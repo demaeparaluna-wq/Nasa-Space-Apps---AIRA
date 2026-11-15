@@ -170,3 +170,14 @@ export interface ModalFeedbackState {
   failedResource?: ResourceKey;
   failurePhysicsByProfile?: Record<AgeProfile, string>;
 }
+
+export interface ChoiceHistoryEntry {
+  sol: 1 | 2 | 3 | 4;
+  solTitle: string;
+  cardId: 'A' | 'B' | 'C';
+  cardTitle: string;
+  category: string;
+  appliedDelta: ResourceDelta;
+  resultingResources: Resources;
+  enteredDanger: boolean;
+}

@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { MessageCircle, Send, X } from 'lucide-react';
-import { RESOURCE_META } from '../data/missionData';
+import { INSTRUMENTS, ORBITS, RESOURCE_META, ROCKETS } from '../data/missionData';
 import {
   AgeProfile,
+  ChoiceHistoryEntry,
   GameScreen,
+  HangarConfig,
   NasaDataBundle,
   QuackExpression,
   ResourceKey,
@@ -25,7 +27,11 @@ interface QuackChatWidgetProps {
   resources: Resources;
   expression: QuackExpression;
   nasaData: NasaDataBundle;
+  hangarConfig: HangarConfig;
+  choiceHistory: ChoiceHistoryEntry[];
 }
+
+type TopicId = 'status' | 'physics' | 'nasa' | 'history' | 'custom';
 
 function getLowestResource(resources: Resources): { key: ResourceKey; value: number } {
   const entries = (Object.keys(resources) as ResourceKey[]).map((key) => ({
@@ -43,21 +49,116 @@ function normalizeText(str: string): string {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
+function buildPhysicsPunByProfile(
+  ageProfile: AgeProfile,
+  domain: 'gravity' | 'thermo' | 'light' | 'magnetism' | 'photons' | 'momentum',
+  nasaData: NasaDataBundle
+): string {
+  const puns: Record<AgeProfile, Record<typeof domain, string>> = {
+    explorers: {
+      gravity:
+        'Pato que pula em Marte vira super-pato: com só 38% da gravidade da Terra, um salto meu de 1 metro lá vira quase 3 metros!',
+      thermo: `Brr! A ${nasaData.meda.nightTempC}°C (MEDA), até meu quack congela no ar — na física do calor, energia elétrica precisa virar calorzinho nos canos!`,
+      light: `Alô-ô-ô? A luz corre a 300 mil km/s, mas Marte fica tão longe que leva ${nasaData.meda.oneWayRadioDelayMin} min pra ir e ${nasaData.meda.oneWayRadioDelayMin} min pra voltar — não dá pra pedir socorro de última hora!`,
+      magnetism: `Sem escudo magnético gigante como o da Terra, a explosão solar ${nasaData.donkiFlare.classType} (DONKI) tenta dar um choque nas penas — ainda bem que água também barra radiação!`,
+      photons: `As alfaces da Estufa Veggie (${nasaData.osdr.studyId}) fazem lanche de luz! Elas precisam de ${nasaData.osdr.ledHoursPerDay}h de LEDs pra soltar oxigênio pra gente respirar.`,
+      momentum:
+        'Foguete é igual pato nadando: joga combustível com força para trás para a 3ª Lei de Newton empurrar a nave para frente! Quanto mais peso, mais combustível!',
+    },
+    strategists: {
+      gravity:
+        'Com gravidade marciana de 3,71 m/s² (38% da Terra), a massa continua exigindo inércia e empuxo preciso — leve peso morto no foguete e o Δv cobra a conta!',
+      thermo: `Termodinâmica cruel: com noites a ${nasaData.meda.nightTempC}°C registradas pelo sensor MEDA, cada Watt cortado em Energia acelera a perda de calor na Cratera Jezero.`,
+      light: `Mesmo no limite cósmico da velocidade da luz (c ≈ 3×10⁸ m/s), a distância orbital impõe ${nasaData.meda.oneWayRadioDelayMin} min de latência só de ida — autonomia local é sobrevivência.`,
+      magnetism: `Sem dipolo magnético global em Marte, prótons de uma fulguração ${nasaData.donkiFlare.classType} (${nasaData.donkiFlare.flrID}) atingem o solo; o hidrogênio da água é excelente blindagem passiva.`,
+      photons: `Pela relação fótons/Watt do estudo ${nasaData.osdr.studyId}, a alface Outredgeous exige ${nasaData.osdr.ledHoursPerDay}h/dia de LEDs — enquanto a poeira τ=${nasaData.meda.dustOpacityTau} derruba os painéis solares.`,
+      momentum:
+        'A Equação de Tsiolkovsky não perdoa trocadilho barato: cada kg extra no Hangar reduz a margem estrutural e drena o orçamento da missão!',
+    },
+    educators: {
+      gravity:
+        'Sob g ≈ 3,71 m/s² (38% de g terrestre), reduz-se o peso aparente na superfície marciana, mas mantém-se integralmente a massa inercial nas manobras.',
+      thermo: `Balanço térmico crítico (MEDA, Rodriguez-Manfredi et al.): a ${nasaData.meda.nightTempC}°C noturnos, qualquer colapso elétrico interrompe aquecedores resistivos e congela o circuito hídrico.`,
+      light: `Latência eletromagnética inevitável (c = 299.792 km/s): ${nasaData.meda.oneWayRadioDelayMin} min one-way (~28 min RTT) torna impraticável o telecontrole em tempo real.`,
+      magnetism: `Ausência de magnetosfera planetária expõe o habitat a eventos DONKI Classe ${nasaData.donkiFlare.classType} (${nasaData.donkiFlare.sourceLocation}); materiais hidrogenados como H₂O reduzem radiação secundária.`,
+      photons: `O ensaio ISS Veggie (${nasaData.osdr.studyId}, Massa et al.) demonstra o acoplamento energético entre fotoperíodo de ${nasaData.osdr.ledHoursPerDay}h LED e geração fotovoltaica atenuada por τ=${nasaData.meda.dustOpacityTau}.`,
+      momentum:
+        'Conservação de momento linear e restrição orçamentária no Hangar ilustram o trade-off real entre massa útil (payload), Δv e redundância sistêmica.',
+    },
+  };
+
+  return puns[ageProfile][domain];
+}
+
+function summarizeHistoryContext(
+  choiceHistory: ChoiceHistoryEntry[],
+  hangarConfig: HangarConfig,
+  ageProfile: AgeProfile
+): string {
+  const rocket = ROCKETS.find((r) => r.id === hangarConfig.rocket);
+  const orbit = ORBITS.find((o) => o.id === hangarConfig.orbit);
+  const instNames = INSTRUMENTS.filter((i) => hangarConfig.instruments.includes(i.id)).map(
+    (i) => i.shortName
+  );
+
+  const hangarSummary = rocket
+    ? `${rocket.name}${orbit ? ` + ${orbit.name}` : ''}${instNames.length ? ` (${instNames.join(' e ')})` : ''}`
+    : 'Hangar ainda em montagem';
+
+  if (choiceHistory.length === 0) {
+    return ageProfile === 'explorers'
+      ? `Seu histórico até agora: ${hangarSummary}, e ainda vamos começar o Sol 1!`
+      : `Configuração atual: ${hangarSummary}. Nenhuma carta executada nos Sols ainda.`;
+  }
+
+  const last = choiceHistory[choiceHistory.length - 1];
+  const riskyCount = choiceHistory.filter((c) => c.enteredDanger).length;
+  const hybridCount = choiceHistory.filter((c) => c.category === 'Engenharia Híbrida').length;
+
+  if (ageProfile === 'explorers') {
+    return `No Sol ${last.sol}, você escolheu "${last.cardTitle}" (${last.cardId})${
+      riskyCount > 0
+        ? ` — e já passou ${riskyCount} vez(es) pela zona amarela/vermelha (<35%)!`
+        : ' — mantendo suas penas bem seguras!'
+    }`;
+  }
+  if (ageProfile === 'strategists') {
+    return `Histórico (${choiceHistory.length}/4 Sols · ${hangarSummary}): última ação foi Sol ${last.sol} [${last.cardId}: ${last.cardTitle} — ${last.category}].${
+      hybridCount > 0
+        ? ` Você aplicou ${hybridCount} solução(ões) híbrida(s) de engenharia!`
+        : riskyCount > 0
+          ? ` Atenção: ${riskyCount} escolha(s) levou(aram) barras abaixo de 35%.`
+          : ''
+    }`;
+  }
+  return `Rastro da sessão (${choiceHistory.length}/4 decisões · ${hangarSummary}): última entrada em Sol ${last.sol} (${last.cardId} - "${last.cardTitle}", categoria ${last.category}; episódios <35%: ${riskyCount}).`;
+}
+
 function generateSmartQuackReply(
-  topic: 'status' | 'physics' | 'nasa' | 'custom',
+  topic: TopicId,
   userQuestion: string,
   screen: GameScreen,
   currentSol: 1 | 2 | 3 | 4,
   ageProfile: AgeProfile,
   resources: Resources,
-  nasaData: NasaDataBundle
+  nasaData: NasaDataBundle,
+  hangarConfig: HangarConfig,
+  choiceHistory: ChoiceHistoryEntry[]
 ): string {
   const lowest = getLowestResource(resources);
   const lowestMeta = RESOURCE_META[lowest.key];
   const inDanger = lowest.value < 35;
   const q = normalizeText(userQuestion);
+  const lastChoice = choiceHistory[choiceHistory.length - 1];
+  const historyBrief = summarizeHistoryContext(choiceHistory, hangarConfig, ageProfile);
+  const nasaLiveTag =
+    nasaData.status === 'live'
+      ? 'telemetria NASA AO VIVO'
+      : nasaData.status === 'cache'
+        ? 'cache NASA 24h'
+        : 'acervo real NASA';
 
-  // Guardrail check: if player asks directly which card to click
+  // Guardrail check: never reveal which card to click
   if (
     q.includes('qual carta') ||
     q.includes('qual opcao') ||
@@ -67,131 +168,232 @@ function generateSmartQuackReply(
     q.includes('a b ou c') ||
     q.includes('a, b ou c')
   ) {
-    return `Quack-esperto! Um bom astronauta não cola da nave vizinha! 😉 Posso te dar uma pista científica: sua barra mais baixa agora é **${lowestMeta.label} (${lowest.value}%)**. Compare qual ação protege esse sistema sem zerar os outros — você consegue!`;
+    return `Quack-esperto! Um bom astronauta não cola da nave vizinha! 😉 ${historyBrief} Sua barra mais baixa agora é **${lowestMeta.label} (${lowest.value}%)**. ${buildPhysicsPunByProfile(
+      ageProfile,
+      currentSol === 1 ? 'light' : currentSol === 2 ? 'magnetism' : currentSol === 3 ? 'photons' : 'momentum',
+      nasaData
+    )}`;
   }
 
-  // Conversational greetings & playful duck/mambo banter
+  // Explicit history analysis request
+  if (
+    topic === 'history' ||
+    (topic === 'custom' &&
+      (q.includes('historico') ||
+        q.includes('minha escolha') ||
+        q.includes('minhas escolhas') ||
+        q.includes('o que eu fiz') ||
+        q.includes('como estou')))
+  ) {
+    const advice = inDanger
+      ? `Alerta nas penas! Depois da sua escolha${lastChoice ? ` ("${lastChoice.cardTitle}")` : ''}, **${lowestMeta.label}** caiu para **${lowest.value}%** — priorize recuperá-la sem zerar as outras!`
+      : `Equilíbrio sólido até aqui! Seu menor medidor é **${lowestMeta.label} (${lowest.value}%)**.`;
+    return `${historyBrief} ${advice} ${buildPhysicsPunByProfile(ageProfile, 'gravity', nasaData)}`;
+  }
+
+  // Greetings
   if (
     topic === 'custom' &&
     (/^(oi|ola|hey|e ai|bom dia|boa tarde|boa noite|quack|tudo bem|salve)/.test(q) ||
       q.includes('tudo bem'))
   ) {
-    return ageProfile === 'explorers'
-      ? `Quack-tástico falar com você! 🦆🚀 Aqui na Cratera Jezero faz um friozinho de ${nasaData.meda.nightTempC}°C — ainda bem que meu traje tem penas térmicas! Quer saber alguma curiosidade de Marte ou olhar suas barras?`
-      : `Quack! Saudações da Base Ares! Sabia que um dia em Marte (chamado de "Sol") dura 24 horas e 39 minutos? Estou de bico atento nos seus sistemas (${lowestMeta.label} está em ${lowest.value}%). Sobre o que quer conversar?`;
+    return `${
+      ageProfile === 'explorers'
+        ? `Quack-tástico falar com você! 🦆🚀`
+        : ageProfile === 'strategists'
+          ? `Quack! Canal de telemetria aberto (${nasaLiveTag})!`
+          : `Saudações pedagógicas da Base Ares (${nasaLiveTag})!`
+    } ${buildPhysicsPunByProfile(ageProfile, 'thermo', nasaData)} ${
+      lastChoice ? `Vi que no Sol ${lastChoice.sol} você escolheu "${lastChoice.cardTitle}".` : ''
+    }`;
   }
 
+  // Duck / Mambo / Gravity
   if (
     topic === 'custom' &&
-    (q.includes('pato') || q.includes('quack') || q.includes('mambo') || q.includes('danca') || q.includes('pena'))
+    (q.includes('pato') ||
+      q.includes('quack') ||
+      q.includes('mambo') ||
+      q.includes('danca') ||
+      q.includes('pena') ||
+      q.includes('gravidade'))
   ) {
-    return `Pelas minhas penas aerodinâmicas! 🦆✨ No espaço quase não tem gravidade para patinar, então o jeito é dançar mambo em microgravidade! Fato real da NASA: na Estação Espacial (ISS), os astronautas precisam de 2 horas de exercício por dia para não perder massa muscular enquanto flutuam!`;
+    return `${buildPhysicsPunByProfile(ageProfile, 'gravity', nasaData)} Fato NASA (${nasaLiveTag}): na ISS, astronautas treinam 2h/dia contra atrofia muscular em microgravidade — e aqui ${historyBrief}`;
   }
 
   // Stars & Constellations
   if (
     topic === 'custom' &&
-    (q.includes('estrela') || q.includes('constelacao') || q.includes('ceu') || q.includes('deneb') || q.includes('orion'))
+    (q.includes('estrela') ||
+      q.includes('constelacao') ||
+      q.includes('ceu') ||
+      q.includes('deneb') ||
+      q.includes('orion'))
   ) {
-    return `Olho vivo no telescópio, pato-astrônomo! 🔭 Sabia que no céu de Marte a estrela polar do norte não é Polaris como na Terra, e sim **Deneb** (na constelação do Cisne), porque o eixo de Marte é inclinado em 25,19°? E em Marte o pôr do sol é azulado por causa da poeira fina!`;
+    return `Olho vivo no telescópio! 🔭 Em Marte, a estrela polar do norte é **Deneb** (Cisne) por causa da inclinação de 25,19° do eixo marciano — e a foto atual no nosso módulo APOD é **"${nasaData.apod.title}" (${nasaData.apod.date})**! ${buildPhysicsPunByProfile(
+      ageProfile,
+      'light',
+      nasaData
+    )}`;
   }
 
   // ETs / Biofilms / Pipes / Water
   if (
     topic === 'custom' &&
-    (q.includes('et') || q.includes('alien') || q.includes('carrapato') || q.includes('biofilme') || q.includes('agua') || q.includes('cano') || q.includes('duto'))
+    (q.includes('et') ||
+      q.includes('alien') ||
+      q.includes('carrapato') ||
+      q.includes('biofilme') ||
+      q.includes('agua') ||
+      q.includes('cano') ||
+      q.includes('duto'))
   ) {
-    return `Quack! Os famosos "Carrapatos ETs" têm nome científico de verdade: **biofilmes**! 🦠 Na pesquisa real **NASA OSDR (Zea et al.)**, cientistas descobriram que bactérias formam camadas grudentas mais espessas em microgravidade dentro dos canos de reciclagem de água da ISS!`;
+    return `Os "Carrapatos ETs" são **biofilmes** reais estudados no **${nasaData.osdr.studyId}** (Zea et al., ISS): em microgravidade, bactérias formam camadas espessas nos dutos de reciclagem de água! ${
+      lastChoice && lastChoice.sol === 1
+        ? `No Sol 1 você reagiu com "${lastChoice.cardTitle}".`
+        : ''
+    } ${buildPhysicsPunByProfile(ageProfile, 'magnetism', nasaData)}`;
   }
 
   // Solar flare / Shield / Radiation / DONKI
   if (
     topic === 'custom' &&
-    (q.includes('tempestade') || q.includes('radiacao') || q.includes('escudo') || q.includes('donki') || q.includes('x8') || q.includes('explosao'))
+    (q.includes('tempestade') ||
+      q.includes('radiacao') ||
+      q.includes('escudo') ||
+      q.includes('donki') ||
+      q.includes('x8') ||
+      q.includes('explosao'))
   ) {
-    return `Penas ao alto! ☀️🛡️ A explosão solar **Classe ${nasaData.donkiFlare.classType}** foi registrada de verdade pelo sistema **NASA CCMC DONKI**! Como Marte não tem um campo magnético gigante como a Terra, a água dos tanques ajuda de verdade a bloquear radiação por ser rica em hidrogênio!`;
+    return `Dado real **NASA DONKI** (${nasaLiveTag}): evento **${nasaData.donkiFlare.flrID}** Classe **${nasaData.donkiFlare.classType}** na região ${nasaData.donkiFlare.sourceLocation}! ${buildPhysicsPunByProfile(
+      ageProfile,
+      'magnetism',
+      nasaData
+    )} ${lastChoice ? `Seu último passo foi "${lastChoice.cardTitle}" (Escudo atual: ${resources.shield}%).` : ''}`;
   }
 
   // Veggie / Plants / Lettuce / Oxygen / LEDs
   if (
     topic === 'custom' &&
-    (q.includes('planta') || q.includes('alface') || q.includes('estufa') || q.includes('veggie') || q.includes('oxigenio') || q.includes('led') || q.includes('ar'))
+    (q.includes('planta') ||
+      q.includes('alface') ||
+      q.includes('estufa') ||
+      q.includes('veggie') ||
+      q.includes('oxigenio') ||
+      q.includes('led') ||
+      q.includes('ar'))
   ) {
-    return `Quack-alface fresquinha no espaço! 🥬 Na missão real **Veggie (${nasaData.osdr.studyId})**, astronautas cultivaram alface *Outredgeous* usando **${nasaData.osdr.ledHoursPerDay} horas por dia de LEDs** vermelhos, azuis e verdes! Além de gerar oxigênio, cuidar de plantas melhora o humor da tripulação!`;
+    return `${buildPhysicsPunByProfile(ageProfile, 'photons', nasaData)} Hoje seu Suporte de Vida está em **${resources.lifeSupport}%** e Energia em **${resources.energy}%**.`;
   }
 
   // Energy / Batteries / Cold / Dust / MEDA
   if (
     topic === 'custom' &&
-    (q.includes('energia') || q.includes('bateria') || q.includes('frio') || q.includes('temperatura') || q.includes('poeira') || q.includes('painel') || q.includes('meda'))
+    (q.includes('energia') ||
+      q.includes('bateria') ||
+      q.includes('frio') ||
+      q.includes('temperatura') ||
+      q.includes('poeira') ||
+      q.includes('painel') ||
+      q.includes('meda'))
   ) {
-    return `Brr! Bateu o bico só de pensar: segundo a estação **MEDA** do robô Perseverance, à noite na Cratera Jezero faz **${nasaData.meda.nightTempC}°C**! ⚡ E a poeira fina marciana (opacidade τ=${nasaData.meda.dustOpacityTau}) cobre os painéis solares — por isso manter Energia acima de 35% é vital para o aquecimento!`;
+    return `${buildPhysicsPunByProfile(ageProfile, 'thermo', nasaData)} Telemetria **${nasaData.meda.mission}**: opacidade de poeira **τ=${nasaData.meda.dustOpacityTau}** na ${nasaData.meda.location}. Sua Energia agora está em **${resources.energy}%**.`;
   }
 
   // Radio / Delay / Earth / Mars / Jezero
   if (
     topic === 'custom' &&
-    (q.includes('radio') || q.includes('sinal') || q.includes('atraso') || q.includes('demora') || q.includes('terra') || q.includes('jezero') || q.includes('distancia'))
+    (q.includes('radio') ||
+      q.includes('sinal') ||
+      q.includes('atraso') ||
+      q.includes('demora') ||
+      q.includes('terra') ||
+      q.includes('jezero') ||
+      q.includes('distancia'))
   ) {
-    return `Alôôô... eco espacial! 📡 Mesmo viajando à velocidade da luz (300.000 km/s!), um recado de rádio leva cerca de **${nasaData.meda.oneWayRadioDelayMin} minutos para ir e ${nasaData.meda.oneWayRadioDelayMin} para voltar** (28 min no total)! Por isso na **Cratera Jezero** a nave precisa pensar rápido sozinha!`;
+    return `${buildPhysicsPunByProfile(ageProfile, 'light', nasaData)} Sua barra de Comunicações está em **${resources.comms}%**${
+      hangarConfig.orbit === 'high' ? ' (ajudada pela sua Órbita Alta!)' : ''
+    }.`;
   }
 
   // Rockets / Mass / Budget / Hangar
   if (
     topic === 'custom' &&
-    (q.includes('foguete') || q.includes('massa') || q.includes('peso') || q.includes('orcamento') || q.includes('dinheiro') || q.includes('orbita') || q.includes('hangar'))
+    (q.includes('foguete') ||
+      q.includes('massa') ||
+      q.includes('peso') ||
+      q.includes('orcamento') ||
+      q.includes('dinheiro') ||
+      q.includes('orbita') ||
+      q.includes('hangar'))
   ) {
-    return `Engenharia de peso — literalmente! 🚀 Na física de foguetes, cada quilograma extra exige muito mais combustível para escapar da gravidade da Terra (11,2 km/s!). E economizar orçamento no Hangar cria uma reserva estratégica para emergências em Marte!`;
+    return `${buildPhysicsPunByProfile(ageProfile, 'momentum', nasaData)} ${historyBrief}`;
   }
 
   // Screen-level fallbacks & quick buttons
   if (screen === 'prologue' || screen === 'hangar') {
     if (topic === 'nasa') {
-      return `Tudo aqui usa telemetria real da NASA: explosões solares do **DONKI (${nasaData.donkiFlare.classType})**, frio de **${nasaData.meda.nightTempC}°C** do **MEDA** e a estufa **Veggie (${nasaData.osdr.studyId})**! Escolha equipamentos que equilibrem peso e verba!`;
+      return `Telemetria carregada (${nasaLiveTag}): **DONKI ${nasaData.donkiFlare.classType}** (${nasaData.donkiFlare.flrID}), **MEDA ${nasaData.meda.nightTempC}°C / τ=${nasaData.meda.dustOpacityTau}**, **OSDR ${nasaData.osdr.studyId}** (${nasaData.osdr.ledHoursPerDay}h LED) e **APOD "${nasaData.apod.title}"**!`;
     }
-    if (ageProfile === 'explorers') {
-      return `Quack! Aqui no Hangar, pense como quem arruma uma mochila para acampar em Marte: não dá para levar tudo se passar do peso do foguete ou do dinheirinho de $100M!`;
+    if (topic === 'physics') {
+      return `${buildPhysicsPunByProfile(ageProfile, 'momentum', nasaData)} ${historyBrief}`;
     }
-    return `Dica de engenharia do Quack: observe a massa total (350 kg da cápsula + 2 instrumentos) e o teto de $100M. Sobrar dinheiro no Hangar ajuda muito no Sol 2!`;
+    return `${historyBrief} ${buildPhysicsPunByProfile(ageProfile, 'gravity', nasaData)}`;
   }
 
   if (screen === 'victory') {
-    return `Quack-parabéns! 🎉 Vocês finalizaram os 4 Sols com Energia ${resources.energy}%, Suporte ${resources.lifeSupport}%, Escudo ${resources.shield}% e Rádio ${resources.comms}%. Clique no céu noturno para revelar constelações reais de Marte como Deneb (a estrela polar marciana)!`;
+    if (topic === 'physics') {
+      return `${buildPhysicsPunByProfile(ageProfile, 'gravity', nasaData)} ${historyBrief}`;
+    }
+    if (topic === 'nasa') {
+      return `Passaporte validado com ${nasaLiveTag}: **DONKI ${nasaData.donkiFlare.classType}**, **OSDR ${nasaData.osdr.studyId}**, **MEDA ${nasaData.meda.nightTempC}°C** e foto **APOD "${nasaData.apod.title}" (${nasaData.apod.date})**!`;
+    }
+    return `Quack-parabéns! 🎉 ${historyBrief} Placar final das barras: Energia ${resources.energy}%, Suporte ${resources.lifeSupport}%, Escudo ${resources.shield}%, Rádio ${resources.comms}%. Clique no céu escuro para revelar Deneb e Órion!`;
   }
 
   // Command Center quick buttons: status / physics / nasa
   if (topic === 'status') {
     const moodText = inDanger
-      ? `🚨 Pato em alerta máximo! **${lowestMeta.label}** caiu para **${lowest.value}%** (zona de perigo!).`
-      : `Tudo sob controle das penas, mas o menor medidor agora é **${lowestMeta.label} (${lowest.value}%)**.`;
-    return `${moodText} Lembre-se: nenhuma carta é gratuita na engenharia — avalie qual sistema precisa de fôlego agora sem deixar outro zerar!`;
+      ? `🚨 Penas em alerta máximo! **${lowestMeta.label}** caiu para **${lowest.value}%** (<35% zona de perigo!).`
+      : `Equilíbrio firme nas penas! Seu menor medidor agora é **${lowestMeta.label} (${lowest.value}%)**.`;
+    return `${moodText} ${historyBrief} Avalie qual sistema precisa de fôlego no Sol ${currentSol} sem zerar nenhum outro!`;
   }
 
   if (topic === 'nasa') {
     if (currentSol === 1) {
-      return `Ciência real no Sol 1: **biofilmes** (OSDR) entopem dutos em microgravidade enquanto o **MEDA** registra **${nasaData.meda.nightTempC}°C** e **${nasaData.meda.oneWayRadioDelayMin} min** de atraso de rádio só de ida!`;
+      return `Ciência real no Sol 1 (${nasaLiveTag}): no **${nasaData.osdr.studyId}** (Zea et al.), biofilmes espessos entopem dutos em microgravidade enquanto o **MEDA** mede **${nasaData.meda.nightTempC}°C** e **${nasaData.meda.oneWayRadioDelayMin} min** de atraso de rádio!`;
     }
     if (currentSol === 2) {
-      return `Ciência real no Sol 2: explosão solar **Classe ${nasaData.donkiFlare.classType}** do catálogo **NASA DONKI**! Sem campo magnético global em Marte, até água potável ajuda como escudo de hidrogênio!`;
+      return `Ciência real no Sol 2 (${nasaLiveTag}): explosão **${nasaData.donkiFlare.flrID}** Classe **${nasaData.donkiFlare.classType}** do catálogo **NASA DONKI**! ${
+        lastChoice ? `Depois do Sol ${lastChoice.sol} ("${lastChoice.cardTitle}"), seu Escudo está em ${resources.shield}%.` : ''
+      }`;
     }
     if (currentSol === 3) {
-      return `Ciência real no Sol 3: a alface *Outredgeous* da **Estufa Veggie (${nasaData.osdr.studyId})** precisa de **16h/dia de LEDs**, disputando energia com painéis sujos de poeira marciana (τ=${nasaData.meda.dustOpacityTau})!`;
+      return `Ciência real no Sol 3 (${nasaLiveTag}): a alface *Outredgeous* (**${nasaData.osdr.studyId}**) exige **${nasaData.osdr.ledHoursPerDay}h/dia de LEDs**, competindo com painéis sob poeira **τ=${nasaData.meda.dustOpacityTau}** (MEDA)!`;
     }
-    return `Ciência real no Sol 4: durante ventos de poeira na **Cratera Jezero**, radares e sincronização orbital são essenciais para pouso seguro!`;
+    return `Ciência real no Sol 4 (${nasaLiveTag}): pouso sob ventos de poeira na **${nasaData.meda.location}** exige sincronia orbital e enlace com atraso de **${nasaData.meda.oneWayRadioDelayMin} min**!`;
   }
 
   if (topic === 'physics') {
-    const solPhysics: Record<1 | 2 | 3 | 4, string> = {
-      1: `Por que 28 minutos de espera? Ondas de rádio viajam a 300.000 km/s, mas Marte está tão longe que 14 min vão e 14 min voltam! Seu menor sistema agora é **${lowestMeta.label} (${lowest.value}%)**.`,
-      2: `Por que a tempestade solar preocupa? Sem magnetosfera em Marte, prótons solares atingem a base! Escudos ativos gastam muita Energia, enquanto água e inclinação de painéis protegem de outra forma.`,
-      3: `Por que energia vs. plantas? LEDs por 16h/dia consomem bastante eletricidade para manter a fotossíntese, mas poeira sobre os painéis reduz o carregamento solar.`,
-      4: `Por que pouso na poeira é difícil? Radares enxergam através da poeira gastando Energia/Escudo; pousos lentos protegem o casco mas consomem mais oxigênio e água!`,
+    const domainBySol: Record<1 | 2 | 3 | 4, 'light' | 'magnetism' | 'photons' | 'momentum'> = {
+      1: 'light',
+      2: 'magnetism',
+      3: 'photons',
+      4: 'momentum',
     };
-    return solPhysics[currentSol];
+    return `${buildPhysicsPunByProfile(ageProfile, domainBySol[currentSol], nasaData)} ${
+      lastChoice
+        ? `Pela sua decisão anterior ("${lastChoice.cardTitle}"), seu ponto mais sensível agora é **${lowestMeta.label} (${lowest.value}%)**.`
+        : `Fique de olho em **${lowestMeta.label} (${lowest.value}%)**!`
+    }`;
   }
 
-  // Intelligent custom catch-all that echoes user input + shares NASA fact + pun
-  return `Quack-interessante você falar sobre "${userQuestion.trim().slice(0, 36)}"! 🦆 Pelo meu radar espacial, seu medidor mais sensível agora é **${lowestMeta.label} (${lowest.value}%)**. Curiosidade da NASA: em Marte a gravidade é só 38% da Terra — você pularia quase 3 vezes mais alto por lá!`;
+  // Dynamic catch-all referencing history + profile physics pun + real NASA fact
+  return `Quack-curioso você perguntar sobre "${userQuestion.trim().slice(0, 36)}"! 🦆 ${historyBrief} ${buildPhysicsPunByProfile(
+    ageProfile,
+    'gravity',
+    nasaData
+  )} (${nasaLiveTag}: DONKI ${nasaData.donkiFlare.classType} · MEDA ${nasaData.meda.nightTempC}°C).`;
 }
 
 export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
@@ -201,6 +403,8 @@ export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
   resources,
   expression,
   nasaData,
+  hangarConfig,
+  choiceHistory,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
@@ -208,31 +412,40 @@ export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const quickButtons = useMemo(() => {
-    if (screen === 'command') {
-      return [
-        { id: 'status' as const, label: 'Qual barra está em perigo?' },
-        { id: 'physics' as const, label: 'Por que isso acontece na física?' },
-        { id: 'nasa' as const, label: 'Curiosidade real da NASA!' },
-      ];
+    const base: { id: TopicId; label: string }[] =
+      screen === 'command'
+        ? [
+            { id: 'status', label: 'Qual barra está em perigo?' },
+            { id: 'physics', label: 'Física de Marte no Sol!' },
+            { id: 'nasa', label: 'Dado real NASA agora!' },
+          ]
+        : [
+            { id: 'status', label: 'Dica para essa etapa!' },
+            { id: 'physics', label: 'Leis da física aqui?' },
+            { id: 'nasa', label: 'Telemetria NASA carregada?' },
+          ];
+
+    if (choiceHistory.length > 0 || hangarConfig.rocket) {
+      base.push({ id: 'history', label: 'Analisar minhas escolhas!' });
     }
-    return [
-      { id: 'status' as const, label: 'Dica para essa etapa!' },
-      { id: 'physics' as const, label: 'Como funciona a física aqui?' },
-      { id: 'nasa' as const, label: 'Quais dados da NASA são reais?' },
-    ];
-  }, [screen]);
+    return base;
+  }, [screen, choiceHistory.length, hangarConfig.rocket]);
 
   const greeting = useMemo(() => {
+    const last = choiceHistory[choiceHistory.length - 1];
+    const historyNote = last
+      ? ` Vi sua última jogada no Sol ${last.sol}: "${last.cardTitle}"!`
+      : '';
     if (ageProfile === 'explorers') {
-      return 'Quack! 🦆 Pode tocar num botão ou me perguntar qualquer coisa sobre Marte, ETs e estrelas — sempre com um trocadilho de pato!';
+      return `Quack! 🦆${historyNote} Pergunte sobre Marte, gravidade, ETs ou estrelas — sempre com um trocadilho de pato e ciência da NASA (${nasaData.meda.nightTempC}°C)!`;
     }
     if (ageProfile === 'strategists') {
-      return 'Telemetria ativa! Pergunte sobre física, NASA, estrelas ou suas barras — prometo dar boas dicas sem dar spoiler da carta!';
+      return `Telemetria ativa!${historyNote} Analiso seu histórico e explico física marciana (DONKI ${nasaData.donkiFlare.classType}, MEDA τ=${nasaData.meda.dustOpacityTau}) sem dar spoiler da carta!`;
     }
-    return 'Assistente Pedagógico Quack: respondo perguntas abertas sobre ciência espacial (DONKI, OSDR, MEDA), diagnostico as barras e estimulo o pensamento crítico.';
-  }, [ageProfile]);
+    return `Assistente Pedagógico Quack:${historyNote} Contextualizo o histórico da sessão com física planetária e dados reais (OSDR ${nasaData.osdr.studyId}, DONKI ${nasaData.donkiFlare.classType}, MEDA).`;
+  }, [ageProfile, choiceHistory, nasaData]);
 
-  const handleAsk = (topic: 'status' | 'physics' | 'nasa' | 'custom', labelText: string) => {
+  const handleAsk = (topic: TopicId, labelText: string) => {
     playClickSound();
     const userMsgId = `${Date.now()}-u`;
     setMessages((prev) => [
@@ -249,14 +462,16 @@ export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
         currentSol,
         ageProfile,
         resources,
-        nasaData
+        nasaData,
+        hangarConfig,
+        choiceHistory
       );
       setMessages((prev) => [
         ...prev.slice(-8),
         { id: `${Date.now()}-q`, sender: 'quack', text: reply },
       ]);
       setIsThinking(false);
-    }, 280);
+    }, 260);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -285,13 +500,15 @@ export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
               Falar com Quack
             </p>
             <p className="text-[11px] font-semibold text-orange-600 dark:text-orange-300 leading-tight">
-              Dicas &amp; Ciência NASA
+              {choiceHistory.length > 0
+                ? `${choiceHistory.length} escolha(s) · Física NASA`
+                : 'Dicas & Ciência NASA'}
             </p>
           </div>
           <MessageCircle className="h-4 w-4 text-orange-500 dark:text-orange-400" />
         </button>
       ) : (
-        <div className="w-[340px] max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-[#0F172A] shadow-2xl overflow-hidden">
+        <div className="w-[345px] max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-[#0F172A] shadow-2xl overflow-hidden">
           <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-[#162038] px-3.5 py-2.5">
             <div className="flex items-center gap-2.5">
               <QuackMascot expression={expression} size={38} />
@@ -300,7 +517,7 @@ export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
                   Comandante Quack
                 </h3>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
-                  Tutor Espacial Interativo
+                  Tutor de Física &amp; Histórico ({choiceHistory.length}/4)
                 </p>
               </div>
             </div>
@@ -332,7 +549,7 @@ export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
             ))}
             {isThinking && (
               <div className="mr-8 rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900 px-3 py-2 text-[11px] italic text-slate-500 dark:text-slate-400">
-                Quack está consultando os sensores da NASA...
+                Quack está cruzando seu histórico com a telemetria NASA...
               </div>
             )}
           </div>
@@ -356,7 +573,7 @@ export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Pergunte sobre Marte, ETs, estrelas..."
+                placeholder="Pergunte sobre Marte, gravidade, escolhas..."
                 className="flex-1 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500 px-2.5 py-1.5 text-xs focus:border-orange-400 focus:outline-none"
               />
               <button

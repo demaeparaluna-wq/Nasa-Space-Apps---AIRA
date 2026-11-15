@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Moon, Sun, Volume2, VolumeX } from 'lucide-react';
+import { Database, Moon, Sun, Volume2, VolumeX, X } from 'lucide-react';
 import { NasaFooter } from './components/NasaFooter';
+import { MissionPatchLogo } from './components/MissionPatchLogo';
 import { QuackChatWidget } from './components/QuackChatWidget';
 import { Screen1Prologue } from './components/Screen1Prologue';
 import { Screen2Hangar } from './components/Screen2Hangar';
@@ -9,12 +10,14 @@ import { Screen4Modal } from './components/Screen4Modal';
 import { Screen5Victory } from './components/Screen5Victory';
 import { BackgroundEasterEggLayer } from './components/SpaceVisuals';
 import { SplashScreen } from './components/SplashScreen';
+import { TechnicalLineagePanel } from './components/TechnicalLineagePanel';
 import { HANGAR_BUDGET_M, INSTRUMENTS, ORBITS, ROCKETS, SOL_SCENARIOS } from './data/missionData';
 import { getArchivedFallbackBundle, loadResilientNasaData } from './services/nasaApi';
 import {
   AgeProfile,
   AvatarId,
   BadgeId,
+  ChoiceHistoryEntry,
   GameScreen,
   HangarConfig,
   ModalFeedbackState,
@@ -154,7 +157,9 @@ export function App() {
   const [lastDelta, setLastDelta] = useState<ResourceDelta | null>(null);
   const [unlockedBadges, setUnlockedBadges] = useState<BadgeId[]>([]);
   const [penaltyPoints, setPenaltyPoints] = useState(0);
+  const [choiceHistory, setChoiceHistory] = useState<ChoiceHistoryEntry[]>([]);
   const [modalFeedback, setModalFeedback] = useState<ModalFeedbackState | null>(null);
+  const [showLineageModal, setShowLineageModal] = useState(false);
 
   const toggleMute = () => {
     const next = !muted;
@@ -178,6 +183,7 @@ export function App() {
     setLastDelta(null);
     setUnlockedBadges([]);
     setPenaltyPoints(0);
+    setChoiceHistory([]);
     setModalFeedback(null);
     setScreen('command');
   };
@@ -243,6 +249,21 @@ export function App() {
     }
 
     const scenario = SOL_SCENARIOS.find((s) => s.sol === currentSol)!;
+    const historyEntry: ChoiceHistoryEntry = {
+      sol: currentSol,
+      solTitle: scenario.title,
+      cardId: card.id,
+      cardTitle: card.title,
+      category: card.category,
+      appliedDelta,
+      resultingResources: updated,
+      enteredDanger,
+    };
+    setChoiceHistory((prev) => [
+      ...prev.filter((item) => item.sol !== currentSol),
+      historyEntry,
+    ]);
+
     if (!unlockedBadges.includes(scenario.badge.id)) {
       setUnlockedBadges((prev) => [...prev, scenario.badge.id]);
     }
@@ -284,6 +305,7 @@ export function App() {
     setCurrentSol(1);
     setUnlockedBadges([]);
     setPenaltyPoints(0);
+    setChoiceHistory([]);
     setLastDelta(null);
     setModalFeedback(null);
     setHangarConfig({ rocket: null, orbit: null, instruments: [] });
@@ -327,15 +349,23 @@ export function App() {
   }
 
   return (
-    <div className="relative min-h-screen bg-slate-50 text-slate-900 dark:bg-[#080D1A] dark:text-slate-100 transition-colors">
+    <div className="relative min-h-screen bg-slate-50 text-slate-900 dark:bg-[#0B1221] dark:text-slate-100 transition-colors">
+      {/* Subtle Martian top-right radial glow matching mission aesthetic */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0 dark:bg-[radial-gradient(ellipse_at_top_right,_rgba(234,88,12,0.16),_transparent_55%)]"
+      />
       <BackgroundEasterEggLayer screen={screen} currentSol={currentSol} />
 
-      {/* Clean Top Bar with Theme Switch + Audio Toggle */}
-      <header className="relative z-10 border-b border-slate-200 bg-white/95 dark:border-slate-800/90 dark:bg-[#0A1020]/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white whitespace-nowrap shrink-0">
-            Missão Sol-4 · Base Ares
-          </span>
+      {/* Clean Top Bar with Orange Mission Patch + Theme Switch + Audio Toggle */}
+      <header className="relative z-10 border-b border-slate-200 bg-white/95 dark:border-slate-800/80 dark:bg-[#0B1221]/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2.5">
+          <div className="flex items-center gap-2.5 whitespace-nowrap shrink-0">
+            <MissionPatchLogo size={36} />
+            <span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
+              Missão Sol-4 · Base Ares
+            </span>
+          </div>
 
           <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-500 dark:text-slate-400">
             <span className={screen === 'prologue' ? 'text-orange-600 dark:text-orange-400' : ''}>
@@ -353,6 +383,17 @@ export function App() {
           </nav>
 
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowLineageModal(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-xs font-semibold text-sky-800 hover:bg-sky-100 dark:border-sky-500/40 dark:bg-sky-950/50 dark:text-sky-200 dark:hover:bg-sky-900/60 whitespace-nowrap"
+              aria-label="Ver Linhagem Técnica NASA e Relação com Mecânicas"
+            >
+              <Database className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" />
+              <span className="hidden sm:inline">Dados &amp; Mecânicas</span>
+              <span className="sm:hidden">Dados</span>
+            </button>
+
             <button
               type="button"
               onClick={toggleTheme}
@@ -406,6 +447,8 @@ export function App() {
             setTeamNames={setTeamNames}
             teamCount={teamCount}
             setTeamCount={setTeamCount}
+            nasaData={nasaData}
+            onOpenLineage={() => setShowLineageModal(true)}
             onStartHangar={() => setScreen('hangar')}
           />
         )}
@@ -447,6 +490,7 @@ export function App() {
             resources={resources}
             penaltyPoints={penaltyPoints}
             unlockedBadges={unlockedBadges}
+            choiceHistory={choiceHistory}
             nasaData={nasaData}
             onUpdateApod={handleUpdateApod}
             onPlayAgain={handlePlayAgain}
@@ -466,6 +510,55 @@ export function App() {
         />
       )}
 
+      {showLineageModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+          onClick={() => setShowLineageModal(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="max-h-[88vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-[#10182E] p-5 sm:p-6 shadow-2xl space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
+                  Arquitetura Educacional &amp; Dados Reais
+                </p>
+                <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
+                  Linhagem Técnica NASA &amp; Relacionamento nas Mecânicas
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowLineageModal(false)}
+                className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                aria-label="Fechar janela técnica"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <TechnicalLineagePanel
+              nasaData={nasaData}
+              ageProfile={ageProfile}
+              hangarConfig={hangarConfig}
+              resources={resources}
+              choiceHistory={choiceHistory}
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowLineageModal(false)}
+              className="w-full rounded-xl bg-sky-500 py-2.5 text-xs font-extrabold text-slate-950 hover:bg-sky-400"
+            >
+              Voltar à Missão
+            </button>
+          </div>
+        </div>
+      )}
+
       <QuackChatWidget
         screen={screen}
         currentSol={currentSol}
@@ -473,6 +566,8 @@ export function App() {
         resources={resources}
         expression={widgetExpression}
         nasaData={nasaData}
+        hangarConfig={hangarConfig}
+        choiceHistory={choiceHistory}
       />
 
       <NasaFooter nasaData={nasaData} />

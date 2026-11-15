@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="bgMars" cx="72%" cy="68%" r="60%">
+      <stop offset="0%" stop-color="#EA580C" />
+      <stop offset="100%" stop-color="#9A3412" />
+    </radialGradient>
+  </defs>
+  <!-- Outer dark rim -->
+  <circle cx="100" cy="100" r="96" fill="#0B1221" />
+  <!-- Orange mission patch border ring -->
+  <circle cx="100" cy="100" r="88" fill="#0B1221" stroke="#F97316" stroke-width="14" />
+  <!-- Dashed inner stitch ring -->
+  <circle cx="100" cy="100" r="78" fill="none" stroke="#FDBA74" stroke-width="2" stroke-dasharray="5 5" />
+  <!-- Mars planet curve inside patch -->
+  <clipPath id="innerClip">
+    <circle cx="100" cy="100" r="73" />
+  </clipPath>
+  <g clip-path="url(#innerClip)">
+    <rect x="20" y="20" width="160" height="160" fill="#0B1221" />
+    <circle cx="136" cy="134" r="56" fill="url(#bgMars)" />
+    <!-- Stars -->
+    <circle cx="52" cy="58" r="2.2" fill="#FFFFFF" />
+    <circle cx="68" cy="44" r="1.6" fill="#BAE6FD" />
+    <circle cx="140" cy="52" r="2" fill="#FDE047" />
+    <circle cx="155" cy="72" r="1.5" fill="#FFFFFF" />
+    <circle cx="48" cy="108" r="1.6" fill="#FFFFFF" />
+  </g>
+  <!-- Mini Comandante Quack in center -->
+  <path d="M78 148 C78 122, 122 122, 122 148 Z" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2.5" />
+  <circle cx="100" cy="95" r="27" fill="#0F172A" fill-opacity="0.35" stroke="#CBD5E1" stroke-width="2.5" />
+  <circle cx="100" cy="96" r="21" fill="#FDE047" stroke="#EAB308" stroke-width="1.5" />
+  <path d="M96 75 C94 67, 100 66, 101 73 C104 66, 109 69, 105 76 Z" fill="#FDE047" />
+  <circle cx="91" cy="93" r="3" fill="#0F172A" />
+  <circle cx="109" cy="93" r="3" fill="#0F172A" />
+  <ellipse cx="83" cy="100" rx="3.5" ry="2.2" fill="#FB7185" fill-opacity="0.6" />
+  <ellipse cx="117" cy="100" rx="3.5" ry="2.2" fill="#FB7185" fill-opacity="0.6" />
+  <ellipse cx="100" cy="103" rx="7.5" ry="4.5" fill="#F97316" />
+  <!-- Side patch stars -->
+  <path d="M23 98 L25 102 L29 102 L26 105 L27 109 L23 107 L19 109 L20 105 L17 102 L21 102 Z" fill="#FDE047" />
+  <path d="M177 98 L179 102 L183 102 L180 105 L181 109 L177 107 L173 109 L174 105 L171 102 L175 102 Z" fill="#FDE047" />
+</svg>

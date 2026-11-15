@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Award,
-  BookOpen,
   Check,
   MessageSquare,
   Microscope,
@@ -15,11 +14,9 @@ import {
   CLASSROOM_DEBATE_QUESTIONS,
   INSTRUMENTS,
   ORBITS,
-  PEER_REVIEWED_REFERENCES,
   RESOURCE_META,
   ROCKETS,
   SOL_SCENARIOS,
-  TECHNICAL_LINEAGE_ROWS,
 } from '../data/missionData';
 import {
   fetchRandomNasaApod,
@@ -29,6 +26,7 @@ import {
   AgeProfile,
   AvatarId,
   BadgeId,
+  ChoiceHistoryEntry,
   HangarConfig,
   NasaApodData,
   NasaDataBundle,
@@ -43,7 +41,9 @@ import {
   MartianStargazingBackdrop,
   SpawnedTwinkleStar,
 } from './MartianStargazingSky';
+import { MissionPatchLogo } from './MissionPatchLogo';
 import { MamboPartyBanner } from './SpaceVisuals';
+import { TechnicalLineagePanel } from './TechnicalLineagePanel';
 
 interface Screen5VictoryProps {
   playerName: string;
@@ -56,6 +56,7 @@ interface Screen5VictoryProps {
   resources: Resources;
   penaltyPoints: number;
   unlockedBadges: BadgeId[];
+  choiceHistory: ChoiceHistoryEntry[];
   nasaData: NasaDataBundle;
   onUpdateApod: (newApod: NasaApodData) => void;
   onPlayAgain: () => void;
@@ -73,12 +74,13 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
   resources,
   penaltyPoints,
   unlockedBadges,
+  choiceHistory,
   nasaData,
   onUpdateApod,
   onPlayAgain,
   onBackToHangar,
 }) => {
-  const [labView, setLabView] = useState<'explorer' | 'technical'>('explorer');
+  const [labView, setLabView] = useState<'explorer' | 'technical'>('technical');
   const [copiedChallenge, setCopiedChallenge] = useState(false);
   const [drawingApod, setDrawingApod] = useState(false);
   const [activeVictoryModal, setActiveVictoryModal] = useState<'classroom' | 'science' | null>(null);
@@ -221,22 +223,25 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
             }`}
           >
             <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-300">
-                  Passaporte Oficial · Missão Sol-4
-                </p>
-                <h2 className="mt-1 text-2xl font-extrabold text-slate-900 dark:text-white">
-                  {isGoldVictory
-                    ? '🏆 Guardião Ouro da Base Ares'
-                    : '🛡️ Sobrevivente de Marte'}
-                </h2>
-                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-                  {isGoldVictory
-                    ? 'Maestria em Engenharia Sistêmica: todos os 4 sistemas terminaram acima de 35%!'
-                    : isHeroicSurvival
-                      ? 'Sobrevivência Heroica! Que tal testar outra combinação no Hangar para buscar o Título Ouro (>35% em tudo)?'
-                      : 'Você completou os 4 Sols! Tente manter todas as 4 barras ≥ 35% para conquistar o Título Ouro.'}
-                </p>
+              <div className="flex items-start gap-3.5">
+                <MissionPatchLogo size={64} className="shrink-0" />
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-300">
+                    Passaporte Oficial · Missão Sol-4
+                  </p>
+                  <h2 className="mt-1 text-2xl font-extrabold text-slate-900 dark:text-white">
+                    {isGoldVictory
+                      ? '🏆 Guardião Ouro da Base Ares'
+                      : '🛡️ Sobrevivente de Marte'}
+                  </h2>
+                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                    {isGoldVictory
+                      ? 'Maestria em Engenharia Sistêmica: todos os 4 sistemas terminaram acima de 35%!'
+                      : isHeroicSurvival
+                        ? 'Sobrevivência Heroica! Que tal testar outra combinação no Hangar para buscar o Título Ouro (>35% em tudo)?'
+                        : 'Você completou os 4 Sols! Tente manter todas as 4 barras ≥ 35% para conquistar o Título Ouro.'}
+                  </p>
+                </div>
               </div>
               <div className="text-right">
                 <span className="block text-[11px] text-slate-500 dark:text-slate-400">
@@ -442,6 +447,17 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Abrir ➔</span>
           </button>
         </section>
+
+        {/* Visão Direta de Linhagem Técnica NASA & Relacionamento nas Mecânicas */}
+        <section className="pointer-events-auto rounded-2xl border border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-[#10182E]/95 p-5 sm:p-6 backdrop-blur-md">
+          <TechnicalLineagePanel
+            nasaData={nasaData}
+            ageProfile={ageProfile}
+            hangarConfig={hangarConfig}
+            resources={resources}
+            choiceHistory={choiceHistory}
+          />
+        </section>
       </div>
 
       {/* Modals for Real Science Lab & Classroom Guide */}
@@ -533,53 +549,13 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-                      <table className="w-full text-left text-xs">
-                        <thead className="bg-slate-100 text-slate-700 dark:bg-[#0B1224] dark:text-slate-300">
-                          <tr>
-                            <th className="px-3 py-2 font-semibold">Base / API NASA</th>
-                            <th className="px-3 py-2 font-semibold">Parâmetro Real</th>
-                            <th className="px-3 py-2 font-semibold">Fallback</th>
-                            <th className="px-3 py-2 font-semibold">Impacto</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-200 bg-white text-slate-800 dark:divide-slate-800 dark:bg-[#0F172A] dark:text-slate-200">
-                          {TECHNICAL_LINEAGE_ROWS.map((row) => (
-                            <tr key={row.api}>
-                              <td className="px-3 py-2 font-mono-tabular font-semibold text-sky-700 dark:text-sky-300">
-                                {row.api}
-                              </td>
-                              <td className="px-3 py-2">{row.parameter}</td>
-                              <td className="px-3 py-2 text-slate-500 dark:text-slate-400">
-                                {row.fallback}
-                              </td>
-                              <td className="px-3 py-2">{row.impact}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h3 className="flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-300">
-                        <BookOpen className="h-4 w-4" />
-                        <span>Referências Científicas Revisadas por Pares</span>
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        {PEER_REVIEWED_REFERENCES.map((ref) => (
-                          <div
-                            key={ref.authors}
-                            className="rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-[#0B1224] p-3 text-xs space-y-1"
-                          >
-                            <p className="font-bold text-slate-900 dark:text-white">{ref.authors}</p>
-                            <p className="italic text-sky-700 dark:text-sky-300">{ref.title}</p>
-                            <p className="text-slate-600 dark:text-slate-400">{ref.relevance}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <TechnicalLineagePanel
+                    nasaData={nasaData}
+                    ageProfile={ageProfile}
+                    hangarConfig={hangarConfig}
+                    resources={resources}
+                    choiceHistory={choiceHistory}
+                  />
                 )}
               </div>
             ) : (
