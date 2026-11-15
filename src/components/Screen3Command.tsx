@@ -15,9 +15,11 @@ import {
   X,
 } from 'lucide-react';
 import workshopImg from '../assets/images/mars_space_workshop_1794706252297.jpg';
+import { HANGAR_BUDGET_M, INSTRUMENTS, ROCKETS } from '../data/missionData';
 import { getLocalizedMissionData } from '../data/missionDataEn';
 import {
   AgeProfile,
+  HangarConfig,
   HotspotInfo,
   Language,
   NasaDataBundle,
@@ -42,6 +44,7 @@ interface Screen3CommandProps {
   teamNames: string[];
   teamCount: number;
   soloName: string;
+  hangarConfig: HangarConfig;
   nasaData: NasaDataBundle;
   onRequestToolHelpCost: () => void;
   onChooseCard: (card: SolCard) => void;
@@ -164,11 +167,18 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
   teamNames,
   teamCount,
   soloName,
+  hangarConfig,
   nasaData,
   onRequestToolHelpCost,
   onChooseCard,
 }) => {
   const isPt = lang === 'pt';
+  const rocketCost =
+    ROCKETS.find((r) => r.id === hangarConfig.rocket)?.costM || 35;
+  const instCost = INSTRUMENTS.filter((i) =>
+    hangarConfig.instruments.includes(i.id)
+  ).reduce((s, i) => s + i.costM, 0);
+  const savedBudget = Math.max(0, HANGAR_BUDGET_M - (rocketCost + instCost));
   const {
     BASE_HOTSPOTS,
     RESOURCE_META,
@@ -283,7 +293,7 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5 pb-20">
+    <div className="mx-auto max-w-5xl space-y-5 pb-[110px]">
       {/* Top HUD: Turn Indicator + 4 Resource Bars + Scientific Method Tracker */}
       <section className="rounded-2xl border border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-[#10182E]/95 p-4 backdrop-blur-sm space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
@@ -439,6 +449,35 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
         {scenario.earthTransmission && (
           <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs sm:text-sm font-medium text-amber-950 dark:border-amber-500/35 dark:bg-amber-950/35 dark:text-amber-100">
             {scenario.earthTransmission}
+          </div>
+        )}
+
+        {currentSol === 2 && (
+          <div
+            className={`rounded-xl border px-4 py-2.5 text-xs font-bold flex flex-wrap items-center justify-between gap-2 ${
+              savedBudget >= 15
+                ? 'border-emerald-400 bg-emerald-50 text-emerald-900 dark:border-emerald-500/45 dark:bg-emerald-950/40 dark:text-emerald-200'
+                : savedBudget === 0
+                  ? 'border-rose-400 bg-rose-50 text-rose-900 dark:border-rose-500/45 dark:bg-rose-950/40 dark:text-rose-200'
+                  : 'border-amber-400 bg-amber-50 text-amber-900 dark:border-amber-500/45 dark:bg-amber-950/40 dark:text-amber-200'
+            }`}
+          >
+            <span>
+              {savedBudget >= 15
+                ? isPt
+                  ? `💰 Reserva do Hangar: $${savedBudget}M poupados — Carta B ganha +10% de Energia extra!`
+                  : `💰 Hangar Reserve: $${savedBudget}M saved — Card B earns +10% extra Energy!`
+                : savedBudget === 0
+                  ? isPt
+                    ? '⚠️ Reserva de Emergência Zerada ($0M livres de $100M) — Carta B sem bônus extra.'
+                    : '⚠️ Emergency Reserve Empty ($0M left of $100M) — Card B gets no extra bonus.'
+                  : isPt
+                    ? `💡 Reserva do Hangar: $${savedBudget}M poupados (precisava de $15M+ para o bônus extra da Carta B).`
+                    : `💡 Hangar Reserve: $${savedBudget}M saved ($15M+ needed for Card B's extra bonus).`}
+            </span>
+            <span className="font-mono-tabular rounded-md bg-white/80 dark:bg-slate-900/70 px-2 py-0.5 text-[11px]">
+              ${savedBudget}M / ${HANGAR_BUDGET_M}M
+            </span>
           </div>
         )}
 

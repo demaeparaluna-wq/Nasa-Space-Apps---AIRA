@@ -296,7 +296,7 @@ export function App() {
         hangarConfig.instruments.includes(i.id)
       ).reduce((s, i) => s + i.costM, 0);
       const savedBudget = HANGAR_BUDGET_M - (rocketCost + instCost);
-      if (savedBudget > 0) {
+      if (savedBudget >= 15) {
         appliedDelta.energy = (appliedDelta.energy || 0) + 10;
       }
     }
@@ -740,7 +740,7 @@ export function App() {
       </header>
 
       <main
-        className={`relative z-10 px-4 pt-6 pb-8 ${
+        className={`relative z-10 px-4 pt-6 pb-[110px] ${
           screen === 'victory' ? 'pointer-events-none' : ''
         }`}
       >
@@ -788,6 +788,7 @@ export function App() {
             teamNames={teamNames}
             teamCount={teamCount}
             soloName={playerName}
+            hangarConfig={hangarConfig}
             nasaData={nasaData}
             onRequestToolHelpCost={handleRequestToolHelpCost}
             onChooseCard={handleChooseCard}

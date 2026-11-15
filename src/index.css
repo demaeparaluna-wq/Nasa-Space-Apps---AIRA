@@ -141,7 +141,7 @@
     transform: translateY(18px) scale(0.9);
   }
   100% {
-    opacity: 0.52;
+    opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
@@ -224,12 +224,32 @@
   animation: constellation-fade 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes et-scratch {
+  0%, 100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translate(-2px, -3px) rotate(-8deg);
+  }
+  50% {
+    transform: translate(2px, 1px) rotate(6deg);
+  }
+  75% {
+    transform: translate(-1.5px, -2px) rotate(-6deg);
+  }
+}
+
 .animate-bg-et-peek {
   animation: bg-et-peek 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-cow-abduction {
   animation: cow-abduction 4.6s ease-in-out infinite;
+}
+
+.animate-et-scratch {
+  transform-origin: 58px 46px;
+  animation: et-scratch 0.85s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -243,7 +263,8 @@
   .animate-minion-cheer,
   .animate-ufo-flyby,
   .animate-star-twinkle,
-  .animate-cow-abduction {
+  .animate-cow-abduction,
+  .animate-et-scratch {
     animation: none !important;
   }
 }

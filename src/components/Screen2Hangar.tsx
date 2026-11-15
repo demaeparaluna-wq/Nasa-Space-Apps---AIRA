@@ -145,7 +145,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
   const inspected = activeInspectKey ? inspectDetails[activeInspectKey] : null;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4 pb-20">
+    <div className="mx-auto max-w-5xl space-y-4 pb-[110px]">
       {launching && selectedRocket && selectedOrbit && (
         <RocketLaunchOverlay
           rocketName={selectedRocket.name}
@@ -170,14 +170,27 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
 
         <div className="text-right">
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
-            {isPt ? 'Hangar de Engenharia · Base Ares' : 'Engineering Hangar · Ares Base'}
+            {isPt ? 'Hangar de Engenharia · Resgate Base Ares' : 'Engineering Hangar · Ares Base Rescue'}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             {isPt
-              ? 'Compare os foguetes nos cards e toque nos ícones de Órbita e Instrumentos para ver detalhes.'
-              : 'Compare rockets below and hover or tap Orbit & Instrument icons to inspect specs.'}
+              ? 'Monte o foguete de suprimentos e resgate que decolará da Terra rumo à Cratera Jezero!'
+              : 'Assemble the supply & rescue rocket launching from Earth to Jezero Crater!'}
           </p>
         </div>
+      </div>
+
+      {/* Rescue Booster Kits Explainer */}
+      <div className="flex items-start gap-2.5 rounded-2xl border border-orange-300/70 bg-orange-50/90 px-4 py-3 text-xs leading-relaxed text-orange-950 dark:border-orange-500/35 dark:bg-orange-950/30 dark:text-orange-100">
+        <Rocket className="h-4 w-4 shrink-0 text-orange-600 dark:text-orange-400 mt-0.5" />
+        <p>
+          <strong className="font-extrabold">
+            {isPt ? 'Kits Avançados de Reforço:' : 'Advanced Booster Kits:'}
+          </strong>{' '}
+          {isPt
+            ? 'Os 2 instrumentos escolhidos (entre Estufa Veggie OSDR OSD-120, Estação MEDA Perseverance e Escudo/Antena DONKI) embarcam neste foguete para turbinar os módulos já instalados na Base Ares, dando bônus reais nas barras!'
+            : 'Your 2 chosen instruments (Veggie OSDR OSD-120, MEDA Perseverance, or DONKI Shield/Antenna) ride aboard this rocket as upgrade kits to supercharge existing Ares Base modules with real starting resource bonuses!'}
+        </p>
       </div>
 
       {/* Live Physics Meters Bar */}
@@ -239,17 +252,21 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
             />
           </div>
           <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-            {remainingBudget > 0
+            {remainingBudget >= 15
               ? isPt
-                ? `Reserva: $${remainingBudget}M (bônus Sol 2!)`
-                : `Reserve: $${remainingBudget}M (Sol 2 bonus!)`
-              : remainingBudget === 0
+                ? `Reserva: $${remainingBudget}M (desbloqueia bônus Sol 2!)`
+                : `Reserve: $${remainingBudget}M (unlocks Sol 2 bonus!)`
+              : remainingBudget > 0
                 ? isPt
-                  ? '$0M livre (sem bônus extra no Sol 2)'
-                  : '$0M left (no Sol 2 reserve bonus)'
-                : isPt
-                  ? `Estourado em $${Math.abs(remainingBudget)}M!`
-                  : `Over budget by $${Math.abs(remainingBudget)}M!`}
+                  ? `Reserva: $${remainingBudget}M (precisa $15M+ p/ bônus Sol 2)`
+                  : `Reserve: $${remainingBudget}M (needs $15M+ for Sol 2 bonus)`
+                : remainingBudget === 0
+                  ? isPt
+                    ? '$0M livre (reserva zerada no Sol 2)'
+                    : '$0M left (empty reserve in Sol 2)'
+                  : isPt
+                    ? `Estourado em $${Math.abs(remainingBudget)}M!`
+                    : `Over budget by $${Math.abs(remainingBudget)}M!`}
           </p>
         </div>
 

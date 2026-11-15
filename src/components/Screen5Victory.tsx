@@ -200,25 +200,34 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
         onSkyClick={handleSkyClick}
       />
 
-      <div className="relative z-10 mx-auto max-w-5xl space-y-6 pb-20 pointer-events-none">
+      <div className="relative z-10 mx-auto max-w-5xl space-y-6 pb-[110px] pointer-events-none">
         {/* Festive Mambo Celebration Stage */}
         <section className="pointer-events-auto space-y-4">
           <MamboPartyBanner avatarId={avatarId} lang={lang} />
 
-          <div className="rounded-2xl border border-amber-400/50 bg-white/95 dark:border-amber-500/35 dark:bg-[#10182E]/90 p-5 text-center backdrop-blur-md space-y-2">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-300">
-              <Sparkles className="h-4 w-4" />
-              <span>{isPt ? 'FESTA MAMBO NA BASE ARES' : 'ARES BASE MAMBO PARTY'}</span>
+          <div className="rounded-2xl border border-amber-400/50 bg-white/95 dark:border-amber-500/35 dark:bg-[#10182E]/90 p-5 text-center backdrop-blur-md space-y-2.5">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/50 bg-emerald-500/15 px-3 py-1 text-xs font-extrabold text-emerald-700 dark:text-emerald-300">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>
+                {isPt
+                  ? 'MISSÃO COMPLETA: RESGATAMOS O COMANDANTE QUACK! 🚀🦆'
+                  : 'MISSION COMPLETE: WE RESCUED COMMANDER QUACK! 🚀🦆'}
+              </span>
             </div>
             <h1 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white text-balance">
               {isPt
-                ? '“Missão cumprida! Sorria e acene — e lembre-se: quando o espaço apertar, continue a nadar! Quack!”'
-                : '“Mission complete! Smile and wave — and remember: when space gets tough, just keep swimming! Quack!”'}
+                ? '🎉 Resgate Concluído & Grande Festa Dançando Mambo em Marte! 🎶'
+                : '🎉 Rescue Complete & Grand Mambo Celebration on Mars! 🎶'}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+            <p className="text-sm sm:text-base font-medium leading-relaxed text-slate-700 dark:text-slate-200 max-w-3xl mx-auto">
               {isPt
-                ? 'Comandante Quack, os Guardiões no palco e toda a platéia de Carrapatos ETs estão comemorando!'
-                : 'Commander Quack, the Guardians on stage, and the whole crowd of Alien Ticks are celebrating!'}
+                ? '“Missão completa — vocês vieram da Terra e me resgataram! Sorria e acene, e lembre-se: quando o espaço apertar, continue a nadar! Quack! Agora vamos comemorar antes de voltar para casa!”'
+                : '“Mission complete — you flew from Earth and rescued me! Smile and wave, and remember: when space gets tough, just keep swimming! Quack! Now let’s celebrate before heading home!”'}
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {isPt
+                ? 'Comandante Quack, os Guardiões no palco e toda a platéia de Carrapatos ETs estão comemorando juntos!'
+                : 'Commander Quack, the Guardians on stage, and the whole crowd of Alien Ticks are celebrating together!'}
             </p>
           </div>
         </section>

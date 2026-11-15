@@ -91,7 +91,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 pb-20">
+    <div className="mx-auto max-w-4xl space-y-6 pb-[110px]">
       {/* Hero Patch + Title Lockup */}
       <section className="flex flex-col items-center text-center pt-1 space-y-3">
         <MissionPatchLogo size={116} lang={lang} />
@@ -149,7 +149,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
                 <GlossaryInline termKey="jezero" ageProfile={ageProfile} lang={lang}>
                   Cratera Jezero
                 </GlossaryInline>{' '}
-                — um enorme buraco em Marte onde pousou o robô Perseverance! O sinal está falhando e... o que é aquilo se mexendo nos dutos de água?!”
+                — onde pousou o robô Perseverance! Os sensores estão falhando, o frio vai despencar para -85°C e algo estranho está entupindo nossos dutos de água! Vocês aí no Centro de Controle da Terra precisam preparar e lançar uma nave de apoio urgente antes que a Base Ares fique sem energia!”
               </p>
             ) : (
               <p className="text-sm sm:text-base leading-relaxed text-slate-800 dark:text-slate-100">
@@ -157,7 +157,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
                 <GlossaryInline termKey="jezero" ageProfile={ageProfile} lang={lang}>
                   Jezero Crater
                 </GlossaryInline>{' '}
-                — a giant crater on Mars where the Perseverance rover landed! Our signal is glitching and... what is that wriggling inside our water pipes?!”
+                — where the Perseverance rover landed! Sensors are glitching, temperatures are plunging to -85°C, and something strange is clogging our water pipes! You at Earth Mission Control must build and launch an urgent rescue ship before Ares Base loses all power!”
               </p>
             )}
           </div>

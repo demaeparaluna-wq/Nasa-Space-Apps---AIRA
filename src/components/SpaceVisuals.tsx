@@ -75,13 +75,27 @@ export const MiniAlienTickSvg: React.FC<{
   party?: boolean;
   blink?: boolean;
   armsUp?: boolean;
-}> = ({ size = 54, party = false, blink = false, armsUp = false }) => (
+  scratchBelly?: boolean;
+}> = ({
+  size = 54,
+  party = false,
+  blink = false,
+  armsUp = false,
+  scratchBelly = false,
+}) => (
   <svg width={size} height={size} viewBox="0 0 80 80" role="img" aria-label="Carrapato ET amigável">
     {armsUp ? (
       <path
         d="M22 44 L10 26 M24 54 L14 66 M58 44 L70 26 M56 54 L66 66"
         stroke="#22C55E"
         strokeWidth="3.2"
+        strokeLinecap="round"
+      />
+    ) : scratchBelly ? (
+      <path
+        d="M22 50 L14 58 M24 58 L16 66 M56 58 L64 66"
+        stroke="#22C55E"
+        strokeWidth="3"
         strokeLinecap="round"
       />
     ) : (
@@ -118,12 +132,70 @@ export const MiniAlienTickSvg: React.FC<{
       </g>
     )}
     <path d="M34 48 Q40 53 46 48" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round" />
+    {scratchBelly && (
+      <g className="animate-et-scratch">
+        <path
+          d="M58 46 Q52 54 41 53"
+          fill="none"
+          stroke="#16A34A"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+        />
+        <circle cx="40" cy="53" r="3" fill="#22C55E" stroke="#16A34A" strokeWidth="1.2" />
+      </g>
+    )}
   </svg>
+);
+
+const CowAbductionVignette: React.FC<{ gradientId: string }> = ({ gradientId }) => (
+  <svg viewBox="0 0 110 120" className="w-24 h-26 sm:w-28 sm:h-30 overflow-visible">
+    <defs>
+      <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.6" />
+        <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.08" />
+      </linearGradient>
+    </defs>
+    <polygon points="34,34 76,34 98,112 12,112" fill={`url(#${gradientId})`} />
+    <g className="animate-cow-abduction" style={{ transformOrigin: '55px 78px' }}>
+      <line x1="44" y1="86" x2="43" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="49" y1="86" x2="49" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="60" y1="86" x2="60" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="65" y1="86" x2="66" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+      <ellipse cx="55" cy="79" rx="14" ry="9" fill="#FFFFFF" stroke="#94A3B8" strokeWidth="1.2" />
+      <circle cx="50" cy="77" r="3" fill="#0F172A" />
+      <circle cx="59" cy="81" r="2.3" fill="#0F172A" />
+      <circle cx="68" cy="74" r="6" fill="#FFFFFF" stroke="#94A3B8" strokeWidth="1.2" />
+      <path d="M64 68 L62 64 M71 68 L73 64" stroke="#FDE047" strokeWidth="1.8" strokeLinecap="round" />
+      <ellipse cx="70" cy="76.5" rx="4" ry="2.6" fill="#FDA4AF" />
+      <circle cx="66.5" cy="72.5" r="1.3" fill="#0F172A" />
+      <circle cx="70.5" cy="72.5" r="1.3" fill="#0F172A" />
+    </g>
+    <path d="M36 26 C36 10, 74 10, 74 26 Z" fill="#BAE6FD" fillOpacity="0.88" stroke="#38BDF8" strokeWidth="1.5" />
+    <ellipse cx="55" cy="30" rx="34" ry="9" fill="#475569" stroke="#1E293B" strokeWidth="1.8" />
+    <circle cx="34" cy="31" r="2.5" fill="#FACC15" />
+    <circle cx="55" cy="33" r="2.5" fill="#F97316" />
+    <circle cx="76" cy="31" r="2.5" fill="#4ADE80" />
+  </svg>
+);
+
+const CruisingSaucerBackground: React.FC<{ topClass?: string }> = ({ topClass = 'top-16' }) => (
+  <div className={`fixed inset-x-0 ${topClass} opacity-40 dark:opacity-50`}>
+    <div className="animate-ufo-flyby inline-block">
+      <svg viewBox="0 0 96 48" className="w-20 h-10 sm:w-24 sm:h-12">
+        <path d="M30 22 C30 8, 66 8, 66 22 Z" fill="#BAE6FD" fillOpacity="0.75" />
+        <ellipse cx="48" cy="25" rx="34" ry="9" fill="#64748B" />
+        <circle cx="28" cy="26" r="2.8" fill="#FACC15" />
+        <circle cx="48" cy="28" r="2.8" fill="#F97316" />
+        <circle cx="68" cy="26" r="2.8" fill="#4ADE80" />
+      </svg>
+    </div>
+  </div>
 );
 
 /**
  * Ambient Easter Eggs rendered strictly in the background scenery behind UI cards,
- * with pointer-events-none and subtle opacity so they never obstruct foreground clicks.
+ * with pointer-events-none and low opacity so each screen alternates playful scenes
+ * in different corners without ever obstructing clicks.
  */
 export const BackgroundEasterEggLayer: React.FC<{
   screen: GameScreen;
@@ -159,7 +231,7 @@ export const BackgroundEasterEggLayer: React.FC<{
       <svg
         viewBox="0 0 1440 160"
         preserveAspectRatio="none"
-        className="absolute bottom-0 inset-x-0 h-28 sm:h-36 w-full opacity-25 dark:opacity-45"
+        className="absolute bottom-0 inset-x-0 h-28 sm:h-36 w-full opacity-20 dark:opacity-40"
       >
         <path
           d="M0 160 L0 105 Q220 55 430 108 T900 92 T1220 112 T1440 82 L1440 160 Z"
@@ -180,80 +252,96 @@ export const BackgroundEasterEggLayer: React.FC<{
 
       {visible && (
         <>
-          {/* Corner 1 (Bottom-Right): Blinking Alien Tick peeking gently across every screen (with Base Ares flag on Sol 4) */}
-          <div className="animate-bg-et-peek fixed right-2.5 bottom-14 sm:right-6 sm:bottom-16 opacity-55 dark:opacity-65 flex items-end gap-1">
-            <MiniAlienTickSvg
-              size={58}
-              blink={blink}
-              armsUp={screen === 'command' && currentSol === 4}
-            />
-            {screen === 'command' && currentSol === 4 && (
-              <svg viewBox="0 0 32 48" className="w-6 h-10 -ml-2">
-                <line x1="6" y1="6" x2="6" y2="44" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
-                <path d="M7 8 L29 13 L7 21 Z" fill="#F97316" />
-              </svg>
-            )}
-          </div>
-
-          {/* Corner 2 (Bottom-Left): Cute Spotted Cow being abducted into UFO tractor beam across screens */}
-          <div className="fixed left-2 bottom-14 sm:left-6 sm:bottom-16 opacity-60 dark:opacity-75">
-            <svg viewBox="0 0 110 120" className="w-24 h-26 sm:w-28 sm:h-30 overflow-visible">
-              <defs>
-                <linearGradient id="tractor-beam-grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.6" />
-                  <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.08" />
-                </linearGradient>
-              </defs>
-              <polygon points="34,34 76,34 98,112 12,112" fill="url(#tractor-beam-grad)" />
-              <g className="animate-cow-abduction" style={{ transformOrigin: '55px 78px' }}>
-                <line x1="44" y1="86" x2="43" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="49" y1="86" x2="49" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="60" y1="86" x2="60" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="65" y1="86" x2="66" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
-                <ellipse cx="55" cy="79" rx="14" ry="9" fill="#FFFFFF" stroke="#94A3B8" strokeWidth="1.2" />
-                <circle cx="50" cy="77" r="3" fill="#0F172A" />
-                <circle cx="59" cy="81" r="2.3" fill="#0F172A" />
-                <circle cx="68" cy="74" r="6" fill="#FFFFFF" stroke="#94A3B8" strokeWidth="1.2" />
-                <path d="M64 68 L62 64 M71 68 L73 64" stroke="#FDE047" strokeWidth="1.8" strokeLinecap="round" />
-                <ellipse cx="70" cy="76.5" rx="4" ry="2.6" fill="#FDA4AF" />
-                <circle cx="66.5" cy="72.5" r="1.3" fill="#0F172A" />
-                <circle cx="70.5" cy="72.5" r="1.3" fill="#0F172A" />
-              </g>
-              <path d="M36 26 C36 10, 74 10, 74 26 Z" fill="#BAE6FD" fillOpacity="0.88" stroke="#38BDF8" strokeWidth="1.5" />
-              <ellipse cx="55" cy="30" rx="34" ry="9" fill="#475569" stroke="#1E293B" strokeWidth="1.8" />
-              <circle cx="34" cy="31" r="2.5" fill="#FACC15" />
-              <circle cx="55" cy="33" r="2.5" fill="#F97316" />
-              <circle cx="76" cy="31" r="2.5" fill="#4ADE80" />
-            </svg>
-          </div>
-
-          {/* Upper-Sky Passby: Flying saucer gliding across the sky on Sol 2 & Victory */}
-          {((screen === 'command' && currentSol === 2) || screen === 'victory') && (
-            <div className="fixed inset-x-0 top-16 opacity-45">
-              <div className="animate-ufo-flyby inline-block">
-                <svg viewBox="0 0 96 48" className="w-20 h-10 sm:w-24 sm:h-12">
-                  <path d="M30 22 C30 8, 66 8, 66 22 Z" fill="#BAE6FD" fillOpacity="0.75" />
-                  <ellipse cx="48" cy="25" rx="34" ry="9" fill="#64748B" />
-                  <circle cx="28" cy="26" r="2.8" fill="#FACC15" />
-                  <circle cx="48" cy="28" r="2.8" fill="#F97316" />
-                  <circle cx="68" cy="26" r="2.8" fill="#4ADE80" />
+          {/* PROLOGUE: Blinking ET peeking bottom-right + tiny hovering scout UFO top-left */}
+          {screen === 'prologue' && (
+            <>
+              <div className="animate-bg-et-peek fixed right-3 bottom-14 sm:right-6 sm:bottom-16 opacity-40 dark:opacity-50">
+                <MiniAlienTickSvg size={58} blink={blink} />
+              </div>
+              <div className="animate-float-zero-g fixed left-3 top-24 sm:left-8 sm:top-28 opacity-35 dark:opacity-45">
+                <svg viewBox="0 0 80 48" className="w-16 h-10 sm:w-20 sm:h-12">
+                  <polygon points="28,32 52,32 62,48 18,48" fill="#38BDF8" fillOpacity="0.16" />
+                  <path d="M24 22 C24 8, 56 8, 56 22 Z" fill="#BAE6FD" fillOpacity="0.7" />
+                  <ellipse cx="40" cy="24" rx="28" ry="8" fill="#475569" />
+                  <circle cx="24" cy="25" r="2.2" fill="#FACC15" />
+                  <circle cx="40" cy="27" r="2.2" fill="#F97316" />
+                  <circle cx="56" cy="25" r="2.2" fill="#4ADE80" />
                 </svg>
               </div>
-            </div>
+            </>
           )}
 
-          {/* Upper-Left Hovering Saucer on Hangar */}
+          {/* HANGAR: Belly-scratching ET in bottom-left + cruising spaceship flying across sky behind */}
           {screen === 'hangar' && (
-            <div className="animate-float-zero-g fixed right-4 top-20 sm:right-10 sm:top-24 opacity-45">
-              <svg viewBox="0 0 80 48" className="w-16 h-10 sm:w-20 sm:h-12">
-                <polygon points="28,32 52,32 62,48 18,48" fill="#38BDF8" fillOpacity="0.16" />
-                <path d="M24 22 C24 8, 56 8, 56 22 Z" fill="#BAE6FD" fillOpacity="0.7" />
-                <ellipse cx="40" cy="24" rx="28" ry="8" fill="#475569" />
-                <circle cx="24" cy="25" r="2.2" fill="#FACC15" />
-                <circle cx="40" cy="27" r="2.2" fill="#F97316" />
-                <circle cx="56" cy="25" r="2.2" fill="#4ADE80" />
-              </svg>
-            </div>
+            <>
+              <CruisingSaucerBackground topClass="top-20" />
+              <div className="animate-bg-et-peek fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-40 dark:opacity-50">
+                <MiniAlienTickSvg size={60} blink={blink} scratchBelly />
+              </div>
+            </>
+          )}
+
+          {/* COMMAND SOL 1: Blinking ET top-left + Cow Abduction bottom-right */}
+          {screen === 'command' && currentSol === 1 && (
+            <>
+              <div className="animate-bg-et-peek fixed left-3 top-24 sm:left-8 sm:top-28 opacity-40 dark:opacity-50">
+                <MiniAlienTickSvg size={56} blink={blink} />
+              </div>
+              <div className="fixed right-3 bottom-14 sm:right-8 sm:bottom-16 opacity-45 dark:opacity-55">
+                <CowAbductionVignette gradientId="tractor-beam-sol1" />
+              </div>
+            </>
+          )}
+
+          {/* COMMAND SOL 2: Spaceship cruising across background sky + Belly-scratching ET bottom-right */}
+          {screen === 'command' && currentSol === 2 && (
+            <>
+              <CruisingSaucerBackground topClass="top-20" />
+              <div className="animate-bg-et-peek fixed right-3 bottom-14 sm:right-8 sm:bottom-16 opacity-40 dark:opacity-50">
+                <MiniAlienTickSvg size={60} blink={blink} scratchBelly />
+              </div>
+            </>
+          )}
+
+          {/* COMMAND SOL 3: Cow Abduction top-right + Blinking ET bottom-left */}
+          {screen === 'command' && currentSol === 3 && (
+            <>
+              <div className="fixed right-3 top-24 sm:right-8 sm:top-28 opacity-45 dark:opacity-55">
+                <CowAbductionVignette gradientId="tractor-beam-sol3" />
+              </div>
+              <div className="animate-bg-et-peek fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-40 dark:opacity-50">
+                <MiniAlienTickSvg size={58} blink={blink} />
+              </div>
+            </>
+          )}
+
+          {/* COMMAND SOL 4: Flag-waving ET bottom-left + Blinking ET top-right */}
+          {screen === 'command' && currentSol === 4 && (
+            <>
+              <div className="animate-bg-et-peek fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-45 dark:opacity-55 flex items-end gap-1">
+                <MiniAlienTickSvg size={56} party armsUp />
+                <svg viewBox="0 0 32 48" className="w-6 h-10 -ml-2">
+                  <line x1="6" y1="6" x2="6" y2="44" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+                  <path d="M7 8 L29 13 L7 21 Z" fill="#F97316" />
+                </svg>
+              </div>
+              <div className="animate-bg-et-peek fixed right-3 top-24 sm:right-8 sm:top-28 opacity-40 dark:opacity-50">
+                <MiniAlienTickSvg size={54} blink={blink} />
+              </div>
+            </>
+          )}
+
+          {/* VICTORY: Belly-scratching blinking ET top-right + Cow Abduction bottom-left + Cruising saucer in starry sky */}
+          {screen === 'victory' && (
+            <>
+              <CruisingSaucerBackground topClass="top-20" />
+              <div className="animate-bg-et-peek fixed right-3 top-24 sm:right-8 sm:top-28 opacity-45">
+                <MiniAlienTickSvg size={58} blink={blink} scratchBelly />
+              </div>
+              <div className="fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-50">
+                <CowAbductionVignette gradientId="tractor-beam-victory" />
+              </div>
+            </>
           )}
         </>
       )}

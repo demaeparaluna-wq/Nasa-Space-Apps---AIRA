@@ -338,7 +338,7 @@ export const SOL_SCENARIOS: SolScenario[] = [
             'Blindagem passiva com hidrogênio da água e corte de carga elétrica (bônus se houve economia de orçamento no Hangar).',
         },
         effects: { energy: 15, lifeSupport: -30 },
-        bonusNote: '+10% Energia bônus se poupou orçamento no Hangar!',
+        bonusNote: '+10% Energia bônus se poupou $15M+ no Hangar!',
         scienceExplanationByProfile: {
           explorers:
             'Sabia que a água segura a radiação igual um cobertor pesado? Economizou energia, mas o ar ficou apertado!',
@@ -536,9 +536,9 @@ export const SOL_SCENARIOS: SolScenario[] = [
           strategists:
             'Sincroniza a órbita de encontro com a nave de resgate mantendo equilíbrio de sistemas.',
           educators:
-            'Manobra orbital de espera (phasing): melhora o enlace de comunicações (+15%) com custo moderado em energia e escudo.',
+            'Manobra orbital de espera (phasing): melhora comunicações (+12%) e suporte (+5%) com custo leve em energia e escudo (-5%).',
         },
-        effects: { comms: 15, energy: -12, shield: -12 },
+        effects: { comms: 12, lifeSupport: 5, energy: -5, shield: -5 },
         scienceExplanationByProfile: {
           explorers:
             'A curva espacial foi perfeita! A nave chegou certinho na Base Ares!',

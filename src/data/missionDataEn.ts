@@ -350,7 +350,7 @@ export const SOL_SCENARIOS_EN: SolScenario[] = [
             'Passive hydrogen shielding via water tanks plus load shedding (bonus if Hangar budget was saved).',
         },
         effects: { energy: 15, lifeSupport: -30 },
-        bonusNote: '+10% bonus Energy if you saved budget in the Hangar!',
+        bonusNote: '+10% bonus Energy if you saved $15M+ in the Hangar!',
         scienceExplanationByProfile: {
           explorers:
             'Did you know water stops space radiation like a heavy blanket? Saved energy, though air got tight!',
@@ -548,9 +548,9 @@ export const SOL_SCENARIOS_EN: SolScenario[] = [
           strategists:
             'Synchronizes rendezvous orbit with the rescue ship while keeping systems balanced.',
           educators:
-            'Orbital phasing maneuver: strengthens comms link (+15%) with moderate energy and shield cost.',
+            'Orbital phasing maneuver: strengthens comms link (+12%) and life support (+5%) with gentle energy and shield cost (-5%).',
         },
-        effects: { comms: 15, energy: -12, shield: -12 },
+        effects: { comms: 12, lifeSupport: 5, energy: -5, shield: -5 },
         scienceExplanationByProfile: {
           explorers:
             'What a smooth space curve! The rescue ship landed right on Ares Base!',
