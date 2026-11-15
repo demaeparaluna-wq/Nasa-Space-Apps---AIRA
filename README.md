@@ -14,7 +14,7 @@ Official Submission — **NASA Space Apps Challenge (2026)**
 
 - **Play the Game (Google AI Studio):** [`https://ares-base-guardians.ai.studio/`](https://ares-base-guardians.ai.studio/)
 - **Watch Demo Video (YouTube):** [`https://youtu.be/Ou2d6JxJJrU`](https://youtu.be/Ou2d6JxJJrU)
-- **Source Repository (GitHub):** `https://github.com/[username]/[repo-name]`
+- **Source Repository (GitHub):** `https://github.com/demaeparaluna-wq/Nasa-Space-Apps---Ares-Base-Guardians`
 - **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite, Per-Endpoint Circuit Breaker + `LocalFallback`) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
 
 ---
