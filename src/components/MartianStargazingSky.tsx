@@ -277,23 +277,34 @@ export const MartianStargazingBackdrop: React.FC<MartianStargazingBackdropProps>
                   y2={p2.y}
                   stroke="#38BDF8"
                   strokeOpacity="0.45"
-                  strokeWidth="0.22"
-                  strokeDasharray="0.7 0.5"
+                  strokeWidth={1.35}
+                  strokeDasharray="4 4"
+                  vectorEffect="non-scaling-stroke"
                 />
               );
             })}
-            {constellation.points.map((pt, i) => (
-              <circle
-                key={i}
-                cx={pt.x}
-                cy={pt.y}
-                r={pt.label ? 0.55 : 0.35}
-                fill={pt.label ? '#FDE047' : '#BAE6FD'}
-              />
-            ))}
           </g>
         ))}
       </svg>
+
+      {MARTIAN_CONSTELLATIONS.filter((c) => revealedIds.includes(c.id)).map((constellation) => (
+        <div
+          key={`bg-pts-${constellation.id}`}
+          className="animate-constellation-reveal pointer-events-none absolute inset-0"
+        >
+          {constellation.points.map((pt, i) => (
+            <span
+              key={i}
+              style={{ left: `${pt.x}%`, top: `${pt.y}%` }}
+              className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full ${
+                pt.label
+                  ? 'h-2 w-2 bg-[#FDE047] shadow-[0_0_8px_rgba(253,224,71,0.85)]'
+                  : 'h-1.5 w-1.5 bg-[#BAE6FD]/90'
+              }`}
+            />
+          ))}
+        </div>
+      ))}
 
       {stars.map((star) => (
         <div
@@ -385,7 +396,7 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
             onSkyClick(25 + Math.random() * 50, 20 + Math.random() * 55);
           }
         }}
-        className="relative h-64 sm:h-72 w-full cursor-crosshair overflow-hidden rounded-2xl border border-slate-700 bg-[radial-gradient(ellipse_at_bottom,_#2B141A_0%,_#0B142B_55%,_#050812_100%)] select-none"
+        className="relative aspect-[16/10] min-h-[260px] sm:aspect-auto sm:h-[440px] lg:h-[500px] w-full cursor-crosshair overflow-hidden rounded-2xl border border-slate-700 bg-[radial-gradient(ellipse_at_bottom,_#2B141A_0%,_#0B142B_55%,_#050812_100%)] select-none"
         aria-label={
           isPt
             ? 'Clique no céu marciano para acender estrelas e descobrir constelações'
@@ -395,7 +406,7 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
         <svg
           viewBox="0 0 800 90"
           preserveAspectRatio="none"
-          className="pointer-events-none absolute bottom-0 inset-x-0 h-14 w-full"
+          className="pointer-events-none absolute bottom-0 inset-x-0 h-14 sm:h-20 w-full"
         >
           <path
             d="M0 90 L0 58 Q140 34 260 56 T540 48 T800 54 L800 90 Z"
@@ -419,17 +430,9 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
                   x2={c.points[b].x}
                   y2={c.points[b].y}
                   stroke="#38BDF8"
-                  strokeOpacity="0.7"
-                  strokeWidth="0.35"
-                />
-              ))}
-              {c.points.map((p, i) => (
-                <circle
-                  key={i}
-                  cx={p.x}
-                  cy={p.y}
-                  r={p.label ? 0.95 : 0.6}
-                  fill={p.label ? '#FDE047' : '#E0F2FE'}
+                  strokeOpacity={activeConstellation?.id === c.id ? '0.9' : '0.62'}
+                  strokeWidth={activeConstellation?.id === c.id ? 2.2 : 1.6}
+                  vectorEffect="non-scaling-stroke"
                 />
               ))}
             </g>
@@ -437,17 +440,61 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
         </svg>
 
         {MARTIAN_CONSTELLATIONS.filter((c) => revealedIds.includes(c.id)).map((c) => {
+          const isSelected = activeConstellation?.id === c.id;
+          return (
+            <div
+              key={`obs-pts-${c.id}`}
+              className="animate-constellation-reveal pointer-events-none absolute inset-0"
+            >
+              {c.points.map((p, i) => (
+                <div
+                  key={i}
+                  style={{ left: `${p.x}%`, top: `${p.y}%` }}
+                  className="absolute -translate-x-1/2 -translate-y-1/2"
+                >
+                  <span
+                    className={`block rounded-full ${
+                      p.label
+                        ? isSelected
+                          ? 'h-3.5 w-3.5 bg-[#FDE047] shadow-[0_0_12px_rgba(253,224,71,0.95)] ring-2 ring-[#FDE047]/45'
+                          : 'h-3 w-3 bg-[#FDE047] shadow-[0_0_9px_rgba(253,224,71,0.85)] ring-2 ring-[#FDE047]/30'
+                        : 'h-2 w-2 bg-[#E0F2FE] shadow-[0_0_6px_rgba(224,242,254,0.65)]'
+                    }`}
+                  />
+                  {p.label && (
+                    <span className="hidden sm:block absolute left-3 top-1.5 whitespace-nowrap text-[10px] font-semibold tracking-wide text-amber-200/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                      {p.label}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          );
+        })}
+
+        {MARTIAN_CONSTELLATIONS.filter((c) => revealedIds.includes(c.id)).map((c) => {
           const anchor = c.points[0];
+          const clampedLeft =
+            c.id === 'taurus' ? 82 : Math.max(12, Math.min(88, anchor.x));
+          const clampedTop =
+            c.id === 'taurus' ? 35 : Math.max(6, anchor.y - 8);
+          const isSelected = activeConstellation?.id === c.id;
           return (
             <button
               key={c.id}
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
+                playToolPickupSound();
                 setSelectedConstellationId(c.id);
               }}
-              style={{ left: `${anchor.x}%`, top: `${Math.max(8, anchor.y - 6)}%` }}
-              className="absolute -translate-x-1/2 rounded-md border border-sky-400/50 bg-[#0A1328]/85 px-2 py-0.5 text-[10px] font-bold text-sky-200 hover:border-amber-300 hover:text-amber-200"
+              aria-pressed={isSelected}
+              style={{ left: `${clampedLeft}%`, top: `${clampedTop}%` }}
+              className={`absolute -translate-x-1/2 whitespace-nowrap rounded-md border px-2.5 py-1 text-[11px] font-bold transition-colors ${
+                isSelected
+                  ? 'border-amber-300 bg-[#0F1D3A]/95 text-amber-200 shadow-lg'
+                  : 'border-sky-400/50 bg-[#0A1328]/85 text-sky-200 hover:border-amber-300 hover:text-amber-200'
+              }`}
             >
               {isPt ? c.name : c.nameEn}
             </button>
