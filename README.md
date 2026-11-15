@@ -11,8 +11,7 @@
 **Team Ares Base Guardians** · *Maryangela Costa de Souza Florentin & Luna Costa Antunes*  
 Official Submission — **NASA Space Apps Challenge (2026)**
 
-- **Live Demo (Primary — Google AI Studio):** [`https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`](https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app)
-- **Live Demo Mirror (GitHub Pages):** `https://[username].github.io/[repo-name]/`
+- **Live Demo (Google AI Studio):** [`https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`](https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app)
 - **Source Repository:** `https://github.com/[username]/[repo-name]`
 - **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite, Per-Endpoint Circuit Breaker + `LocalFallback`) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
 
@@ -134,14 +133,9 @@ npm run lint
 npm run build
 ```
 
-### GitHub Pages Automated Deployment
-
-This repository includes a pre-configured **GitHub Actions** workflow (`.github/workflows/deploy-pages.yml`) plus relative asset bundling (`base: './'` and `public/.nojekyll`):
-
-1. Push this project to your GitHub repository on the `main` branch.
-2. Open your repository on GitHub and go to **Settings → Pages**.
-3. Under **Build and deployment → Source**, select **GitHub Actions**.
-4. Every push to `main` (or manual run via **Actions → Deploy Mission Sol-4 to GitHub Pages**) automatically typechecks (`npm run lint`), builds `dist/`, and publishes your live game to `https://[username].github.io/[repo-name]/`.
+### Production Deployment (Google AI Studio)
+1. Run `npm run build` to generate the self-contained static `dist/` bundle.
+2. Hosted live on **Google AI Studio** at [`https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`](https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app) — zero server environment variables or backend secrets are required.
 
 ---
 
@@ -151,8 +145,10 @@ Use these recommended fields in your GitHub repository sidebar (**About ⚙**) a
 
 - **Description:**
   `Interactive bilingual (EN-US/PT-BR) STEM Mars rescue game powered by real NASA data (DONKI, OSDR, MEDA, APOD) with circuit-breaker offline resilience and WCAG 2.1 accessibility.`
+- **Website:**
+  `https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`
 - **Topics (Tags):**
-  `nasa`, `nasa-space-apps-challenge`, `mars`, `stem-education`, `educational-game`, `accessibility`, `wcag`, `bilingual`, `react`, `typescript`, `tailwindcss`, `vite`, `github-pages`
+  `nasa`, `nasa-space-apps-challenge`, `mars`, `stem-education`, `educational-game`, `accessibility`, `wcag`, `bilingual`, `react`, `typescript`, `tailwindcss`, `vite`
 - **Documentation Artifacts Included:**
   - `docs/ARCHITECTURE.md` — System architecture, unified Mermaid.js data lineage, 24h cache schema, circuit breaker, WCAG 2.1 mapping, and tutor guardrails
   - `docs/IMPLEMENTATION_PLAN.md` — Per-endpoint Circuit Breaker & `LocalFallback` design specification

@@ -16,8 +16,7 @@
     "wcag",
     "react",
     "typescript",
-    "tailwindcss",
-    "github-pages"
+    "tailwindcss"
   ],
   "type": "module",
   "scripts": {
