@@ -1,6 +1,6 @@
 # Educator & Family Pedagogical Guide
 
-**Mission Sol-4: Ares Base Guardians** · *Team Ares Base Guardians (Maryangela Costa de Souza Florentin & Luna Costa Antunes)*  
+**Mission Sol-4: Guardians of Ares Base** · *Team Ares Base Guardians (Maryangela Costa de Souza Florentin & Luna Costa Antunes)*  
 **Target Learners:** Ages 7–12 (Elementary & Early Middle School) · **Session Time:** 20–35 Minutes  
 **Requirements:** Any modern web browser (desktop, Chromebook, tablet, or smartphone) — works smoothly on low-bandwidth school networks and offline.
 
@@ -76,7 +76,7 @@ If any subsystem drops to `0%`, **celebrate the learning moment!** NASA treats a
 ### Quick Printable Mission Log for Students
 ```text
 ================================================================================
-              MISSION LOG — MISSION SOL-4: ARES BASE GUARDIANS
+              MISSION LOG — MISSION SOL-4: GUARDIANS OF ARES BASE
 ================================================================================
 Crew / Student Name(s): _____________________________  Date: ____/____/2026
 Profile Selected: [ ] Explorers (7-9)  [ ] Strategists (10-12)  [ ] Educators

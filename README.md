@@ -1,6 +1,7 @@
 # Mission Sol-4: Guardians of Ares Base
 
 ![NASA Space Apps Challenge](https://img.shields.io/badge/NASA_Space_Apps-2026-0B3D91?style=for-the-badge&logo=nasa&logoColor=white)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Google_AI_Studio-EA580C?style=for-the-badge)](https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app)
 ![React 19](https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-0F172A?style=for-the-badge&logo=tailwind-css&logoColor=38BDF8)
@@ -10,15 +11,16 @@
 **Team Ares Base Guardians** · *Maryangela Costa de Souza Florentin & Luna Costa Antunes*  
 Official Submission — **NASA Space Apps Challenge (2026)**
 
-- **Live Demo (GitHub Pages):** `https://[username].github.io/[repo-name]/`
+- **Live Demo (Primary — Google AI Studio):** [`https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`](https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app)
+- **Live Demo Mirror (GitHub Pages):** `https://[username].github.io/[repo-name]/`
 - **Source Repository:** `https://github.com/[username]/[repo-name]`
-- **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite, Circuit-Breaker NASA Telemetry + `LocalFallback`) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
+- **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite, Per-Endpoint Circuit Breaker + `LocalFallback`) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
 
 ---
 
 ## Executive Summary & Pedagogical Vision
 
-**Mission Sol-4: Ares Base Guardians** is an interactive, story-driven STEM rescue simulation designed for learners **ages 7–12** with **zero prior space science knowledge required**. Across four Martian days (**Sols 1–4**), solo players or rotating student teams apply the **Scientific Method** (*Observation → Hypothesis → Experiment → Conclusion*) to rescue mission mascot **Commander Quack** from escalating crises at **Jezero Crater, Mars**.
+**Mission Sol-4: Guardians of Ares Base** is an interactive, story-driven STEM rescue simulation designed for learners **ages 7–12** with **zero prior space science knowledge required**. Across four Martian days (**Sols 1–4**), solo players or rotating student teams apply the **Scientific Method** (*Observation → Hypothesis → Experiment → Conclusion*) to rescue mission mascot **Commander Quack** from escalating crises at **Jezero Crater, Mars**.
 
 To create emotional engagement alongside rigorous STEM literacy:
 - **Progressive Age-Profile Adaptation:** Choosing *Explorers (7–9)*, *Strategists (10–12)*, or *Parents & Teachers* adapts narrative voice, vocabulary, engineering explanations, and chat responses across all five screens without altering game fairness.
@@ -68,11 +70,12 @@ Available discreetly in the top-right corner from the **Splash Screen** through 
 
 ---
 
-## Architecture, Caching & Offline Resilience
+## Architecture, Circuit Breaker & Offline Resilience
 
-- **100% Front-End Execution:** Built with React, TypeScript, Tailwind CSS, Vite, native Web Audio API, and native Web Speech API (`window.speechSynthesis`). Built and deployed cleanly via Google AI Studio + GitHub with zero servers and zero external databases.
-- **24-Hour `localStorage` Caching:** Parallel live API calls (`4,000 ms` timeout via `AbortController`) store telemetry in `quack_nasa_cache_v1` with a 24-hour TTL (`86,400,000 ms`), minimizing bandwidth in school computer labs.
-- **Deterministic Offline Fallback:** If APIs time out or school networks restrict external traffic, the app seamlessly uses verified NASA datasets (`X8.7` flare, `OSD-120`, `MEDA`, curated NASA photo memories, and local Martian vector art) with zero gameplay interruption.
+- **100% Front-End Execution:** Built with React, TypeScript, Tailwind CSS, Vite, native Web Audio API, and native Web Speech API (`window.speechSynthesis`). Runs with zero backend servers, zero external databases, and zero user API keys.
+- **Per-Endpoint Circuit Breaker (`CLOSED → OPEN → HALF_OPEN`):** Independent state machines guard **DONKI** and **APOD**. On the first timeout (`4,000 ms` `AbortController`), HTTP error, or non-photo payload, that endpoint trips to `OPEN` for a 5-minute cooldown and short-circuits directly to the immutable `LocalFallback` constant bundle (plus verified NASA/JPL photo cycling on Screen 5).
+- **Anti-Logo APOD Guard & 3-Tier No-Cache Resilience:** APOD fetches a 6-item batch (`count=6`) and filters out videos, SVG/GIF icons, and NASA agency logos/seals/patches. An in-memory session cache and in-flight request deduplicator run alongside guarded 24h `localStorage` (`quack_nasa_cache_v1`), ensuring zero errors when judges disable cookies/storage or pass `?nocache=1`.
+- **Immediate Offline Bypass (`?offline=1`):** When `navigator.onLine === false` or `?offline=1` is active, the client skips `fetch()` immediately and boots in `0 ms` from `LocalFallback` (`status = 'archived'`).
 - **Low-Spec Device Optimization:** Ambient animations automatically throttle from CSS keyframes to a single `30 fps` `requestAnimationFrame` loop with `will-change: transform` when low-end CPU/memory or frame drops are detected.
 
 ---
@@ -161,4 +164,34 @@ Use these recommended fields in your GitHub repository sidebar (**About ⚙**) a
 git tag -a v1.0.0 -m "Mission Sol-4 v1.0.0 — NASA Space Apps Challenge Submission"
 git push origin v1.0.0
 ```
+
+---
+
+## NASA Space Apps Challenge — Judging Criteria & Verification
+
+### 1. Alignment with the 5 Official Judging Pillars
+
+| Judging Criterion | How *Mission Sol-4: Guardians of Ares Base* Delivers |
+| :--- | :--- |
+| **Impact** | Teaches systems engineering, the Scientific Method, and STEM literacy to **ages 7–12** with zero prior space knowledge, built-in WCAG 2.1 AA accessibility (`Large Text`, `High Contrast & Colorblind Patterns`, `EN-US/PT-BR` audio description), and zero PII collection (`COPPA` / `LGPD Kids` safe). |
+| **Creativity** | Turns dry telemetry into an emotional Mars rescue story led by **Commander Quack** (4 dynamic SVG expressions), a `$100M` mass-constrained Hangar, a Zero-G tool-scavenging workshop minigame, anti-spoiler mentoring, and a celebratory Martian Mambo & Constellation Observatory. |
+| **Validity** | Grounded 100% in real NASA data and peer-reviewed spaceflight literature: **DONKI** Class `X8.7` (`AR3664`), **OSDR `OSD-120`** (*Massa et al.*, 2017; *Zea et al.*, 2018/2020), **Mars 2020 `MEDA`** (*Rodriguez-Manfredi et al.*, 2021 — `-85°C`, `τ = 0.85`, `14-min` delay), and **NASA APOD** + Mars `25.19°` tilt (**Deneb**). |
+| **Relevance** | Bridges the gap between NASA's public open-science archives and elementary/middle-school classrooms, operating reliably on low-spec hardware, blocked cookies/incognito browsers, and offline school intranets via a per-endpoint Circuit Breaker + `LocalFallback`. |
+| **Presentation** | Includes a live deployed web app, 2-minute judge walkthrough (`DEMO_SCRIPT.md`), unified Mermaid.js data lineage (`docs/ARCHITECTURE.md`), interactive **Real Science Lab** inspector inside the app, and printable educator guides (`docs/PEDAGOGICAL_GUIDE.md`). |
+
+### 2. Judge Quickstart & Verification URLs
+
+- **Standard Live Mode (DONKI + APOD + 24h Cache):**  
+  `https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`
+- **Test Circuit Breaker & Immediate `LocalFallback` (Zero Network Requests):**  
+  `https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app/?offline=1`
+- **Test Storage-Disabled / No-Persistent-Cache Mode (RAM-Only Session Cache):**  
+  `https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app/?nocache=1`
+- **Anti-Spoiler Pedagogical Check:** Open **Commander Quack Chat** in Sol 1–4 and ask *"Which card should I pick?"* — the agent refuses spoilers and guides trade-off reasoning using live gauges.
+
+### 3. Open Data Attribution & AI Transparency Disclosure
+
+- **NASA Open Data Sources Used:** NASA CCMC DONKI (`/DONKI/WS/get/FLR`), NASA Astronomy Picture of the Day (`/planetary/apod`), NASA Open Science Data Repository (`OSD-120`), and NASA Mars 2020 Perseverance `MEDA` peer-reviewed telemetry baselines.
+- **Runtime AI Disclosure:** The deployed application executes **zero runtime LLM/generative-AI API calls** and requires **no user or server API keys** (`GEMINI_API_KEY` in `.env.example` is unused at runtime). Commander Quack's bilingual tutoring engine is 100% deterministic client-side TypeScript. Google AI Studio was used during development for software engineering, documentation, and static hosting.
+
 

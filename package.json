@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "Interactive bilingual STEM Mars rescue game powered by real NASA data (DONKI, OSDR, MEDA, APOD) with WCAG 2.1 accessibility and fault-tolerant caching.",
+  "homepage": "https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app",
   "author": "Maryangela Costa de Souza Florentin & Luna Costa Antunes (Team Ares Base Guardians)",
   "license": "MIT",
   "keywords": [
