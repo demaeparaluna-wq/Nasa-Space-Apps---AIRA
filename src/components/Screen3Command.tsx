@@ -350,6 +350,20 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
             const val = resources[key];
             const delta = lastDelta?.[key];
             const isDanger = val < 35;
+            const isCritical = val <= 0;
+            const statusText = isCritical
+              ? isPt
+                ? 'CRÍTICO 0%'
+                : 'CRITICAL 0%'
+              : isDanger
+                ? isPt
+                  ? 'ATENÇÃO <35%'
+                  : 'WARNING <35%'
+                : isPt
+                  ? 'SEGURO'
+                  : 'SAFE';
+            const patternClass = isDanger ? 'a11y-pattern-danger' : `a11y-pattern-${key}`;
+
             return (
               <div
                 key={key}
@@ -378,19 +392,37 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
                       {meta.label}
                     </span>
                   </div>
-                  <span
-                    className={`font-mono-tabular text-sm font-extrabold ${
-                      isDanger
-                        ? 'text-rose-600 dark:text-rose-300'
-                        : 'text-slate-900 dark:text-white'
-                    }`}
-                  >
-                    {val}%
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className={`a11y-hc-only rounded px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide border ${
+                        isDanger
+                          ? 'border-rose-400 bg-rose-950 text-rose-200'
+                          : 'border-emerald-400 bg-emerald-950 text-emerald-200'
+                      }`}
+                    >
+                      {statusText}
+                    </span>
+                    <span
+                      className={`font-mono-tabular text-sm font-extrabold ${
+                        isDanger
+                          ? 'text-rose-600 dark:text-rose-300'
+                          : 'text-slate-900 dark:text-white'
+                      }`}
+                    >
+                      {val}%
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+                <div
+                  className="a11y-bar-track mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800"
+                  role="progressbar"
+                  aria-label={`${meta.label} (${statusText})`}
+                  aria-valuenow={val}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
                   <div
-                    className={`h-full transition-all duration-300 ${
+                    className={`h-full transition-all duration-300 ${patternClass} ${
                       isDanger ? 'bg-rose-500' : meta.barBg
                     }`}
                     style={{ width: `${Math.max(0, Math.min(100, val))}%` }}
@@ -425,6 +457,11 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
               playClickSound();
               setHotspotsModalOpen(true);
             }}
+            aria-label={
+              isPt
+                ? 'Inspecionar 4 hotspots científicos da Base Ares'
+                : 'Inspect 4 scientific hotspots of Ares Base'
+            }
             className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3.5 py-2 text-xs font-bold text-sky-800 hover:bg-sky-100 dark:border-sky-500/40 dark:bg-sky-950/50 dark:text-sky-200 dark:hover:bg-sky-900/60"
           >
             <MapPin className="h-4 w-4" />
@@ -543,6 +580,11 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
                     playClickSound();
                     setHelpConfirmOpen(true);
                   }}
+                  aria-label={
+                    isPt
+                      ? 'Pedir ajuda dos drones na oficina (-8% Suporte de Vida)'
+                      : 'Ask drone scanner for help in workshop (-8% Life Support)'
+                  }
                   className="inline-flex items-center gap-1.5 rounded-lg border border-amber-400 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100 dark:border-amber-500/50 dark:bg-amber-950/60 dark:text-amber-200 dark:hover:bg-amber-900/70"
                 >
                   <HelpCircle className="h-3.5 w-3.5" />
@@ -678,6 +720,11 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
                   playClickSound();
                   onChooseCard(card);
                 }}
+                aria-label={
+                  isPt
+                    ? `Executar Carta ${card.id}: ${card.title}`
+                    : `Execute Card ${card.id}: ${card.title}`
+                }
                 className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white/95 p-5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-orange-500 dark:border-slate-800 dark:bg-[#10182E]/95 dark:hover:border-orange-400/80 dark:hover:bg-[#14203B] focus-visible:outline-2 focus-visible:outline-orange-400"
               >
                 <div className="space-y-2.5">

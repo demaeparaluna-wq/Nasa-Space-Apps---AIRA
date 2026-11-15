@@ -72,6 +72,7 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
                 playClickSound();
                 onRetrySol();
               }}
+              aria-label={isPt ? 'Tentar este Sol novamente mantendo a mesma nave' : 'Retry this Sol with current ship'}
               className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-3 text-sm font-bold text-slate-950 hover:bg-orange-400"
             >
               <RotateCcw className="h-4 w-4" />
@@ -83,6 +84,7 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
                 playClickSound();
                 onBackToHangar();
               }}
+              aria-label={isPt ? 'Voltar ao Hangar para reprojetar a nave' : 'Return to Hangar to redesign ship'}
               className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700 px-4 py-3 text-sm font-semibold"
             >
               <Wrench className="h-4 w-4" />
@@ -176,6 +178,15 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
             playClickSound();
             onContinueNextSol();
           }}
+          aria-label={
+            modal.sol < 4
+              ? isPt
+                ? `Avançar para o Sol ${modal.sol + 1}`
+                : `Advance to Sol ${modal.sol + 1}`
+              : isPt
+                ? 'Avançar para o Passaporte Final e Festa Mambo'
+                : 'Advance to Final Passport and Mambo Party'
+          }
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 px-5 py-3.5 text-sm sm:text-base font-extrabold text-slate-950 hover:bg-emerald-300 transition-colors"
         >
           <span>

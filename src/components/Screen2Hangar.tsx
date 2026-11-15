@@ -177,6 +177,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
             playClickSound();
             onBack();
           }}
+          aria-label={isPt ? 'Voltar para o Prólogo da missão' : 'Back to Mission Prologue'}
           className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-[#10182E] dark:text-slate-200 dark:hover:bg-slate-800"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -207,27 +208,47 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
       {/* Live Physics Meters Bar */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#10182E] p-3.5 sm:p-4">
         <div>
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-xs gap-2">
             <span className="font-semibold text-slate-700 dark:text-slate-300">
               {isPt ? 'Massa Total' : 'Total Payload Mass'}
             </span>
-            <span
-              className={`font-mono-tabular font-bold ${
-                isOverMass
-                  ? 'text-rose-600 dark:text-rose-400'
-                  : 'text-emerald-600 dark:text-emerald-400'
-              }`}
-            >
-              {totalMassKg.toLocaleString(isPt ? 'pt-BR' : 'en-US')} /{' '}
-              {selectedRocket
-                ? `${selectedRocket.maxMassKg.toLocaleString(isPt ? 'pt-BR' : 'en-US')} kg`
-                : '—'}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={`a11y-hc-only rounded px-1.5 py-0.5 text-[10px] font-extrabold border ${
+                  isOverMass
+                    ? 'border-rose-400 bg-rose-950 text-rose-200'
+                    : 'border-emerald-400 bg-emerald-950 text-emerald-200'
+                }`}
+              >
+                {isOverMass ? (isPt ? 'EXCEDIDO' : 'OVER') : 'OK'}
+              </span>
+              <span
+                className={`font-mono-tabular font-bold ${
+                  isOverMass
+                    ? 'text-rose-600 dark:text-rose-400'
+                    : 'text-emerald-600 dark:text-emerald-400'
+                }`}
+              >
+                {totalMassKg.toLocaleString(isPt ? 'pt-BR' : 'en-US')} /{' '}
+                {selectedRocket
+                  ? `${selectedRocket.maxMassKg.toLocaleString(isPt ? 'pt-BR' : 'en-US')} kg`
+                  : '—'}
+              </span>
+            </div>
           </div>
-          <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+          <div
+            className="a11y-bar-track mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800"
+            role="progressbar"
+            aria-label={isPt ? 'Massa total da nave' : 'Total payload mass'}
+            aria-valuenow={massPct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
             <div
               className={`h-full transition-all duration-200 ${
-                isOverMass ? 'bg-rose-500' : 'bg-emerald-500 dark:bg-emerald-400'
+                isOverMass
+                  ? 'a11y-pattern-danger bg-rose-500'
+                  : 'a11y-pattern-lifeSupport bg-emerald-500 dark:bg-emerald-400'
               }`}
               style={{ width: `${massPct}%` }}
             />
@@ -240,24 +261,44 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
         </div>
 
         <div>
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-xs gap-2">
             <span className="font-semibold text-slate-700 dark:text-slate-300">
               {isPt ? 'Orçamento' : 'Mission Budget'}
             </span>
-            <span
-              className={`font-mono-tabular font-bold ${
-                isOverBudget
-                  ? 'text-rose-600 dark:text-rose-400'
-                  : 'text-sky-600 dark:text-sky-400'
-              }`}
-            >
-              ${totalCostM}M / ${HANGAR_BUDGET_M}M
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={`a11y-hc-only rounded px-1.5 py-0.5 text-[10px] font-extrabold border ${
+                  isOverBudget
+                    ? 'border-rose-400 bg-rose-950 text-rose-200'
+                    : 'border-emerald-400 bg-emerald-950 text-emerald-200'
+                }`}
+              >
+                {isOverBudget ? (isPt ? 'EXCEDIDO' : 'OVER') : 'OK'}
+              </span>
+              <span
+                className={`font-mono-tabular font-bold ${
+                  isOverBudget
+                    ? 'text-rose-600 dark:text-rose-400'
+                    : 'text-sky-600 dark:text-sky-400'
+                }`}
+              >
+                ${totalCostM}M / ${HANGAR_BUDGET_M}M
+              </span>
+            </div>
           </div>
-          <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+          <div
+            className="a11y-bar-track mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800"
+            role="progressbar"
+            aria-label={isPt ? 'Orçamento da missão' : 'Mission budget'}
+            aria-valuenow={budgetPct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
             <div
               className={`h-full transition-all duration-200 ${
-                isOverBudget ? 'bg-rose-500' : 'bg-sky-500 dark:bg-sky-400'
+                isOverBudget
+                  ? 'a11y-pattern-danger bg-rose-500'
+                  : 'a11y-pattern-energy bg-sky-500 dark:bg-sky-400'
               }`}
               style={{ width: `${budgetPct}%` }}
             />
@@ -341,6 +382,8 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
                     playClickSound();
                     setConfig((prev) => ({ ...prev, rocket: rocket.id }));
                   }}
+                  aria-pressed={active}
+                  aria-label={`${isPt ? 'Selecionar foguete' : 'Select rocket'} ${rocket.name}, $${rocket.costM}M`}
                   className="w-full text-left space-y-2.5"
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -457,6 +500,8 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
                       setPinnedItem(key);
                       setConfig((prev) => ({ ...prev, orbit: orbit.id }));
                     }}
+                    aria-pressed={active}
+                    aria-label={`${isPt ? 'Selecionar órbita' : 'Select orbit'} ${orbit.name}`}
                     className={`relative flex flex-col items-center justify-center rounded-xl border p-3 text-center transition-all ${
                       active
                         ? 'border-sky-500 bg-sky-50/80 shadow-sm dark:border-sky-400 dark:bg-[#182442]'
@@ -528,6 +573,8 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
                     onFocus={() => setHoveredItem(key)}
                     onBlur={() => setHoveredItem(null)}
                     onClick={() => toggleInstrument(inst.id)}
+                    aria-pressed={active}
+                    aria-label={`${isPt ? 'Alternar instrumento' : 'Toggle instrument'} ${inst.name}`}
                     className={`relative flex flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all ${
                       active
                         ? 'border-emerald-500 bg-emerald-50/80 shadow-sm dark:border-emerald-400 dark:bg-[#14263C]'
@@ -709,6 +756,11 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
             type="button"
             disabled={!canLaunch}
             onClick={handleLaunch}
+            aria-label={
+              isPt
+                ? 'Iniciar lançamento da nave de resgate para Marte'
+                : 'Launch rescue spacecraft to Mars'
+            }
             className={`inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl px-7 py-3.5 text-sm sm:text-base font-extrabold transition-all ${
               canLaunch
                 ? 'bg-orange-500 text-slate-950 shadow-lg hover:bg-orange-400'

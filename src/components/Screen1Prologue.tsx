@@ -116,6 +116,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
               playClickSound();
               setActiveInfoModal('howto');
             }}
+            aria-label={isPt ? 'Abrir tutorial Como Jogar em 3 Passos' : 'Open How to Play in 3 Steps guide'}
             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700/90 dark:bg-[#131C33] dark:text-sky-200 dark:hover:bg-[#1A2540]"
           >
             <BookOpen className="h-3.5 w-3.5 text-sky-500" />
@@ -127,6 +128,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
               playClickSound();
               setActiveInfoModal('badges');
             }}
+            aria-label={isPt ? 'Abrir vitrine de selos da NASA' : 'Open NASA Mission Badges showcase'}
             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700/90 dark:bg-[#131C33] dark:text-amber-300 dark:hover:bg-[#1A2540]"
           >
             <Award className="h-3.5 w-3.5 text-amber-500" />
@@ -176,6 +178,8 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
               setValidationError(null);
               setPlayMode('solo');
             }}
+            aria-pressed={playMode === 'solo'}
+            aria-label={isPt ? 'Selecionar modo de jogo Solo' : 'Select Solo play mode'}
             className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold transition-colors ${
               playMode === 'solo'
                 ? 'bg-orange-500 text-white font-bold'
@@ -192,6 +196,8 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
               setValidationError(null);
               setPlayMode('team');
             }}
+            aria-pressed={playMode === 'team'}
+            aria-label={isPt ? 'Selecionar modo Equipe de 2 a 4 jogadores' : 'Select Team mode for 2 to 4 players'}
             className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold transition-colors ${
               playMode === 'team'
                 ? 'bg-orange-500 text-white font-bold'
@@ -295,6 +301,8 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
                     playClickSound();
                     setAvatarId(av.id);
                   }}
+                  aria-pressed={selected}
+                  aria-label={`${isPt ? 'Escolher avatar' : 'Choose avatar'} ${av.name}`}
                   className={`flex flex-col items-center rounded-2xl border p-3 text-center transition-all ${
                     selected
                       ? 'border-orange-500 bg-orange-50 shadow-sm dark:border-amber-400 dark:bg-[#1A2540]'
@@ -332,6 +340,8 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
                     playClickSound();
                     setAgeProfile(prof.id);
                   }}
+                  aria-pressed={active}
+                  aria-label={`${isPt ? 'Selecionar perfil de leitura' : 'Select reading profile'} ${prof.label}`}
                   className={`rounded-2xl border p-3 text-left transition-all ${
                     active
                       ? 'border-sky-500 bg-sky-50 dark:border-sky-400 dark:bg-[#1A2540]'
@@ -363,6 +373,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
         <button
           type="button"
           onClick={handleProceed}
+          aria-label={isPt ? 'Avançar para o Hangar de Engenharia' : 'Proceed to Engineering Hangar'}
           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4 text-base font-extrabold text-slate-950 shadow-lg hover:brightness-105 transition-all focus-visible:outline-2 focus-visible:outline-orange-400"
         >
           <span>{isPt ? 'Entrar no Hangar de Engenharia' : 'Enter Engineering Hangar'}</span>

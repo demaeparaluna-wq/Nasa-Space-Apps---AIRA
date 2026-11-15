@@ -11,6 +11,7 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react';
+import { AccessibilityMenu } from './components/AccessibilityMenu';
 import { InfoHubTab, MissionInfoHubModal } from './components/MissionInfoHubModal';
 import { MissionPatchLogo } from './components/MissionPatchLogo';
 import { NasaFooter } from './components/NasaFooter';
@@ -43,12 +44,32 @@ import {
   Resources,
   SolCard,
 } from './types/game';
+import { buildCurrentScreenNarration } from './utils/a11ySpeech';
 import {
   playBadgeUnlockSound,
   playGentleAlertSound,
   playVictoryMamboSound,
   setSoundMuted,
 } from './utils/sound';
+
+const A11Y_LARGE_TEXT_KEY = 'sol4_a11y_large_text';
+const A11Y_HIGH_CONTRAST_KEY = 'sol4_a11y_high_contrast';
+
+function readStoredA11yFlag(key: string): boolean {
+  try {
+    return window.localStorage.getItem(key) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function writeStoredA11yFlag(key: string, value: boolean): void {
+  try {
+    window.localStorage.setItem(key, value ? '1' : '0');
+  } catch {
+    // Ignore storage quota or private-mode restrictions
+  }
+}
 
 const BASE_STARTING_RESOURCES: Resources = {
   energy: 55,
@@ -176,6 +197,12 @@ export function App() {
   const [lang, setLang] = useState<Language>('en');
   const [muted, setMuted] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [a11yLargeText, setA11yLargeText] = useState<boolean>(() =>
+    readStoredA11yFlag(A11Y_LARGE_TEXT_KEY)
+  );
+  const [a11yHighContrast, setA11yHighContrast] = useState<boolean>(() =>
+    readStoredA11yFlag(A11Y_HIGH_CONTRAST_KEY)
+  );
 
   const isPt = lang === 'pt';
 
@@ -188,6 +215,17 @@ export function App() {
       root.classList.remove('dark');
     }
   }, [theme]);
+
+  // Sync Accessibility classes & localStorage preferences
+  useEffect(() => {
+    document.documentElement.classList.toggle('a11y-large-text', a11yLargeText);
+    writeStoredA11yFlag(A11Y_LARGE_TEXT_KEY, a11yLargeText);
+  }, [a11yLargeText]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('a11y-high-contrast', a11yHighContrast);
+    writeStoredA11yFlag(A11Y_HIGH_CONTRAST_KEY, a11yHighContrast);
+  }, [a11yHighContrast]);
 
   // Sync <html lang> and <title> with active language
   useEffect(() => {
@@ -451,10 +489,34 @@ export function App() {
     return 'celebrate';
   })();
 
+  const handleBuildNarration = useCallback(
+    () =>
+      buildCurrentScreenNarration({
+        lang,
+        screen,
+        currentSol,
+        ageProfile,
+        resources,
+        hangarConfig,
+        nasaData,
+        modalFeedback,
+        infoHubTab,
+      }),
+    [lang, screen, currentSol, ageProfile, resources, hangarConfig, nasaData, modalFeedback, infoHubTab]
+  );
+
   if (screen === 'splash') {
     return (
       <>
-        <SplashScreen lang={lang} onComplete={handleSplashDone} />
+        <SplashScreen
+          lang={lang}
+          onComplete={handleSplashDone}
+          a11yLargeText={a11yLargeText}
+          onToggleLargeText={() => setA11yLargeText((prev) => !prev)}
+          a11yHighContrast={a11yHighContrast}
+          onToggleHighContrast={() => setA11yHighContrast((prev) => !prev)}
+          onBuildNarration={handleBuildNarration}
+        />
         <NasaFooter lang={lang} nasaData={nasaData} lightSurface />
       </>
     );
@@ -468,12 +530,13 @@ export function App() {
       />
       <BackgroundEasterEggLayer screen={screen} currentSol={currentSol} />
 
-      {/* Top Bar: Orange Mission Patch + Clickable Stage Nav + Language Switcher right next to Dark Mode + Audio + Menu */}
+      {/* Top Bar: Orange Mission Patch + Clickable Stage Nav + Language Switcher right next to Dark Mode + Audio + Accessibility + Menu */}
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/98 dark:border-slate-800/80 dark:bg-[#0B1221]/98">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4 py-2.5">
           <button
             type="button"
             onClick={() => setScreen('prologue')}
+            aria-label={isPt ? 'Voltar para o início da Missão Sol-4' : 'Go to Mission Sol-4 Prologue'}
             className="flex items-center gap-2 whitespace-nowrap shrink-0 text-left hover:opacity-90 transition-opacity"
           >
             <MissionPatchLogo size={36} lang={lang} />
@@ -608,6 +671,16 @@ export function App() {
                 {muted ? (isPt ? 'Mudo' : 'Muted') : isPt ? 'Som' : 'Sound'}
               </span>
             </button>
+
+            <AccessibilityMenu
+              lang={lang}
+              largeText={a11yLargeText}
+              onToggleLargeText={() => setA11yLargeText((prev) => !prev)}
+              highContrast={a11yHighContrast}
+              onToggleHighContrast={() => setA11yHighContrast((prev) => !prev)}
+              onBuildNarration={handleBuildNarration}
+              variant="header"
+            />
 
             {/* Discreet 3-bar hamburger menu */}
             <button

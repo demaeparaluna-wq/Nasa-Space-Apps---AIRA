@@ -517,6 +517,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
               <button
                 type="button"
                 onClick={handleCopyChallenge}
+                aria-label={isPt ? 'Copiar resumo de desafio para um amigo' : 'Copy challenge summary for a friend'}
                 className="flex flex-1 min-w-[200px] items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 py-3 text-sm font-extrabold text-slate-950 hover:bg-emerald-300 transition-colors"
               >
                 {copiedChallenge ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
@@ -537,6 +538,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
                     playClickSound();
                     onBackToHangar();
                   }}
+                  aria-label={isPt ? 'Voltar ao Hangar para buscar o Título Ouro' : 'Return to Hangar to aim for Gold Status'}
                   className="flex items-center justify-center gap-2 rounded-xl border border-amber-400 bg-amber-100 text-amber-900 hover:bg-amber-200 dark:border-amber-400/50 dark:bg-amber-500/15 dark:text-amber-200 dark:hover:bg-amber-500/25 px-4 py-3 text-sm font-bold"
                 >
                   <span>{isPt ? 'Buscar Ouro no Hangar' : 'Retry Hangar for Gold'}</span>
@@ -548,6 +550,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
                   playClickSound();
                   onPlayAgain();
                 }}
+                aria-label={isPt ? 'Jogar uma nova missão desde o Prólogo' : 'Play a new mission from the Prologue'}
                 className="flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700 px-4 py-3 text-sm font-semibold"
               >
                 <RotateCcw className="h-4 w-4" />
@@ -612,6 +615,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
                 type="button"
                 disabled={drawingApod}
                 onClick={handleDrawNewApod}
+                aria-label={isPt ? 'Sortear outra foto astronômica da NASA APOD' : 'Draw another NASA APOD space photo'}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 hover:bg-sky-100 disabled:opacity-60 dark:border-sky-500/40 dark:bg-sky-950/50 dark:text-sky-200 dark:hover:bg-sky-900/60"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${drawingApod ? 'animate-spin' : ''}`} />
@@ -637,6 +641,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
               playClickSound();
               onOpenInfoHub('explorer');
             }}
+            aria-label={isPt ? 'Abrir Laboratório de Ciência Real da NASA' : 'Open NASA Real Science Lab'}
             className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:border-sky-400 dark:border-slate-800 dark:bg-[#10182E] dark:hover:border-sky-400/60 transition-all"
           >
             <div className="flex items-center gap-3">
@@ -665,6 +670,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
               playClickSound();
               onOpenInfoHub('parents');
             }}
+            aria-label={isPt ? 'Abrir Área Pais e Professores com guia de debate' : 'Open Parents and Teachers Classroom Guide'}
             className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:border-emerald-400 dark:border-slate-800 dark:bg-[#10182E] dark:hover:border-emerald-400/60 transition-all"
           >
             <div className="flex items-center gap-3">

@@ -5,7 +5,7 @@ Official Submission — **NASA Space Apps Challenge (2026)**
 
 - **Live Demo:** `https://[username].github.io/mission-sol4`
 - **Source Repository:** `https://github.com/[username]/mission-sol4`
-- **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
+- **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite, built & hosted via Google AI Studio + GitHub) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
 
 ---
 
@@ -51,32 +51,56 @@ Each Sol presents three balanced trade-off decisions (**Cards A, B, C**), intera
 
 ---
 
+## Universal Design & Native Accessibility (`♿ Accessibility` / `♿ Acessibilidade`)
+
+Available discreetly in the top-right corner from the **Splash Screen** through the **Final Victory Passport**, the built-in Accessibility popover delivers three **zero-dependency, 100% browser-native** inclusive features with persistent `localStorage` preferences, click-outside support, and `Esc` keyboard dismissal:
+
+- **Low Vision (Large Text Mode):** Toggles a global `a11y-large-text` CSS class on the root document (`<html>`) that proportionally scales typography (`rem` root size), line height, card padding, and interactive touch targets across mobile and desktop viewports with zero horizontal overflow.
+- **Colorblindness & High Contrast Mode:** Toggles a global `a11y-high-contrast` theme applying deep `#000000` backgrounds, stark high-contrast borders (`#FFFFFF` / `#FACC15`), high-visibility focus rings (`3px solid #FACC15`), and **redundant non-color visual cues**—distinct geometric fill patterns on all 4 telemetry gauges and Hangar meters (diagonal stripes, dots, reverse hatch, grid), crisp icons, numeric percentages, explicit `+`/`-` deltas, and explicit text status badges (`SAFE`, `WARNING <35%`, `CRITICAL 0%` / `SEGURO`, `ATENÇÃO <35%`, `CRÍTICO 0%`).
+- **Blind & Screen-Reading Audio Description:** Integrates the native **Web Speech API** (`window.speechSynthesis` supporting both `en-US` and `pt-BR` with safe `'speechSynthesis' in window` capability checks and a dedicated **"Stop Reading"** button) to read aloud on demand the active screen or modal title, Commander Quack's theatrical dialogue, live resource bar levels, and rich visual scene descriptions—paired with semantic `aria-label`, `aria-expanded`, `role="switch"`, and `role="progressbar"` attributes across primary controls.
+
+---
+
 ## Architecture, Caching & Offline Resilience
 
-- **100% Front-End Execution:** Built with React, TypeScript, Tailwind CSS, Vite, and native Web Audio API. Zero servers, zero databases, and zero child data collection (COPPA / LGPD safe by design).
+- **100% Front-End Execution:** Built with React, TypeScript, Tailwind CSS, Vite, native Web Audio API, and native Web Speech API (`window.speechSynthesis`). Built and deployed cleanly via Google AI Studio + GitHub with zero servers and zero external databases.
 - **24-Hour `localStorage` Caching:** Parallel live API calls (`4,000 ms` timeout via `AbortController`) store telemetry in `quack_nasa_cache_v1` with a 24-hour TTL (`86,400,000 ms`), minimizing bandwidth in school computer labs.
 - **Deterministic Offline Fallback:** If APIs time out or school networks restrict external traffic, the app seamlessly uses verified NASA datasets (`X8.7` flare, `OSD-120`, `MEDA`, curated NASA photo memories, and local Martian vector art) with zero gameplay interruption.
 - **Low-Spec Device Optimization:** Ambient animations automatically throttle from CSS keyframes to a single `30 fps` `requestAnimationFrame` loop with `will-change: transform` when low-end CPU/memory or frame drops are detected.
 
 ---
 
-## Official NASA Open Data Lineage & Peer-Reviewed References
+## Scientific Auditability & Child Data Privacy
 
-| NASA Source | Dataset / Endpoint | Scientific Basis & Mission Integration |
+Every in-game number and crisis maps directly to official NASA telemetry or peer-reviewed spaceflight research, while keeping children's privacy completely protected on the client device:
+
+| Audit Pillar | Implementation & Source | Verifiable Guarantee |
 | :--- | :--- | :--- |
-| **NASA APOD API** | `/planetary/apod` | Live randomized astronomy imagery & explanations in the Victory Passport (with curated NASA image fallback). |
-| **NASA CCMC DONKI** | `/DONKI/WS/get/FLR` | Real Class **X8.7** solar flare telemetry (`2024-05-14`, `AR3664`) driving Sol 2 radiation and shielding decisions. |
-| **NASA OSDR** | Study `OSD-120` | **Veggie** `16h/day` LED photoperiod for *Outredgeous* lettuce (*Massa et al.*, 2017) & spaceflight water-loop **biofilms** (*Zea et al.*, 2017/2020). |
-| **Mars 2020 Perseverance** | `MEDA` Weather Suite | Real Jezero Crater nocturnal lows (`-85°C`), dust optical depth (`τ = 0.85`), and `14-min` one-way radio latency (*Rodriguez-Manfredi et al.*, 2021). |
+| **Solar Weather Telemetry** | **NASA CCMC DONKI** (`/DONKI/WS/get/FLR`) | Real Class **X8.7** solar flare (`2024-05-14`, Active Region `AR3664`) driving Sol 2 radiation and shielding decisions. |
+| **Astrobiology & Space Botany** | **NASA OSDR Study `OSD-120`** (*Massa et al.*, 2017; *Zea et al.*, 2017/2020) | Real **Veggie** `16h/day` LED photoperiod for *Outredgeous* lettuce and spaceflight water-loop **biofilms**. |
+| **Martian Surface Weather** | **Mars 2020 Perseverance `MEDA`** (*Rodriguez-Manfredi et al.*, 2021) | Real Jezero Crater nocturnal lows (`-85°C`), dust optical depth (`τ = 0.85`), and `14-min` one-way radio latency (`28-min` RTT). |
+| **Astronomy Imagery** | **NASA APOD API** (`/planetary/apod`) | Live randomized astronomy photography and scientific captions in the Victory Passport, backed by curated NASA image fallback and local vector art. |
+| **24h Cache & Lineage Badge** | `localStorage` (`quack_nasa_cache_v1`, 24h TTL) + Footer Indicator | Transparent telemetry status badge in the footer clearly shows **Live**, **Cache 24h**, or **Verified Archive** at all times. |
+| **Child Data Privacy (Zero Collection)** | 100% Client-Side SPA · No Login · No Backend DB | Zero personal identifiers, analytics trackers, or student names ever leave the browser; **COPPA & LGPD Kids safe by design**. |
 
 ---
 
 ## Educational Business & Scalability Model
 
 Because **Mission Sol-4** runs as a lightweight static web app with zero per-student cloud inference costs, it scales sustainably across three channels:
+- **B2C (Free Open-Access for Families):** Forever-free web access for parents and children at home to explore real NASA data safely together.
 - **B2G (Public School Districts & Ministries of Education):** Zero-infrastructure deployment for computer labs and low-bandwidth municipal networks, bundled with standards-aligned teacher guides and printable worksheets.
 - **B2B (Private STEM Schools, Museums & EdTech Networks):** White-label classroom challenge packs, science-fair competition kits, and turn-key bilingual STEM workshop licensing.
-- **B2C (Free Open-Access for Families):** Forever-free web access for parents and children at home to explore real NASA data safely together.
+
+---
+
+## Product Roadmap
+
+| Phase | Milestone | Scope & Deliverables |
+| :--- | :--- | :--- |
+| **V1 (Delivered)** | **Mars MVP & Universal Design** | Complete 5-screen Jezero Crater simulation, `$100M` Physics Lock Hangar, 4 Scientific Method Sols + Zero-G Workshop, local anti-spoiler Quack Chat, live/cached NASA APIs (`APOD`, `DONKI`, `OSDR`, `MEDA`), and native `♿ Accessibility` suite (`Large Text`, `High Contrast & Colorblind`, `Audio Description`). |
+| **V2 (Next)** | **Artemis / Moon Expansion & Multi-Language** | New lunar South Pole survival module powered by Artemis telemetry, expanded `i18n` packs (Spanish & French alongside `EN-US` / `PT-BR`), and downloadable printable STEM classroom mission certificates. |
+| **V3 (Future)** | **Teacher Analytics & Sign Language** | Optional zero-PII local classroom session summary exporter for educators (group trade-off debrief charts) plus integrated **LIBRAS / ASL** sign-language video overlays on narration cues. |
 
 ---
 
@@ -100,6 +124,6 @@ npm run lint
 npm run build
 ```
 
-### Static Deployment (GitHub Pages / Netlify / Vercel / School Intranet)
+### Static Deployment (GitHub Pages / Google AI Studio / Netlify / School Intranet)
 1. Run `npm run build` to generate the self-contained static `dist/` folder.
 2. Deploy `dist/` to any static host (e.g., GitHub Pages at `https://[username].github.io/mission-sol4`). No server environment variables or backend secrets are required for core gameplay.

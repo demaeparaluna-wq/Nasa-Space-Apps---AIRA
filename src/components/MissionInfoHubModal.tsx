@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   BookOpen,
   Cpu,
@@ -46,6 +46,18 @@ export const MissionInfoHubModal: React.FC<MissionInfoHubModalProps> = ({
   choiceHistory,
 }) => {
   const isPt = lang === 'pt';
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const {
     AGE_PROFILES,
     CLASSROOM_DEBATE_QUESTIONS,

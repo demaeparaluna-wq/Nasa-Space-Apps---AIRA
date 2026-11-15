@@ -44,10 +44,26 @@
 
 ---
 
-## 4. Classroom Facilitation Tips & Discussion Prompts
+## 4. Inclusive Classroom Facilitation
+
+**Mission Sol-4** embeds a zero-dependency **`♿ Accessibility`** (`♿ Acessibilidade`) menu in the top-right corner—available starting on the Splash Screen—so educators can create fully inclusive teams without separate apps or hardware:
+
+### Pairing Accessibility Tools with 4-Role Co-Op Mode
+1. **Equal Participation for Blind & Low-Vision Learners:**
+   - Enable **Low Vision (Large Text Mode)** to enlarge fonts, spacing, and tap targets across shared tablets or laptops—saved automatically across browser sessions.
+   - Assign a blind or screen-reading student as **Mission Leader** or **Comms Officer** and use the on-demand **"Read Current Screen"** button (`window.speechSynthesis` in `en-US` or `pt-BR`) to hear Commander Quack's transmission, exact subsystem percentages, and rich audio descriptions of every visual scene (with **"Stop Reading"** ready anytime).
+   - During the **Sol 3 Zero-G Workshop**, encourage teammates to verbally describe spatial cues or activate the **Drone UV Scanner** (`-8% Life Support`) together, turning an inclusion accommodation into an authentic NASA teamwork lesson!
+2. **Colorblindness & High Contrast Support:**
+   - Enable **High Contrast & Colorblind Mode** on shared displays or individual stations so no student relies on red-vs.-green hues alone. Every telemetry bar renders a distinct fill pattern alongside explicit status badges (`SAFE`, `WARNING <35%`, `CRITICAL 0%`), icons, and `+`/`-` signs.
+3. **Zero-Friction Keyboard & Switch Access:**
+   - All primary mission buttons feature semantic `aria-label` descriptions, high-contrast focus rings, and instant `Esc` dismissal on the Accessibility menu so keyboard-only learners navigate smoothly alongside peers.
+
+---
+
+## 5. Classroom Facilitation Tips & Discussion Prompts
 
 ### Handling Failure Constructively (Screen 4)
-If any subsystem drops to `0%`, **celebrate the learning moment!** NASA treats anomaly diagnosis as core engineering practice. Read the failure-physics box aloud with learners, identify which trade-off drained the gauge, and let students choose **"Retry This Sol"** or **"Redesign Ship in Hangar"** to test a new hypothesis.
+If any subsystem drops to `0%`, **celebrate the learning moment!** NASA treats anomaly diagnosis as core engineering practice. Read the failure-physics box aloud with learners (or trigger **Read Current Screen**), identify which trade-off drained the gauge, and let students choose **"Retry This Sol"** or **"Redesign Ship in Hangar"** to test a new hypothesis.
 
 ### Post-Victory Discussion Prompts (Built into the App's Classroom Guide)
 1. **Communication Latency:** *Why does a 14-minute one-way radio delay change how engineers design Mars rovers and habitats?*  
@@ -64,6 +80,7 @@ If any subsystem drops to `0%`, **celebrate the learning moment!** NASA treats a
 ================================================================================
 Crew / Student Name(s): _____________________________  Date: ____/____/2026
 Profile Selected: [ ] Explorers (7-9)  [ ] Strategists (10-12)  [ ] Educators
+Accessibility On: [ ] Large Text       [ ] High Contrast        [ ] Read Aloud
 
 1. HANGAR DESIGN ($100M Max Budget)
    Rocket: [ ] Light ($35M · 1,200kg max)   [ ] Heavy ($50M · 2,200kg max)

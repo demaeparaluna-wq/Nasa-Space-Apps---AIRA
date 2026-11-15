@@ -292,3 +292,236 @@
     animation: none !important;
   }
 }
+
+/* ============================================================================
+   ACCESSIBILITY MODES (Native, zero external dependencies)
+   1. .a11y-large-text (Low Vision / Enlarged typography & comfortable spacing)
+   2. .a11y-high-contrast (High Contrast & Colorblind Patterns + Text Badges)
+   ============================================================================ */
+
+.a11y-hc-only {
+  display: none;
+}
+
+html.a11y-large-text {
+  font-size: 118.75%;
+}
+
+html.a11y-large-text body {
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+
+html.a11y-large-text p,
+html.a11y-large-text li {
+  line-height: 1.65;
+}
+
+html.a11y-large-text section,
+html.a11y-large-text .a11y-popover-card {
+  padding: 1.35rem;
+}
+
+html.a11y-large-text button:not(.a11y-compact-btn) {
+  min-height: 2.75rem;
+}
+
+html.a11y-high-contrast .a11y-hc-only {
+  display: inline-flex;
+}
+
+html.a11y-high-contrast,
+html.a11y-high-contrast body,
+html.a11y-high-contrast #root > div {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+html.a11y-high-contrast header,
+html.a11y-high-contrast footer,
+html.a11y-high-contrast section,
+html.a11y-high-contrast [role='dialog'],
+html.a11y-high-contrast [role='dialog'] > div,
+html.a11y-high-contrast .a11y-popover-card,
+html.a11y-high-contrast table,
+html.a11y-high-contrast th,
+html.a11y-high-contrast td,
+html.a11y-high-contrast [class*='bg-slate-50'],
+html.a11y-high-contrast [class*='bg-slate-100'],
+html.a11y-high-contrast [class*='bg-slate-200'],
+html.a11y-high-contrast [class*='bg-white'],
+html.a11y-high-contrast [class*='bg-orange-50'],
+html.a11y-high-contrast [class*='bg-orange-100'],
+html.a11y-high-contrast [class*='bg-sky-50'],
+html.a11y-high-contrast [class*='bg-sky-100'],
+html.a11y-high-contrast [class*='bg-emerald-50'],
+html.a11y-high-contrast [class*='bg-emerald-100'],
+html.a11y-high-contrast [class*='bg-amber-50'],
+html.a11y-high-contrast [class*='bg-amber-100'],
+html.a11y-high-contrast [class*='bg-rose-50'],
+html.a11y-high-contrast [class*='bg-rose-100'] {
+  background-color: #09090b !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+html.a11y-high-contrast p,
+html.a11y-high-contrast span,
+html.a11y-high-contrast label,
+html.a11y-high-contrast li,
+html.a11y-high-contrast th,
+html.a11y-high-contrast td,
+html.a11y-high-contrast h1,
+html.a11y-high-contrast h2,
+html.a11y-high-contrast h3 {
+  color: #ffffff !important;
+}
+
+html.a11y-high-contrast .bg-clip-text {
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  color: #facc15 !important;
+}
+
+html.a11y-high-contrast .text-orange-600,
+html.a11y-high-contrast .text-orange-400,
+html.a11y-high-contrast .text-amber-600,
+html.a11y-high-contrast .text-amber-400,
+html.a11y-high-contrast .text-amber-300,
+html.a11y-high-contrast .text-sky-600,
+html.a11y-high-contrast .text-sky-400,
+html.a11y-high-contrast .text-sky-300 {
+  color: #fef08a !important;
+}
+
+html.a11y-high-contrast .text-rose-600,
+html.a11y-high-contrast .text-rose-400,
+html.a11y-high-contrast .text-rose-300 {
+  color: #fda4af !important;
+}
+
+html.a11y-high-contrast .text-emerald-700,
+html.a11y-high-contrast .text-emerald-600,
+html.a11y-high-contrast .text-emerald-400,
+html.a11y-high-contrast .text-emerald-300 {
+  color: #86efac !important;
+}
+
+html.a11y-high-contrast button,
+html.a11y-high-contrast input,
+html.a11y-high-contrast [role='switch'] {
+  border: 2px solid #ffffff !important;
+}
+
+html.a11y-high-contrast button:disabled {
+  background: #18181b !important;
+  color: #cbd5e1 !important;
+  border: 2px dashed #94a3b8 !important;
+}
+
+html.a11y-high-contrast button:disabled * {
+  color: #cbd5e1 !important;
+}
+
+html.a11y-high-contrast button.bg-rose-500 {
+  background: #fda4af !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+html.a11y-high-contrast button.bg-rose-500 * {
+  color: #000000 !important;
+}
+
+html.a11y-high-contrast button.bg-orange-500,
+html.a11y-high-contrast button.bg-emerald-400,
+html.a11y-high-contrast button.bg-emerald-500,
+html.a11y-high-contrast button.bg-amber-400,
+html.a11y-high-contrast button.bg-amber-500,
+html.a11y-high-contrast button.bg-sky-500,
+html.a11y-high-contrast button[class*='from-amber-500'],
+html.a11y-high-contrast span.bg-orange-500,
+html.a11y-high-contrast span.bg-sky-500,
+html.a11y-high-contrast span.bg-amber-400,
+html.a11y-high-contrast span.bg-emerald-500 {
+  background: #facc15 !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+html.a11y-high-contrast button.bg-orange-500 *,
+html.a11y-high-contrast button.bg-emerald-400 *,
+html.a11y-high-contrast button.bg-emerald-500 *,
+html.a11y-high-contrast button.bg-amber-400 *,
+html.a11y-high-contrast button.bg-amber-500 *,
+html.a11y-high-contrast button.bg-sky-500 *,
+html.a11y-high-contrast button[class*='from-amber-500'] *,
+html.a11y-high-contrast span.bg-orange-500 *,
+html.a11y-high-contrast span.bg-sky-500 *,
+html.a11y-high-contrast span.bg-amber-400 *,
+html.a11y-high-contrast span.bg-emerald-500 * {
+  color: #000000 !important;
+}
+
+html.a11y-high-contrast *:focus-visible {
+  outline: 3px solid #facc15 !important;
+  outline-offset: 2px !important;
+}
+
+/* Colorblind-safe distinct fill patterns for the 4 resource bars + Hangar meters */
+html.a11y-high-contrast .a11y-bar-track {
+  background-color: #18181b !important;
+  border: 1px solid #ffffff !important;
+  height: 0.75rem !important;
+}
+
+html.a11y-high-contrast .a11y-pattern-energy {
+  background-color: #facc15 !important;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    rgba(0, 0, 0, 0.55) 5px,
+    rgba(0, 0, 0, 0.55) 9px
+  ) !important;
+}
+
+html.a11y-high-contrast .a11y-pattern-lifeSupport {
+  background-color: #22d3ee !important;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.7) 2px, transparent 2px) !important;
+  background-size: 8px 8px !important;
+}
+
+html.a11y-high-contrast .a11y-pattern-shield {
+  background-color: #e879f9 !important;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 5px,
+    rgba(0, 0, 0, 0.55) 5px,
+    rgba(0, 0, 0, 0.55) 9px
+  ) !important;
+}
+
+html.a11y-high-contrast .a11y-pattern-comms {
+  background-color: #a3e635 !important;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 5px,
+    rgba(0, 0, 0, 0.65) 5px,
+    rgba(0, 0, 0, 0.65) 8px
+  ) !important;
+}
+
+html.a11y-high-contrast .a11y-pattern-danger {
+  background-color: #fb7185 !important;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 4px,
+    #000000 4px,
+    #000000 8px
+  ) !important;
+}
