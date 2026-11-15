@@ -150,7 +150,7 @@ export const TechnicalLineagePanel: React.FC<TechnicalLineagePanelProps> = ({
           title: `NASA APOD — Lembrança Espacial`,
           explorer:
             'Traz fotos reais de estrelas, nebulosas e Marte tiradas por telescópios e robôs da NASA para você colecionar no Passaporte Final!',
-          technical: `Endpoint api.nasa.gov/planetary/apod?count=1 (filtro media_type === "image") com pool determinístico de 5 imagens verificadas JPL/Hubble. Hidrata a Tela 5 e contextualiza fatos astronômicos no QuackChatWidget.`,
+          technical: `Endpoint api.nasa.gov/planetary/apod?count=6 (filtro media_type === "image" + bloqueio anti-logo/selo) com pool determinístico de 5 imagens verificadas JPL/Hubble. Hidrata a Tela 5 e contextualiza fatos astronômicos no QuackChatWidget.`,
           liveState: `Foto atual: "${nasaData.apod.title}" (${nasaData.apod.date})`,
         },
         hangar: {
@@ -204,7 +204,7 @@ export const TechnicalLineagePanel: React.FC<TechnicalLineagePanelProps> = ({
           title: `NASA APOD — Space Memory`,
           explorer:
             'Pulls real photos of stars, nebulae, and Mars captured by NASA telescopes and rovers for your Final Passport!',
-          technical: `api.nasa.gov/planetary/apod?count=1 (filtered to media_type === "image") backed by 5 verified NASA/JPL fallback images. Powers Screen 5 and astronomy trivia in QuackChatWidget.`,
+          technical: `api.nasa.gov/planetary/apod?count=6 (filtered to media_type === "image" + anti-logo/seal guard) backed by 5 verified NASA/JPL fallback images. Powers Screen 5 and astronomy trivia in QuackChatWidget.`,
           liveState: `Current photo: "${nasaData.apod.title}" (${nasaData.apod.date})`,
         },
         hangar: {

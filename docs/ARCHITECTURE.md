@@ -61,20 +61,21 @@ The diagram below traces the complete runtime pipeline from official NASA open-s
 ```mermaid
 flowchart TD
     subgraph SOURCES["Official NASA Open Data & Curated Science Sources"]
-        APOD["NASA APOD API<br/>GET api.nasa.gov/planetary/apod?count=1"]
+        APOD["NASA APOD API<br/>GET api.nasa.gov/planetary/apod?count=6<br/>(Anti-Logo & Media Filter)"]
         DONKI["NASA CCMC DONKI<br/>GET /DONKI/WS/get/FLR"]
         OSDR["NASA OSDR (Curated Baseline)<br/>Study OSD-120 · Massa et al. & Zea et al.<br/>(16h/day LED · ISS Biofilms)"]
         MEDA["Mars 2020 Perseverance MEDA (Curated Baseline)<br/>Rodriguez-Manfredi et al.<br/>(-85°C Night · τ=0.85 Dust · 14m Radio Lag)"]
     end
 
-    subgraph PIPELINE["Fault-Tolerant Client Pipeline (src/services/nasaApi.ts)"]
-        BOOT["App Mount -> Initialize Sync Fallback<br/>+ Async loadResilientNasaData()"]
-        CHECK{"Fresh Cache in localStorage?<br/>key: quack_nasa_cache_v1<br/>Age < 24h (86,400,000 ms)"}
-        CACHE_HIT["Return Cached Bundle<br/>status = 'cache' (🔵 24h Cache)"]
-        FETCH["Promise.all([DONKI, APOD])<br/>fetchWithTimeout(4,000 ms) + AbortController"]
-        VALIDATE{"HTTP 200 OK &<br/>Valid JSON Schema?"}
-        WRITE_CACHE["Persist NasaDataBundle to localStorage<br/>status = 'live' (🟢 Live Data)"]
-        FALLBACK["Deterministic Verified Fallback<br/>• FALLBACK_FLARE (Class X8.7, 2024-05-14)<br/>• VERIFIED_NASA_MEMORIES (5 NASA/JPL images)<br/>• CURATED_OSDR & CURATED_MEDA<br/>status = 'archived' (🟡 Verified Archive)"]
+    subgraph PIPELINE["Fault-Tolerant Client Pipeline & Circuit Breaker (src/services/nasaApi.ts)"]
+        BOOT["App Mount -> Initialize Sync LocalFallback<br/>+ In-Flight Deduplicated loadResilientNasaData()"]
+        OFFLINE{"Offline (navigator.onLine === false)<br/>or Endpoint Circuit OPEN?"}
+        CHECK{"Fresh Cache in RAM or localStorage?<br/>key: quack_nasa_cache_v1 · Age < 24h<br/>(Safe No-Op if Storage Blocked / ?nocache=1)"}
+        CACHE_HIT["Return Cached Bundle<br/>status = 'cache' (🔵 24h / RAM Cache)"]
+        FETCH["Per-Endpoint Breaker (CLOSED / HALF_OPEN)<br/>DONKI + APOD · 4,000 ms AbortController"]
+        VALIDATE{"HTTP 200 OK &<br/>Valid Photo (No Logos/SVG/Video)?"}
+        WRITE_CACHE["Reset Breaker to CLOSED<br/>Update RAM Pool + Safe localStorage<br/>status = 'live' (🟢 Live Data)"]
+        FALLBACK["Trip Endpoint Breaker -> OPEN (5-min Cooldown)<br/>Immutable LocalFallback Bundle<br/>• FALLBACK_FLARE (Class X8.7, 2024-05-14)<br/>• VERIFIED_NASA_MEMORIES (5 NASA/JPL images)<br/>• CURATED_OSDR & CURATED_MEDA<br/>status = 'archived' (🟡 Verified Archive)"]
     end
 
     subgraph A11Y["Accessibility Layer (App.tsx + index.css + a11ySpeech.ts)"]
@@ -96,18 +97,20 @@ flowchart TD
         FOOTER["NasaFooter Badge<br/>(🟢 Live / 🔵 24h Cache / 🟡 Archive)"]
     end
 
-    BOOT --> CHECK
+    BOOT --> OFFLINE
+    OFFLINE -- "Yes (Skip fetch)" --> FALLBACK --> STORE
+    OFFLINE -- "No" --> CHECK
     CHECK -- "Yes (< 24h)" --> CACHE_HIT --> STORE
     CHECK -- "No / Expired" --> FETCH
 
     APOD --> FETCH
     DONKI --> FETCH
-    OSDR -. "Merged deterministic baseline" .-> FALLBACK
-    MEDA -. "Merged deterministic baseline" .-> FALLBACK
+    OSDR -. "Frozen into LocalFallback" .-> FALLBACK
+    MEDA -. "Frozen into LocalFallback" .-> FALLBACK
 
     FETCH --> VALIDATE
     VALIDATE -- "At least 1 live API hit" --> WRITE_CACHE --> STORE
-    VALIDATE -- "Timeout / 429 / Firewall / Offline" --> FALLBACK --> STORE
+    VALIDATE -- "Timeout / 429 / Firewall / Invalid" --> FALLBACK --> STORE
 
     STORE --> FOOTER
     STORE --> SPLASH --> HANGAR --> COMMAND --> VICTORY
@@ -168,12 +171,14 @@ To prevent classroom rate-limiting (`HTTP 429`) and repeated network overhead ac
 }
 ```
 
-#### Deterministic Fallback & Resilience Rules
-1. **Zero-Latency Initial Boot:** `App.tsx` initializes synchronously from `getArchivedFallbackBundle()`, so the UI renders immediately without blocking spinners while `loadResilientNasaData()` resolves in the background.
-2. **Cache Freshness Resolution:** `readCache()` checks `Date.now() - parsed.fetchedAt < CACHE_TTL_MS`. Fresh entries downgrade `status` from `'live'` to `'cache'` (or `'archived'` if both remote APIs had previously fallen back), strictly avoiding stale or corrupted JSON crashes via `try/catch`.
-3. **4,000 ms Timeout Protection:** `fetchWithTimeout()` attaches an `AbortController` signal to every `fetch()` call and clears its timer on resolution or `4,000 ms` expiry, silently degrading to `FALLBACK_FLARE` (`Class X8.7`) and `VERIFIED_NASA_MEMORIES`.
-4. **Partial Live Persistence:** `writeCache(bundle)` only persists to `localStorage` when `liveHits > 0`, ensuring transient network outages do not lock a classroom into a 24-hour archived cache once connectivity returns.
-5. **Bounded Remote Image Recovery:** In `Screen5Victory.tsx`, broken APOD URLs are tracked in `failedUrlsRef` (`Set<string>`); after at most one verified fallback retry, the card transitions cleanly to `LocalMartianSpaceFallbackSvg` so zero broken-image icons appear.
+#### Deterministic Fallback & Circuit Breaker Resilience Rules
+1. **Immutable `LocalFallback` Bundle & Zero-Latency Boot:** `LocalFallback` freezes the verified `FALLBACK_FLARE` (`Class X8.7`), `VERIFIED_NASA_MEMORIES` (5 curated NASA/JPL photographs), `CURATED_OSDR`, and `CURATED_MEDA` constants. `App.tsx` initializes synchronously from `getArchivedFallbackBundle()` (a clean clone of `LocalFallback`), while `loadResilientNasaData()` deduplicates concurrent boot calls via `inFlightBundlePromise`.
+2. **Per-Endpoint Circuit Breaker (`CLOSED -> OPEN -> HALF_OPEN`):** `donki` and `apod` each maintain an independent breaker (`CIRCUIT_FAILURE_THRESHOLD = 1`, `CIRCUIT_COOLDOWN_MS = 300,000` / 5 minutes). Any timeout, HTTP error, or malformed/logo-only payload immediately trips that endpoint's breaker to `OPEN`, short-circuiting subsequent calls straight to `LocalFallback` (and cycling verified `LocalFallback` photos on Screen 5) without calling `fetch()` until the 5-minute cooldown enters `HALF_OPEN`.
+3. **Immediate Offline Bypass:** `isEnvironmentOffline()` checks `navigator.onLine === false`, missing `fetch`, or `?offline=1`, returning `LocalFallback` immediately without attempting network calls.
+4. **Three-Tier Cache Resilience (Zero Errors Without `localStorage`):** `readCache()` checks an **in-memory RAM cache** (`memoryBundleCache` + `memoryApodPool`) before probing `window.localStorage` via `getSafeLocalStorage()`. If judges block site storage, run in Incognito/sandboxed iframes, or pass `?nocache=1` / `?cache=off`, persistent disk writes are bypassed cleanly without throwing `SecurityError` or `QuotaExceededError`.
+5. **Anti-Logo & Non-Photo APOD Guard (`count=6`):** `fetchRandomNasaApod()` fetches a 6-item APOD batch (`count=6`), filters out videos, SVG/GIF icons, and NASA agency logos/seals/emblems/patches (`isValidApodMetadata()`), caches remaining valid live photos in `memoryApodPool` for instant zero-network redraws, and sanitizes any stale cached entry.
+6. **4,000 ms Timeout Protection & Partial Live Persistence:** `fetchWithTimeout()` attaches an `AbortController` signal (`4,000 ms`), and `writeCache(bundle)` only persists to `localStorage` when `liveHits > 0` and persistent caching is permitted.
+7. **Bounded Remote Image Recovery:** In `Screen5Victory.tsx`, broken or undersized (`<120 px`) APOD images are rejected on `onError`/`onLoad`, recorded via `markApodUrlRejected()` and `failedUrlsRef`, and swapped after at most one verified fallback retry to `LocalMartianSpaceFallbackSvg` so zero broken-image or logo icons appear.
 
 ---
 

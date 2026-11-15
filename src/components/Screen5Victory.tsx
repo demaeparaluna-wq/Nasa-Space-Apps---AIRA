@@ -17,6 +17,7 @@ import { getLocalizedMissionData } from '../data/missionDataEn';
 import { getProfileToneCopy } from '../data/toneCopy';
 import {
   fetchRandomNasaApod,
+  markApodUrlRejected,
   pickRandomVerifiedMemory,
 } from '../services/nasaApi';
 import {
@@ -581,7 +582,23 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
                   alt={nasaData.apod.title}
                   decoding="async"
                   referrerPolicy="no-referrer"
+                  onLoad={(e) => {
+                    const img = e.currentTarget;
+                    if (img.naturalWidth > 0 && (img.naturalWidth < 120 || img.naturalHeight < 120)) {
+                      markApodUrlRejected(nasaData.apod.url);
+                      failedUrlsRef.current.add(nasaData.apod.url);
+                      if (failedUrlsRef.current.size <= 1) {
+                        const fallback = pickRandomVerifiedMemory(nasaData.apod.url);
+                        if (!failedUrlsRef.current.has(fallback.url)) {
+                          onUpdateApod(fallback);
+                          return;
+                        }
+                      }
+                      setUseLocalApodIllustration(true);
+                    }
+                  }}
                   onError={() => {
+                    markApodUrlRejected(nasaData.apod.url);
                     failedUrlsRef.current.add(nasaData.apod.url);
                     if (failedUrlsRef.current.size <= 1) {
                       const fallback = pickRandomVerifiedMemory(nasaData.apod.url);
