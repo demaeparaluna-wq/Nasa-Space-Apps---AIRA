@@ -353,7 +353,7 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
   };
 
   return (
-    <section className="rounded-2xl border border-sky-500/35 bg-[#0B1224]/90 p-5 sm:p-6 backdrop-blur-md space-y-4">
+    <section className="rounded-2xl border border-sky-500/35 bg-[#0B1224] p-5 sm:p-6 space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Telescope className="h-5 w-5 text-sky-400" />

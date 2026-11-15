@@ -134,7 +134,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
       </section>
 
       {/* Emergency Transmission Card with Centered Commander Quack */}
-      <section className="rounded-3xl border border-slate-200 bg-white/95 dark:border-slate-800/80 dark:bg-[#131C33]/95 p-5 sm:p-7 shadow-2xl backdrop-blur-md">
+      <section className="rounded-3xl border border-slate-200 bg-white dark:border-slate-800/80 dark:bg-[#131C33] p-5 sm:p-7 shadow-xl">
         <div className="flex flex-col items-center space-y-4">
           <QuackMascot expression="terror" size={144} />
 
@@ -165,7 +165,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
       </section>
 
       {/* Crew Configuration Card */}
-      <section className="rounded-3xl border border-slate-200 bg-white/95 dark:border-slate-800/80 dark:bg-[#131C33]/95 p-5 sm:p-6 shadow-xl backdrop-blur-md space-y-5">
+      <section className="rounded-3xl border border-slate-200 bg-white dark:border-slate-800/80 dark:bg-[#131C33] p-5 sm:p-6 shadow-xl space-y-5">
         <div>
           <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
             {isPt ? 'Identidade da Tripulação' : 'Crew Identity'}
@@ -383,7 +383,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
       {/* Modals for How to Play & Badges */}
       {activeInfoModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
           onClick={() => setActiveInfoModal(null)}
           role="dialog"
           aria-modal="true"

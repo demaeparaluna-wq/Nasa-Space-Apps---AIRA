@@ -295,7 +295,7 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
   return (
     <div className="mx-auto max-w-5xl space-y-5 pb-[110px]">
       {/* Top HUD: Turn Indicator + 4 Resource Bars + Scientific Method Tracker */}
-      <section className="rounded-2xl border border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-[#10182E]/95 p-4 backdrop-blur-sm space-y-4">
+      <section className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#10182E] p-4 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="font-mono-tabular font-bold text-orange-600 dark:text-orange-400">
@@ -406,7 +406,7 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
       </section>
 
       {/* Focused Theatrical Sol Stage */}
-      <section className="rounded-2xl border border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-[#10182E]/95 p-5 backdrop-blur-sm space-y-4">
+      <section className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#10182E] p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold text-orange-600 dark:text-orange-400">
@@ -527,7 +527,7 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
 
       {/* Sol 3 Interactive Workshop Search Minigame */}
       {isSol3Locked ? (
-        <section className="rounded-2xl border border-amber-400/60 bg-white/95 dark:border-amber-500/40 dark:bg-[#121C35]/95 p-5 backdrop-blur-sm space-y-4">
+        <section className="rounded-2xl border border-amber-400/60 bg-white dark:border-amber-500/40 dark:bg-[#121C35] p-5 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Wrench className="h-5 w-5 text-amber-500 dark:text-amber-400" />
@@ -616,6 +616,7 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
                     ? 'Interior da oficina espacial da Base Ares em Marte'
                     : 'Interior of the Ares Base space workshop on Mars'
                 }
+                decoding="async"
                 onError={() => setWorkshopImgError(true)}
                 className="h-full w-full object-cover select-none"
               />
@@ -653,8 +654,8 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
                   aria-label={isPt ? `Pegar ${label} escondida na oficina` : `Pick up hidden ${label}`}
                   className={
                     helpUsed
-                      ? 'animate-float-zero-g group absolute flex min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-slate-900/65 p-2 ring-2 ring-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.75)] transition-transform hover:scale-115 focus-visible:outline-2 focus-visible:outline-amber-300'
-                      : 'group absolute flex min-h-[38px] min-w-[38px] items-center justify-center rounded-lg p-1 opacity-75 transition-all hover:scale-115 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-amber-300'
+                      ? 'animate-float-zero-g group absolute flex min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-slate-900/65 p-2 ring-2 ring-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.75)] transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-amber-300'
+                      : 'group absolute flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-1 opacity-75 transition-all hover:scale-110 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-amber-300'
                   }
                 >
                   {helpUsed && (
@@ -725,7 +726,7 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
       {/* Paid Help Confirmation Modal in Sol 3 */}
       {helpConfirmOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
           onClick={() => setHelpConfirmOpen(false)}
           role="dialog"
           aria-modal="true"
@@ -799,7 +800,7 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
       {/* Modal: Base Ares Hotspots Inspector */}
       {hotspotsModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
           onClick={() => setHotspotsModalOpen(false)}
           role="dialog"
           aria-modal="true"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   AlertTriangle,
   Award,
@@ -63,6 +63,51 @@ interface Screen5VictoryProps {
   onBackToHangar: () => void;
 }
 
+const LocalMartianSpaceFallbackSvg: React.FC<{ isPt: boolean }> = ({ isPt }) => (
+  <svg
+    viewBox="0 0 400 300"
+    className="h-full w-full"
+    role="img"
+    aria-label={
+      isPt
+        ? 'Ilustração espacial local da Cratera Jezero e céu estrelado de Marte'
+        : 'Local space illustration of Jezero Crater and Martian starry sky'
+    }
+  >
+    <defs>
+      <linearGradient id="local-mars-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#070D1F" />
+        <stop offset="60%" stopColor="#1B1838" />
+        <stop offset="100%" stopColor="#7C2D12" />
+      </linearGradient>
+    </defs>
+    <rect width="400" height="300" fill="url(#local-mars-sky)" />
+    <circle cx="52" cy="48" r="1.5" fill="#E2E8F0" />
+    <circle cx="110" cy="32" r="2" fill="#7DD3FC" />
+    <circle cx="168" cy="64" r="1.4" fill="#FFFFFF" />
+    <circle cx="240" cy="40" r="1.8" fill="#FDE047" />
+    <circle cx="315" cy="54" r="1.5" fill="#BAE6FD" />
+    <circle cx="360" cy="28" r="2" fill="#FFFFFF" />
+    <circle cx="88" cy="108" r="1.2" fill="#FDE68A" />
+    <circle cx="288" cy="96" r="1.4" fill="#FFFFFF" />
+    {/* Phobos & Deimos moons */}
+    <circle cx="310" cy="84" r="22" fill="#94A3B8" opacity="0.25" />
+    <circle cx="310" cy="84" r="15" fill="#CBD5E1" />
+    <circle cx="305" cy="80" r="3" fill="#94A3B8" />
+    <circle cx="315" cy="89" r="2.2" fill="#94A3B8" />
+    <circle cx="82" cy="78" r="5" fill="#E2E8F0" opacity="0.85" />
+    {/* Jezero Crater distant rim & dunes */}
+    <path d="M0 218 Q95 170 190 205 T400 190 L400 300 L0 300 Z" fill="#9A3412" />
+    <path d="M0 245 Q130 215 245 240 T400 228 L400 300 L0 300 Z" fill="#7C2D12" />
+    <path d="M0 272 Q170 254 400 268 L400 300 L0 300 Z" fill="#431407" />
+    {/* Tiny Base Ares dome silhouette */}
+    <ellipse cx="145" cy="238" rx="28" ry="12" fill="#38BDF8" fillOpacity="0.35" stroke="#7DD3FC" strokeWidth="1.5" />
+    <rect x="125" y="238" width="40" height="7" rx="3" fill="#E2E8F0" />
+    <line x1="176" y1="238" x2="188" y2="226" stroke="#CBD5E1" strokeWidth="1.5" />
+    <circle cx="189" cy="225" r="2" fill="#FACC15" />
+  </svg>
+);
+
 export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
   lang = 'en',
   playerName,
@@ -85,9 +130,25 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
   const [copiedChallenge, setCopiedChallenge] = useState(false);
   const [drawingApod, setDrawingApod] = useState(false);
   const [lineageOpen, setLineageOpen] = useState(false);
+  const [useLocalApodIllustration, setUseLocalApodIllustration] = useState(false);
+
+  const failedUrlsRef = useRef<Set<string>>(new Set());
+  const copyTimerRef = useRef<number | null>(null);
 
   const [twinkleStars, setTwinkleStars] = useState<SpawnedTwinkleStar[]>([]);
   const [revealedConstellations, setRevealedConstellations] = useState<string[]>([]);
+
+  useEffect(() => {
+    setUseLocalApodIllustration(false);
+  }, [nasaData.apod.url]);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current !== null) {
+        window.clearTimeout(copyTimerRef.current);
+      }
+    };
+  }, []);
 
   const isPt = lang === 'pt';
   const {
@@ -130,9 +191,17 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
     if (drawingApod) return;
     playClickSound();
     setDrawingApod(true);
-    const fresh = await fetchRandomNasaApod(nasaData.apod.url);
-    onUpdateApod(fresh);
-    setDrawingApod(false);
+    try {
+      const fresh = await fetchRandomNasaApod(nasaData.apod.url);
+      if (failedUrlsRef.current.has(fresh.url)) {
+        setUseLocalApodIllustration(true);
+      } else {
+        setUseLocalApodIllustration(false);
+      }
+      onUpdateApod(fresh);
+    } finally {
+      setDrawingApod(false);
+    }
   };
 
   const lowKeys = (Object.keys(resources) as ResourceKey[]).filter((k) => resources[k] < 35);
@@ -182,13 +251,35 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
       : `🚀 I completed Mission Sol-4: Guardians of Ares Base!\n🏅 Title: ${title}\n👨‍🚀 Crew: ${crewDisplay}\n🛰️ Ship: ${rocket.name} + ${orbit.name} (${missionCode})\n🔬 Science Score: ${totalScore} pts\n📊 Energy ${resources.energy}% | Life Support ${resources.lifeSupport}% | Shield ${resources.shield}% | Comms ${resources.comms}%\n\n“When space gets tough, just keep swimming! Quack!” — Can you beat my score using real NASA data?`;
 
     try {
-      await navigator.clipboard.writeText(text);
-      setCopiedChallenge(true);
-      window.setTimeout(() => setCopiedChallenge(false), 3000);
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        await navigator.clipboard.writeText(text);
+      } else {
+        throw new Error('Clipboard API unavailable');
+      }
     } catch {
-      setCopiedChallenge(true);
-      window.setTimeout(() => setCopiedChallenge(false), 3000);
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      } catch {
+        // Ignore clipboard denial cleanly
+      }
     }
+
+    setCopiedChallenge(true);
+    if (copyTimerRef.current !== null) {
+      window.clearTimeout(copyTimerRef.current);
+    }
+    copyTimerRef.current = window.setTimeout(() => {
+      copyTimerRef.current = null;
+      setCopiedChallenge(false);
+    }, 3000);
   };
 
   return (
@@ -205,7 +296,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
         <section className="pointer-events-auto space-y-4">
           <MamboPartyBanner avatarId={avatarId} lang={lang} />
 
-          <div className="rounded-2xl border border-amber-400/50 bg-white/95 dark:border-amber-500/35 dark:bg-[#10182E]/90 p-5 text-center backdrop-blur-md space-y-2.5">
+          <div className="rounded-2xl border border-amber-400/50 bg-white dark:border-amber-500/35 dark:bg-[#10182E]/95 p-5 text-center space-y-2.5">
             <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/50 bg-emerald-500/15 px-3 py-1 text-xs font-extrabold text-emerald-700 dark:text-emerald-300">
               <Sparkles className="h-3.5 w-3.5" />
               <span>
@@ -246,10 +337,10 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
         {/* Official Mission Certificate + Random NASA APOD Card */}
         <div className="pointer-events-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
           <section
-            className={`lg:col-span-7 rounded-2xl border p-6 backdrop-blur-md space-y-5 ${
+            className={`lg:col-span-7 rounded-2xl border p-6 space-y-5 ${
               isGoldVictory
-                ? 'border-amber-400 bg-white/95 dark:border-amber-400/70 dark:bg-gradient-to-br dark:from-[#17213B]/95 dark:to-[#0F172A]/95'
-                : 'border-sky-400/60 bg-white/95 dark:bg-[#10182E]/95'
+                ? 'border-amber-400 bg-white dark:border-amber-400/70 dark:bg-gradient-to-br dark:from-[#17213B] dark:to-[#0F172A]'
+                : 'border-sky-400/60 bg-white dark:bg-[#10182E]'
             }`}
           >
             <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
@@ -433,7 +524,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
           </section>
 
           {/* Random NASA APOD Memory Card */}
-          <section className="lg:col-span-5 flex flex-col justify-between rounded-2xl border border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-[#10182E]/95 p-5 backdrop-blur-md space-y-3">
+          <section className="lg:col-span-5 flex flex-col justify-between rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#10182E] p-5 space-y-3">
             <div className="space-y-1">
               <p className="text-xs font-bold text-sky-600 dark:text-sky-400">
                 {isPt
@@ -446,16 +537,28 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
             </div>
 
             <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-[#080D1A] aspect-[4/3]">
-              <img
-                src={nasaData.apod.url}
-                alt={nasaData.apod.title}
-                referrerPolicy="no-referrer"
-                onError={() => {
-                  const fallback = pickRandomVerifiedMemory(nasaData.apod.url);
-                  onUpdateApod(fallback);
-                }}
-                className="h-full w-full object-cover"
-              />
+              {useLocalApodIllustration ? (
+                <LocalMartianSpaceFallbackSvg isPt={isPt} />
+              ) : (
+                <img
+                  src={nasaData.apod.url}
+                  alt={nasaData.apod.title}
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                  onError={() => {
+                    failedUrlsRef.current.add(nasaData.apod.url);
+                    if (failedUrlsRef.current.size <= 1) {
+                      const fallback = pickRandomVerifiedMemory(nasaData.apod.url);
+                      if (!failedUrlsRef.current.has(fallback.url)) {
+                        onUpdateApod(fallback);
+                        return;
+                      }
+                    }
+                    setUseLocalApodIllustration(true);
+                  }}
+                  className="h-full w-full object-cover"
+                />
+              )}
             </div>
 
             <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 line-clamp-4">
@@ -501,7 +604,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
               playClickSound();
               onOpenInfoHub('explorer');
             }}
-            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white/95 p-5 text-left shadow-sm hover:border-sky-400 dark:border-slate-800 dark:bg-[#10182E]/95 dark:hover:border-sky-400/60 backdrop-blur-md transition-all"
+            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:border-sky-400 dark:border-slate-800 dark:bg-[#10182E] dark:hover:border-sky-400/60 transition-all"
           >
             <div className="flex items-center gap-3">
               <div className="rounded-xl bg-sky-100 p-2.5 text-sky-700 dark:bg-sky-500/15 dark:text-sky-400">
@@ -529,7 +632,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
               playClickSound();
               onOpenInfoHub('parents');
             }}
-            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white/95 p-5 text-left shadow-sm hover:border-emerald-400 dark:border-slate-800 dark:bg-[#10182E]/95 dark:hover:border-emerald-400/60 backdrop-blur-md transition-all"
+            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:border-emerald-400 dark:border-slate-800 dark:bg-[#10182E] dark:hover:border-emerald-400/60 transition-all"
           >
             <div className="flex items-center gap-3">
               <div className="rounded-xl bg-emerald-100 p-2.5 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">
@@ -555,7 +658,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
         </section>
 
         {/* Collapsible End-to-End Technical Lineage Diagram (collapsed by default) */}
-        <section className="pointer-events-auto rounded-2xl border border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-[#10182E]/95 backdrop-blur-md overflow-hidden">
+        <section className="pointer-events-auto rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#10182E] overflow-hidden">
           <button
             type="button"
             onClick={() => {

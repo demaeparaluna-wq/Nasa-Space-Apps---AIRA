@@ -6,11 +6,15 @@ export const UfoSplashVisual: React.FC = () => {
   const [blink, setBlink] = useState(false);
 
   useEffect(() => {
+    let blinkTimeout: number | null = null;
     const id = window.setInterval(() => {
       setBlink(true);
-      window.setTimeout(() => setBlink(false), 180);
+      blinkTimeout = window.setTimeout(() => setBlink(false), 180);
     }, 1800);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+      if (blinkTimeout !== null) window.clearTimeout(blinkTimeout);
+    };
   }, []);
 
   return (
@@ -75,13 +79,13 @@ export const MiniAlienTickSvg: React.FC<{
   party?: boolean;
   blink?: boolean;
   armsUp?: boolean;
-  scratchBelly?: boolean;
+  scratchHead?: boolean;
 }> = ({
   size = 54,
   party = false,
   blink = false,
   armsUp = false,
-  scratchBelly = false,
+  scratchHead = false,
 }) => (
   <svg width={size} height={size} viewBox="0 0 80 80" role="img" aria-label="Carrapato ET amigável">
     {armsUp ? (
@@ -91,7 +95,7 @@ export const MiniAlienTickSvg: React.FC<{
         strokeWidth="3.2"
         strokeLinecap="round"
       />
-    ) : scratchBelly ? (
+    ) : scratchHead ? (
       <path
         d="M22 50 L14 58 M24 58 L16 66 M56 58 L64 66"
         stroke="#22C55E"
@@ -112,6 +116,17 @@ export const MiniAlienTickSvg: React.FC<{
     <circle cx="55" cy="11" r="3" fill="#FACC15" />
     <ellipse cx="40" cy="44" rx="22" ry="20" fill="#4ADE80" stroke="#16A34A" strokeWidth="2.5" />
     <ellipse cx="40" cy="50" rx="14" ry="10" fill="#BBF7D0" fillOpacity="0.45" />
+
+    {scratchHead && (
+      <g>
+        {/* Quizzical "eita..." eyebrows */}
+        <path d="M27 32 Q32 28 36 32" fill="none" stroke="#0F172A" strokeWidth="1.9" strokeLinecap="round" />
+        <path d="M44 34 Q48 31 53 33" fill="none" stroke="#0F172A" strokeWidth="1.9" strokeLinecap="round" />
+        {/* Tiny cartoon sweat drop */}
+        <path d="M23 30 Q25.5 34 23 37 Q20.5 34 23 30 Z" fill="#7DD3FC" stroke="#0284C7" strokeWidth="0.8" />
+      </g>
+    )}
+
     {party ? (
       <g>
         <rect x="24" y="34" width="14" height="9" rx="2.5" fill="#0F172A" />
@@ -123,6 +138,16 @@ export const MiniAlienTickSvg: React.FC<{
         <line x1="28" y1="39" x2="36" y2="39" stroke="#0F172A" strokeWidth="2.5" strokeLinecap="round" />
         <line x1="44" y1="39" x2="52" y2="39" stroke="#0F172A" strokeWidth="2.5" strokeLinecap="round" />
       </g>
+    ) : scratchHead ? (
+      <g>
+        {/* Wide surprised "eita" eyes */}
+        <circle cx="32" cy="39" r="4.3" fill="#FFFFFF" stroke="#0F172A" strokeWidth="1.4" />
+        <circle cx="33" cy="39" r="2.1" fill="#0F172A" />
+        <circle cx="33.8" cy="38.1" r="0.8" fill="#FFFFFF" />
+        <circle cx="48" cy="39" r="3.4" fill="#FFFFFF" stroke="#0F172A" strokeWidth="1.4" />
+        <circle cx="48.6" cy="39.2" r="1.7" fill="#0F172A" />
+        <circle cx="49.2" cy="38.4" r="0.7" fill="#FFFFFF" />
+      </g>
     ) : (
       <g>
         <circle cx="32" cy="39" r="3.5" fill="#0F172A" />
@@ -131,17 +156,31 @@ export const MiniAlienTickSvg: React.FC<{
         <circle cx="49" cy="38" r="1.2" fill="#FFFFFF" />
       </g>
     )}
-    <path d="M34 48 Q40 53 46 48" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round" />
-    {scratchBelly && (
-      <g className="animate-et-scratch">
+
+    {scratchHead ? (
+      /* Crooked wavy "eita..." mouth */
+      <path
+        d="M33 49 Q36.5 46 40 49.5 Q43.5 52.5 47 48.5"
+        fill="none"
+        stroke="#0F172A"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    ) : (
+      <path d="M34 48 Q40 53 46 48" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round" />
+    )}
+
+    {scratchHead && (
+      <g className="animate-et-head-scratch">
         <path
-          d="M58 46 Q52 54 41 53"
+          d="M59 45 Q69 34 55 24"
           fill="none"
           stroke="#16A34A"
           strokeWidth="3.5"
           strokeLinecap="round"
         />
-        <circle cx="40" cy="53" r="3" fill="#22C55E" stroke="#16A34A" strokeWidth="1.2" />
+        <circle cx="54" cy="24" r="3.1" fill="#22C55E" stroke="#16A34A" strokeWidth="1.2" />
+        <path d="M51 21 L48 23 M52 24 L49 26" stroke="#16A34A" strokeWidth="1.3" strokeLinecap="round" />
       </g>
     )}
   </svg>
@@ -213,11 +252,15 @@ export const BackgroundEasterEggLayer: React.FC<{
   }, [screen, currentSol]);
 
   useEffect(() => {
+    let blinkTimeout: number | null = null;
     const id = window.setInterval(() => {
       setBlink(true);
-      window.setTimeout(() => setBlink(false), 180);
+      blinkTimeout = window.setTimeout(() => setBlink(false), 180);
     }, 2200);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+      if (blinkTimeout !== null) window.clearTimeout(blinkTimeout);
+    };
   }, []);
 
   if (screen === 'splash') return null;
@@ -271,12 +314,12 @@ export const BackgroundEasterEggLayer: React.FC<{
             </>
           )}
 
-          {/* HANGAR: Belly-scratching ET in bottom-left + cruising spaceship flying across sky behind */}
+          {/* HANGAR: Head-scratching "eita..." ET in bottom-left + cruising spaceship flying across sky behind */}
           {screen === 'hangar' && (
             <>
               <CruisingSaucerBackground topClass="top-20" />
               <div className="animate-bg-et-peek fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-40 dark:opacity-50">
-                <MiniAlienTickSvg size={60} blink={blink} scratchBelly />
+                <MiniAlienTickSvg size={60} blink={blink} scratchHead />
               </div>
             </>
           )}
@@ -293,12 +336,12 @@ export const BackgroundEasterEggLayer: React.FC<{
             </>
           )}
 
-          {/* COMMAND SOL 2: Spaceship cruising across background sky + Belly-scratching ET bottom-right */}
+          {/* COMMAND SOL 2: Spaceship cruising across background sky + Head-scratching "eita..." ET bottom-right */}
           {screen === 'command' && currentSol === 2 && (
             <>
               <CruisingSaucerBackground topClass="top-20" />
               <div className="animate-bg-et-peek fixed right-3 bottom-14 sm:right-8 sm:bottom-16 opacity-40 dark:opacity-50">
-                <MiniAlienTickSvg size={60} blink={blink} scratchBelly />
+                <MiniAlienTickSvg size={60} blink={blink} scratchHead />
               </div>
             </>
           )}
@@ -331,12 +374,12 @@ export const BackgroundEasterEggLayer: React.FC<{
             </>
           )}
 
-          {/* VICTORY: Belly-scratching blinking ET top-right + Cow Abduction bottom-left + Cruising saucer in starry sky */}
+          {/* VICTORY: Head-scratching "eita..." blinking ET top-right + Cow Abduction bottom-left + Cruising saucer in starry sky */}
           {screen === 'victory' && (
             <>
               <CruisingSaucerBackground topClass="top-20" />
               <div className="animate-bg-et-peek fixed right-3 top-24 sm:right-8 sm:top-28 opacity-45">
-                <MiniAlienTickSvg size={58} blink={blink} scratchBelly />
+                <MiniAlienTickSvg size={58} blink={blink} scratchHead />
               </div>
               <div className="fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-50">
                 <CowAbductionVignette gradientId="tractor-beam-victory" />
@@ -367,7 +410,7 @@ export const MamboPartyBanner: React.FC<{ avatarId: AvatarId; lang?: Language }>
   const crowdDelays = ['0s', '0.14s', '0.28s', '0.08s', '0.22s', '0.35s', '0.12s'];
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-b from-[#172342]/95 via-[#0F1830]/95 to-[#090F1E]/95 px-4 pt-6 pb-4 backdrop-blur-md">
+    <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-b from-[#172342] via-[#0F1830] to-[#090F1E] px-4 pt-6 pb-4">
       {/* Subtle spotlight beam behind Commander Quack */}
       <div
         className="pointer-events-none absolute left-1/2 top-0 h-48 w-64 -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,_rgba(251,191,36,0.22),_transparent_70%)]"

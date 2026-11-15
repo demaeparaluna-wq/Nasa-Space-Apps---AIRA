@@ -77,7 +77,7 @@ export const MissionInfoHubModal: React.FC<MissionInfoHubModalProps> = ({
 
   return (
     <div
-      className="pointer-events-auto fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+      className="pointer-events-auto fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"

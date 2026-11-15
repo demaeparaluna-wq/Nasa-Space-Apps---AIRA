@@ -27,10 +27,10 @@ export const NasaFooter: React.FC<NasaFooterProps> = ({
 
   return (
     <footer
-      className={`fixed bottom-0 inset-x-0 z-30 border-t px-3 py-1.5 text-center backdrop-blur-md transition-colors ${
+      className={`fixed bottom-0 inset-x-0 z-30 border-t px-3 py-1.5 text-center transition-colors ${
         lightSurface
-          ? 'border-slate-200 bg-white/95 text-slate-700'
-          : 'border-slate-200 bg-white/95 text-slate-700 dark:border-slate-800/90 dark:bg-[#070B16]/95 dark:text-slate-300'
+          ? 'border-slate-200 bg-white/98 text-slate-700'
+          : 'border-slate-200 bg-white/98 text-slate-700 dark:border-slate-800/90 dark:bg-[#070B16]/98 dark:text-slate-300'
       }`}
     >
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-0.5 sm:flex-row sm:gap-4">

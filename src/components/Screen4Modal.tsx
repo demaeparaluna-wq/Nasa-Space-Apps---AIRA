@@ -33,7 +33,7 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
 
     return (
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
         role="dialog"
         aria-modal="true"
       >
@@ -105,7 +105,7 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
       role="dialog"
       aria-modal="true"
     >

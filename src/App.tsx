@@ -61,6 +61,18 @@ function clampResource(val: number): number {
   return Math.max(0, Math.min(100, val));
 }
 
+function safeScrollToTop() {
+  try {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch {
+    try {
+      window.scrollTo(0, 0);
+    } catch {
+      // Ignore scroll errors in restricted containers
+    }
+  }
+}
+
 function computeInitialResources(config: HangarConfig): Resources {
   const next = { ...BASE_STARTING_RESOURCES };
   const rocket = ROCKETS.find((r) => r.id === config.rocket);
@@ -187,8 +199,8 @@ export function App() {
 
   // Auto-scroll to top / Commander Quack on every screen or Sol transition (great for mobile!)
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [screen, /* also scroll when Sol advances */]);
+    safeScrollToTop();
+  }, [screen]);
 
   // Silent NASA fetch during splash
   const [nasaData, setNasaData] = useState<NasaDataBundle>(() =>
@@ -239,7 +251,7 @@ export function App() {
 
   // Scroll to top cleanly whenever currentSol changes as well
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    safeScrollToTop();
   }, [currentSol]);
 
   const toggleMute = () => {
@@ -457,7 +469,7 @@ export function App() {
       <BackgroundEasterEggLayer screen={screen} currentSol={currentSol} />
 
       {/* Top Bar: Orange Mission Patch + Clickable Stage Nav + Language Switcher right next to Dark Mode + Audio + Menu */}
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 dark:border-slate-800/80 dark:bg-[#0B1221]/92 backdrop-blur-md">
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/98 dark:border-slate-800/80 dark:bg-[#0B1221]/98">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4 py-2.5">
           <button
             type="button"

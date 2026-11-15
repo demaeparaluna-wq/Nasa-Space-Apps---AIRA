@@ -3,17 +3,21 @@ let isMuted = false;
 
 function getCtx(): AudioContext | null {
   if (isMuted || typeof window === 'undefined') return null;
-  if (!audioCtx) {
-    const AudioContextClass =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext?: typeof AudioContext })
-        .webkitAudioContext;
-    if (AudioContextClass) {
-      audioCtx = new AudioContextClass();
+  try {
+    if (!audioCtx) {
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
+      if (AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
     }
-  }
-  if (audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume().catch(() => {});
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+  } catch {
+    return null;
   }
   return audioCtx;
 }

@@ -2,7 +2,7 @@ import { NasaApodData, NasaDataBundle, NasaFlareData } from '../types/game';
 
 const CACHE_KEY = 'quack_nasa_cache_v1';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
-const FETCH_TIMEOUT_MS = 5000;
+const FETCH_TIMEOUT_MS = 4000;
 
 const DONKI_URL =
   'https://kauai.ccmc.gsfc.nasa.gov/DONKI/WS/get/FLR?startDate=2024-05-10&endDate=2024-05-20';
@@ -119,15 +119,19 @@ function writeCache(bundle: NasaDataBundle) {
 }
 
 async function fetchWithTimeout(url: string, timeoutMs = FETCH_TIMEOUT_MS): Promise<Response | null> {
-  const controller = new AbortController();
-  const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+  if (typeof fetch !== 'function') return null;
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer =
+    controller && typeof window !== 'undefined'
+      ? window.setTimeout(() => controller.abort(), timeoutMs)
+      : null;
   try {
-    const res = await fetch(url, { signal: controller.signal });
-    window.clearTimeout(timer);
+    const res = await fetch(url, controller ? { signal: controller.signal } : undefined);
+    if (timer !== null) window.clearTimeout(timer);
     if (!res.ok) return null;
     return res;
   } catch {
-    window.clearTimeout(timer);
+    if (timer !== null) window.clearTimeout(timer);
     return null;
   }
 }

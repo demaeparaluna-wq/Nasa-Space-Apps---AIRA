@@ -466,6 +466,7 @@ export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
 
   // Draggable free position anywhere inside the viewport corners/edges
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const thinkingTimerRef = useRef<number | null>(null);
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const dragState = useRef<{
     active: boolean;
@@ -521,6 +522,9 @@ export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
       window.removeEventListener('pointermove', handleMove);
       window.removeEventListener('pointerup', handleUp);
       window.removeEventListener('resize', handleResize);
+      if (thinkingTimerRef.current !== null) {
+        window.clearTimeout(thinkingTimerRef.current);
+      }
     };
   }, []);
 
@@ -617,7 +621,12 @@ export const QuackChatWidget: React.FC<QuackChatWidgetProps> = ({
     ]);
     setIsThinking(true);
 
-    window.setTimeout(() => {
+    if (thinkingTimerRef.current !== null) {
+      window.clearTimeout(thinkingTimerRef.current);
+    }
+
+    thinkingTimerRef.current = window.setTimeout(() => {
+      thinkingTimerRef.current = null;
       const reply = generateSmartQuackReply(
         lang,
         topic,

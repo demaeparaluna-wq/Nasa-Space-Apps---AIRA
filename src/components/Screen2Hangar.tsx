@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -48,6 +48,15 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
   const [hoveredItem, setHoveredItem] = useState<InspectableKey | null>(null);
   const [pinnedItem, setPinnedItem] = useState<InspectableKey | null>(null);
   const [expandedRocketInfo, setExpandedRocketInfo] = useState<'light' | 'heavy' | null>(null);
+  const launchTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (launchTimerRef.current !== null) {
+        window.clearTimeout(launchTimerRef.current);
+      }
+    };
+  }, []);
 
   const isPt = lang === 'pt';
   const { ROCKETS, ORBITS, INSTRUMENTS } = getLocalizedMissionData(lang);
@@ -129,10 +138,14 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
   };
 
   const handleLaunch = () => {
-    if (!canLaunch) return;
+    if (!canLaunch || launching) return;
     playLaunchSound();
     setLaunching(true);
-    window.setTimeout(() => {
+    if (launchTimerRef.current !== null) {
+      window.clearTimeout(launchTimerRef.current);
+    }
+    launchTimerRef.current = window.setTimeout(() => {
+      launchTimerRef.current = null;
       setLaunching(false);
       onLaunchSuccess();
     }, 2200);
@@ -194,7 +207,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
       </div>
 
       {/* Live Physics Meters Bar */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 rounded-2xl border border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-[#10182E]/95 p-3.5 sm:p-4 backdrop-blur-sm">
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#10182E] p-3.5 sm:p-4">
         <div>
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-slate-700 dark:text-slate-300">
@@ -301,7 +314,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
       </section>
 
       {/* Step 1: Restored Full Rocket Cards */}
-      <section className="rounded-2xl border border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-[#10182E]/95 p-4 sm:p-5 backdrop-blur-sm space-y-3">
+      <section className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#10182E] p-4 sm:p-5 space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-extrabold uppercase tracking-wider text-orange-600 dark:text-orange-400">
             1. {isPt ? 'Escolha o Foguete' : 'Choose Launch Rocket'} *
@@ -416,7 +429,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
       </section>
 
       {/* Steps 2 & 3: Compact Expandable Icon Grid ONLY for Orbit & Instruments */}
-      <section className="rounded-2xl border border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-[#10182E]/95 p-4 backdrop-blur-sm space-y-4">
+      <section className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#10182E] p-4 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
           {/* Column 1: Orbit (2 compact icon tiles) */}
           <div className="md:col-span-5 space-y-2">
