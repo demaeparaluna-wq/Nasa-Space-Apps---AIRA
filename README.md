@@ -11,8 +11,8 @@
 **Team Ares Base Guardians** · *Maryangela Costa de Souza Florentin & Luna Costa Antunes*  
 Official Submission — **NASA Space Apps Challenge (2026)**
 
-- **Live Demo (Google AI Studio):** [`https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`](https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app)
-- **Source Repository:** `https://github.com/[username]/[repo-name]`
+- **Live Demo (Google AI Studio):** [`https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`](https://ares-base-guardians.ai.studio/)
+- **Source Repository:** `https://github.com/demaeparaluna-wq/Nasa-Space-Apps---Ares-Base-Guardians`
 - **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite, Per-Endpoint Circuit Breaker + `LocalFallback`) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
 
 ---
