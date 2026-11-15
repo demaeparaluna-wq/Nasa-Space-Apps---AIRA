@@ -1,11 +1,18 @@
-# Mission Sol-4: Ares Base Guardians
+# Mission Sol-4: Guardians of Ares Base
+
+![NASA Space Apps Challenge](https://img.shields.io/badge/NASA_Space_Apps-2026-0B3D91?style=for-the-badge&logo=nasa&logoColor=white)
+![React 19](https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-0F172A?style=for-the-badge&logo=tailwind-css&logoColor=38BDF8)
+![WCAG 2.1 AA](https://img.shields.io/badge/WCAG_2.1-AA_Accessible-10B981?style=for-the-badge)
+![License MIT](https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge)
 
 **Team Ares Base Guardians** · *Maryangela Costa de Souza Florentin & Luna Costa Antunes*  
 Official Submission — **NASA Space Apps Challenge (2026)**
 
-- **Live Demo:** `https://[username].github.io/mission-sol4`
-- **Source Repository:** `https://github.com/[username]/mission-sol4`
-- **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite, built & hosted via Google AI Studio + GitHub) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
+- **Live Demo (GitHub Pages):** `https://[username].github.io/[repo-name]/`
+- **Source Repository:** `https://github.com/[username]/[repo-name]`
+- **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite, Circuit-Breaker NASA Telemetry + `LocalFallback`) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
 
 ---
 
@@ -124,6 +131,34 @@ npm run lint
 npm run build
 ```
 
-### Static Deployment (GitHub Pages / Google AI Studio / Netlify / School Intranet)
-1. Run `npm run build` to generate the self-contained static `dist/` folder.
-2. Deploy `dist/` to any static host (e.g., GitHub Pages at `https://[username].github.io/mission-sol4`). No server environment variables or backend secrets are required for core gameplay.
+### GitHub Pages Automated Deployment
+
+This repository includes a pre-configured **GitHub Actions** workflow (`.github/workflows/deploy-pages.yml`) plus relative asset bundling (`base: './'` and `public/.nojekyll`):
+
+1. Push this project to your GitHub repository on the `main` branch.
+2. Open your repository on GitHub and go to **Settings → Pages**.
+3. Under **Build and deployment → Source**, select **GitHub Actions**.
+4. Every push to `main` (or manual run via **Actions → Deploy Mission Sol-4 to GitHub Pages**) automatically typechecks (`npm run lint`), builds `dist/`, and publishes your live game to `https://[username].github.io/[repo-name]/`.
+
+---
+
+## GitHub Repository Metadata, Topics & Release Tags
+
+Use these recommended fields in your GitHub repository sidebar (**About ⚙**) and releases:
+
+- **Description:**
+  `Interactive bilingual (EN-US/PT-BR) STEM Mars rescue game powered by real NASA data (DONKI, OSDR, MEDA, APOD) with circuit-breaker offline resilience and WCAG 2.1 accessibility.`
+- **Topics (Tags):**
+  `nasa`, `nasa-space-apps-challenge`, `mars`, `stem-education`, `educational-game`, `accessibility`, `wcag`, `bilingual`, `react`, `typescript`, `tailwindcss`, `vite`, `github-pages`
+- **Documentation Artifacts Included:**
+  - `docs/ARCHITECTURE.md` — System architecture, unified Mermaid.js data lineage, 24h cache schema, circuit breaker, WCAG 2.1 mapping, and tutor guardrails
+  - `docs/IMPLEMENTATION_PLAN.md` — Per-endpoint Circuit Breaker & `LocalFallback` design specification
+  - `docs/PEDAGOGICAL_GUIDE.md` — Educator classroom facilitation & STEM rubric
+  - `DEMO_SCRIPT.md` — Pitch & live walkthrough script
+
+### Creating Release Tag `v1.0.0`
+```bash
+git tag -a v1.0.0 -m "Mission Sol-4 v1.0.0 — NASA Space Apps Challenge Submission"
+git push origin v1.0.0
+```
+

@@ -1,7 +1,23 @@
 {
-  "name": "react-example",
+  "name": "mission-sol4-ares-base-guardians",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Interactive bilingual STEM Mars rescue game powered by real NASA data (DONKI, OSDR, MEDA, APOD) with WCAG 2.1 accessibility and fault-tolerant caching.",
+  "author": "Maryangela Costa de Souza Florentin & Luna Costa Antunes (Team Ares Base Guardians)",
+  "license": "MIT",
+  "keywords": [
+    "nasa",
+    "nasa-space-apps-challenge",
+    "mars",
+    "stem-education",
+    "educational-game",
+    "accessibility",
+    "wcag",
+    "react",
+    "typescript",
+    "tailwindcss",
+    "github-pages"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
