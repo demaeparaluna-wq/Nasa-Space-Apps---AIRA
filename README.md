@@ -1,7 +1,7 @@
 # Mission Sol-4: Guardians of Ares Base
 
 ![NASA Space Apps Challenge](https://img.shields.io/badge/NASA_Space_Apps-2026-0B3D91?style=for-the-badge&logo=nasa&logoColor=white)
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Google_AI_Studio-EA580C?style=for-the-badge)](https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Google_AI_Studio-EA580C?style=for-the-badge)](https://ares-base-guardians.ai.studio/)
 ![React 19](https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-0F172A?style=for-the-badge&logo=tailwind-css&logoColor=38BDF8)
