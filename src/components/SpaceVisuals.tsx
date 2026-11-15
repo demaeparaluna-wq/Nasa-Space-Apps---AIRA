@@ -1,6 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Microscope, Music, Pause, Play } from 'lucide-react';
 import { AvatarId, GameScreen, Language } from '../types/game';
 import { QuackMascot } from './QuackMascot';
+
+function detectLowPerformanceDevice(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
+  try {
+    const cores = navigator.hardwareConcurrency;
+    const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+    if (typeof cores === 'number' && cores > 0 && cores <= 4) return true;
+    if (typeof memory === 'number' && memory > 0 && memory <= 4) return true;
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+function prefersReducedMotion(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
+  }
+}
 
 export const UfoSplashVisual: React.FC = () => {
   const [blink, setBlink] = useState(false);
@@ -80,12 +103,16 @@ export const MiniAlienTickSvg: React.FC<{
   blink?: boolean;
   armsUp?: boolean;
   scratchHead?: boolean;
+  maracas?: boolean;
+  disableCssAnimation?: boolean;
 }> = ({
   size = 54,
   party = false,
   blink = false,
   armsUp = false,
   scratchHead = false,
+  maracas = false,
+  disableCssAnimation = false,
 }) => (
   <svg width={size} height={size} viewBox="0 0 80 80" role="img" aria-label="Carrapato ET amigável">
     {armsUp ? (
@@ -110,6 +137,17 @@ export const MiniAlienTickSvg: React.FC<{
         strokeLinecap="round"
       />
     )}
+
+    {maracas && (
+      <g>
+        {/* Left & Right Cuban Mambo maracas */}
+        <line x1="10" y1="26" x2="7" y2="20" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round" />
+        <ellipse cx="6" cy="17" rx="4.2" ry="5.2" transform="rotate(-20 6 17)" fill="#F97316" stroke="#FACC15" strokeWidth="1.2" />
+        <line x1="70" y1="26" x2="73" y2="20" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round" />
+        <ellipse cx="74" cy="17" rx="4.2" ry="5.2" transform="rotate(20 74 17)" fill="#FACC15" stroke="#F97316" strokeWidth="1.2" />
+      </g>
+    )}
+
     <line x1="31" y1="22" x2="26" y2="12" stroke="#4ADE80" strokeWidth="2.5" strokeLinecap="round" />
     <circle cx="25" cy="11" r="3" fill="#FACC15" />
     <line x1="49" y1="22" x2="54" y2="12" stroke="#4ADE80" strokeWidth="2.5" strokeLinecap="round" />
@@ -171,7 +209,7 @@ export const MiniAlienTickSvg: React.FC<{
     )}
 
     {scratchHead && (
-      <g className="animate-et-head-scratch">
+      <g className={disableCssAnimation ? undefined : 'animate-et-head-scratch'}>
         <path
           d="M59 45 Q69 34 55 24"
           fill="none"
@@ -186,7 +224,11 @@ export const MiniAlienTickSvg: React.FC<{
   </svg>
 );
 
-const CowAbductionVignette: React.FC<{ gradientId: string }> = ({ gradientId }) => (
+const CowAbductionVignette: React.FC<{
+  gradientId: string;
+  cowRef?: React.RefObject<SVGGElement | null>;
+  useRaf: boolean;
+}> = ({ gradientId, cowRef, useRaf }) => (
   <svg viewBox="0 0 110 120" className="w-24 h-26 sm:w-28 sm:h-30 overflow-visible">
     <defs>
       <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -195,7 +237,11 @@ const CowAbductionVignette: React.FC<{ gradientId: string }> = ({ gradientId }) 
       </linearGradient>
     </defs>
     <polygon points="34,34 76,34 98,112 12,112" fill={`url(#${gradientId})`} />
-    <g className="animate-cow-abduction" style={{ transformOrigin: '55px 78px' }}>
+    <g
+      ref={cowRef}
+      className={useRaf ? undefined : 'animate-cow-abduction'}
+      style={{ transformOrigin: '55px 78px', willChange: 'transform, opacity' }}
+    >
       <line x1="44" y1="86" x2="43" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
       <line x1="49" y1="86" x2="49" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
       <line x1="60" y1="86" x2="60" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
@@ -217,9 +263,17 @@ const CowAbductionVignette: React.FC<{ gradientId: string }> = ({ gradientId }) 
   </svg>
 );
 
-const CruisingSaucerBackground: React.FC<{ topClass?: string }> = ({ topClass = 'top-16' }) => (
+const CruisingSaucerBackground: React.FC<{
+  topClass?: string;
+  saucerRef?: React.RefObject<HTMLDivElement | null>;
+  useRaf: boolean;
+}> = ({ topClass = 'top-16', saucerRef, useRaf }) => (
   <div className={`fixed inset-x-0 ${topClass} opacity-40 dark:opacity-50`}>
-    <div className="animate-ufo-flyby inline-block">
+    <div
+      ref={saucerRef}
+      className={useRaf ? 'inline-block' : 'animate-ufo-flyby inline-block'}
+      style={{ willChange: 'transform, opacity' }}
+    >
       <svg viewBox="0 0 96 48" className="w-20 h-10 sm:w-24 sm:h-12">
         <path d="M30 22 C30 8, 66 8, 66 22 Z" fill="#BAE6FD" fillOpacity="0.75" />
         <ellipse cx="48" cy="25" rx="34" ry="9" fill="#64748B" />
@@ -235,6 +289,10 @@ const CruisingSaucerBackground: React.FC<{ topClass?: string }> = ({ topClass = 
  * Ambient Easter Eggs rendered strictly in the background scenery behind UI cards,
  * with pointer-events-none and low opacity so each screen alternates playful scenes
  * in different corners without ever obstructing clicks.
+ *
+ * On basic/low-performance hardware, continuous CSS animations are disabled and replaced
+ * by a single 30fps-throttled requestAnimationFrame loop mutating DOM transforms directly
+ * with `will-change: transform` to minimize CPU & GPU pressure.
  */
 export const BackgroundEasterEggLayer: React.FC<{
   screen: GameScreen;
@@ -242,6 +300,12 @@ export const BackgroundEasterEggLayer: React.FC<{
 }> = ({ screen, currentSol }) => {
   const [visible, setVisible] = useState(false);
   const [blink, setBlink] = useState(false);
+  const lowSpec = useMemo(() => detectLowPerformanceDevice(), []);
+
+  const saucerRef = useRef<HTMLDivElement | null>(null);
+  const cowRef = useRef<SVGGElement | null>(null);
+  const scoutUfoRef = useRef<HTMLDivElement | null>(null);
+  const etPeekRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setVisible(false);
@@ -263,7 +327,91 @@ export const BackgroundEasterEggLayer: React.FC<{
     };
   }, []);
 
+  // 30fps requestAnimationFrame driver for low-spec hardware
+  useEffect(() => {
+    if (!lowSpec || !visible || screen === 'splash' || prefersReducedMotion()) return;
+
+    let rafId = 0;
+    let startTime = 0;
+    let lastTick = 0;
+    const frameIntervalMs = 1000 / 30; // ~33.3ms cap (30fps)
+
+    const step = (now: number) => {
+      if (!startTime) startTime = now;
+      if (now - lastTick >= frameIntervalMs) {
+        lastTick = now;
+        const elapsed = (now - startTime) / 1000;
+
+        if (saucerRef.current) {
+          const cycle = (elapsed % 11) / 11;
+          const xVw = -15 + cycle * 123;
+          const yPx = Math.sin(elapsed * 1.4) * 6;
+          const alpha = cycle < 0.12 ? cycle / 0.12 : cycle > 0.88 ? (1 - cycle) / 0.12 : 1;
+          saucerRef.current.style.transform = `translate3d(${xVw.toFixed(2)}vw, ${yPx.toFixed(1)}px, 0)`;
+          saucerRef.current.style.opacity = (alpha * 0.65).toFixed(2);
+        }
+
+        if (cowRef.current) {
+          const c = (elapsed % 4.6) / 4.6;
+          let yPx = 18;
+          let scale = 1;
+          let rot = 0;
+          let alpha = 1;
+          if (c < 0.12) {
+            alpha = c / 0.12;
+            yPx = 20 - (c / 0.12) * 2;
+            rot = -3;
+          } else if (c < 0.45) {
+            const p = (c - 0.12) / 0.33;
+            yPx = 18 - p * 16;
+            scale = 1 - p * 0.08;
+            rot = -3 + p * 9;
+          } else if (c < 0.78) {
+            const p = (c - 0.45) / 0.33;
+            yPx = 2 - p * 22;
+            scale = 0.92 - p * 0.47;
+            rot = 6 - p * 16;
+            alpha = 1 - p * 0.1;
+          } else if (c < 0.9) {
+            const p = (c - 0.78) / 0.12;
+            yPx = -20 - p * 8;
+            scale = 0.45 - p * 0.3;
+            alpha = 0.9 * (1 - p);
+          } else {
+            yPx = -28;
+            scale = 0.15;
+            alpha = 0;
+          }
+          cowRef.current.style.transform = `translate3d(0, ${yPx.toFixed(1)}px, 0) scale(${scale.toFixed(2)}) rotate(${rot.toFixed(1)}deg)`;
+          cowRef.current.style.opacity = alpha.toFixed(2);
+        }
+
+        if (scoutUfoRef.current) {
+          const yPx = Math.sin(elapsed * 2.1) * 6;
+          const rot = Math.sin(elapsed * 1.6) * 3;
+          scoutUfoRef.current.style.transform = `translate3d(0, ${yPx.toFixed(1)}px, 0) rotate(${rot.toFixed(1)}deg)`;
+        }
+
+        if (etPeekRef.current) {
+          const enter = Math.min(1, elapsed / 0.8);
+          const bob = Math.sin(elapsed * 2.2) * 3;
+          const yPx = (1 - enter) * 16 + bob;
+          etPeekRef.current.style.transform = `translate3d(0, ${yPx.toFixed(1)}px, 0)`;
+        }
+      }
+
+      rafId = window.requestAnimationFrame(step);
+    };
+
+    rafId = window.requestAnimationFrame(step);
+    return () => {
+      if (rafId) window.cancelAnimationFrame(rafId);
+    };
+  }, [lowSpec, visible, screen, currentSol]);
+
   if (screen === 'splash') return null;
+
+  const useRaf = lowSpec;
 
   return (
     <div
@@ -298,10 +446,18 @@ export const BackgroundEasterEggLayer: React.FC<{
           {/* PROLOGUE: Blinking ET peeking bottom-right + tiny hovering scout UFO top-left */}
           {screen === 'prologue' && (
             <>
-              <div className="animate-bg-et-peek fixed right-3 bottom-14 sm:right-6 sm:bottom-16 opacity-40 dark:opacity-50">
-                <MiniAlienTickSvg size={58} blink={blink} />
+              <div
+                ref={etPeekRef}
+                style={{ willChange: 'transform, opacity' }}
+                className={`${useRaf ? '' : 'animate-bg-et-peek'} fixed right-3 bottom-14 sm:right-6 sm:bottom-16 opacity-40 dark:opacity-50`}
+              >
+                <MiniAlienTickSvg size={58} blink={blink} disableCssAnimation={useRaf} />
               </div>
-              <div className="animate-float-zero-g fixed left-3 top-24 sm:left-8 sm:top-28 opacity-35 dark:opacity-45">
+              <div
+                ref={scoutUfoRef}
+                style={{ willChange: 'transform' }}
+                className={`${useRaf ? '' : 'animate-float-zero-g'} fixed left-3 top-24 sm:left-8 sm:top-28 opacity-35 dark:opacity-45`}
+              >
                 <svg viewBox="0 0 80 48" className="w-16 h-10 sm:w-20 sm:h-12">
                   <polygon points="28,32 52,32 62,48 18,48" fill="#38BDF8" fillOpacity="0.16" />
                   <path d="M24 22 C24 8, 56 8, 56 22 Z" fill="#BAE6FD" fillOpacity="0.7" />
@@ -317,9 +473,13 @@ export const BackgroundEasterEggLayer: React.FC<{
           {/* HANGAR: Head-scratching "eita..." ET in bottom-left + cruising spaceship flying across sky behind */}
           {screen === 'hangar' && (
             <>
-              <CruisingSaucerBackground topClass="top-20" />
-              <div className="animate-bg-et-peek fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-40 dark:opacity-50">
-                <MiniAlienTickSvg size={60} blink={blink} scratchHead />
+              <CruisingSaucerBackground topClass="top-20" saucerRef={saucerRef} useRaf={useRaf} />
+              <div
+                ref={etPeekRef}
+                style={{ willChange: 'transform, opacity' }}
+                className={`${useRaf ? '' : 'animate-bg-et-peek'} fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-40 dark:opacity-50`}
+              >
+                <MiniAlienTickSvg size={60} blink={blink} scratchHead disableCssAnimation={useRaf} />
               </div>
             </>
           )}
@@ -327,11 +487,15 @@ export const BackgroundEasterEggLayer: React.FC<{
           {/* COMMAND SOL 1: Blinking ET top-left + Cow Abduction bottom-right */}
           {screen === 'command' && currentSol === 1 && (
             <>
-              <div className="animate-bg-et-peek fixed left-3 top-24 sm:left-8 sm:top-28 opacity-40 dark:opacity-50">
-                <MiniAlienTickSvg size={56} blink={blink} />
+              <div
+                ref={etPeekRef}
+                style={{ willChange: 'transform, opacity' }}
+                className={`${useRaf ? '' : 'animate-bg-et-peek'} fixed left-3 top-24 sm:left-8 sm:top-28 opacity-40 dark:opacity-50`}
+              >
+                <MiniAlienTickSvg size={56} blink={blink} disableCssAnimation={useRaf} />
               </div>
               <div className="fixed right-3 bottom-14 sm:right-8 sm:bottom-16 opacity-45 dark:opacity-55">
-                <CowAbductionVignette gradientId="tractor-beam-sol1" />
+                <CowAbductionVignette gradientId="tractor-beam-sol1" cowRef={cowRef} useRaf={useRaf} />
               </div>
             </>
           )}
@@ -339,9 +503,13 @@ export const BackgroundEasterEggLayer: React.FC<{
           {/* COMMAND SOL 2: Spaceship cruising across background sky + Head-scratching "eita..." ET bottom-right */}
           {screen === 'command' && currentSol === 2 && (
             <>
-              <CruisingSaucerBackground topClass="top-20" />
-              <div className="animate-bg-et-peek fixed right-3 bottom-14 sm:right-8 sm:bottom-16 opacity-40 dark:opacity-50">
-                <MiniAlienTickSvg size={60} blink={blink} scratchHead />
+              <CruisingSaucerBackground topClass="top-20" saucerRef={saucerRef} useRaf={useRaf} />
+              <div
+                ref={etPeekRef}
+                style={{ willChange: 'transform, opacity' }}
+                className={`${useRaf ? '' : 'animate-bg-et-peek'} fixed right-3 bottom-14 sm:right-8 sm:bottom-16 opacity-40 dark:opacity-50`}
+              >
+                <MiniAlienTickSvg size={60} blink={blink} scratchHead disableCssAnimation={useRaf} />
               </div>
             </>
           )}
@@ -350,10 +518,14 @@ export const BackgroundEasterEggLayer: React.FC<{
           {screen === 'command' && currentSol === 3 && (
             <>
               <div className="fixed right-3 top-24 sm:right-8 sm:top-28 opacity-45 dark:opacity-55">
-                <CowAbductionVignette gradientId="tractor-beam-sol3" />
+                <CowAbductionVignette gradientId="tractor-beam-sol3" cowRef={cowRef} useRaf={useRaf} />
               </div>
-              <div className="animate-bg-et-peek fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-40 dark:opacity-50">
-                <MiniAlienTickSvg size={58} blink={blink} />
+              <div
+                ref={etPeekRef}
+                style={{ willChange: 'transform, opacity' }}
+                className={`${useRaf ? '' : 'animate-bg-et-peek'} fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-40 dark:opacity-50`}
+              >
+                <MiniAlienTickSvg size={58} blink={blink} disableCssAnimation={useRaf} />
               </div>
             </>
           )}
@@ -361,15 +533,22 @@ export const BackgroundEasterEggLayer: React.FC<{
           {/* COMMAND SOL 4: Flag-waving ET bottom-left + Blinking ET top-right */}
           {screen === 'command' && currentSol === 4 && (
             <>
-              <div className="animate-bg-et-peek fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-45 dark:opacity-55 flex items-end gap-1">
-                <MiniAlienTickSvg size={56} party armsUp />
+              <div
+                ref={etPeekRef}
+                style={{ willChange: 'transform, opacity' }}
+                className={`${useRaf ? '' : 'animate-bg-et-peek'} fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-45 dark:opacity-55 flex items-end gap-1`}
+              >
+                <MiniAlienTickSvg size={56} party armsUp disableCssAnimation={useRaf} />
                 <svg viewBox="0 0 32 48" className="w-6 h-10 -ml-2">
                   <line x1="6" y1="6" x2="6" y2="44" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
                   <path d="M7 8 L29 13 L7 21 Z" fill="#F97316" />
                 </svg>
               </div>
-              <div className="animate-bg-et-peek fixed right-3 top-24 sm:right-8 sm:top-28 opacity-40 dark:opacity-50">
-                <MiniAlienTickSvg size={54} blink={blink} />
+              <div
+                style={{ willChange: 'transform, opacity' }}
+                className={`${useRaf ? '' : 'animate-bg-et-peek'} fixed right-3 top-24 sm:right-8 sm:top-28 opacity-40 dark:opacity-50`}
+              >
+                <MiniAlienTickSvg size={54} blink={blink} disableCssAnimation={useRaf} />
               </div>
             </>
           )}
@@ -377,12 +556,16 @@ export const BackgroundEasterEggLayer: React.FC<{
           {/* VICTORY: Head-scratching "eita..." blinking ET top-right + Cow Abduction bottom-left + Cruising saucer in starry sky */}
           {screen === 'victory' && (
             <>
-              <CruisingSaucerBackground topClass="top-20" />
-              <div className="animate-bg-et-peek fixed right-3 top-24 sm:right-8 sm:top-28 opacity-45">
-                <MiniAlienTickSvg size={58} blink={blink} scratchHead />
+              <CruisingSaucerBackground topClass="top-20" saucerRef={saucerRef} useRaf={useRaf} />
+              <div
+                ref={etPeekRef}
+                style={{ willChange: 'transform, opacity' }}
+                className={`${useRaf ? '' : 'animate-bg-et-peek'} fixed right-3 top-24 sm:right-8 sm:top-28 opacity-45`}
+              >
+                <MiniAlienTickSvg size={58} blink={blink} scratchHead disableCssAnimation={useRaf} />
               </div>
               <div className="fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-50">
-                <CowAbductionVignette gradientId="tractor-beam-victory" />
+                <CowAbductionVignette gradientId="tractor-beam-victory" cowRef={cowRef} useRaf={useRaf} />
               </div>
             </>
           )}
@@ -393,13 +576,23 @@ export const BackgroundEasterEggLayer: React.FC<{
 };
 
 /**
- * Minions-stealing-the-Moon inspired Victory Celebration Stage:
- * - Top illuminated stage platform ("Gru"): Comandante Quack in the center flanked by the 3 aligned mini astronauts
- * - Bottom cheering crowd pit: a synchronized row of cute Carrapatos ETs jumping and raising their arms!
+ * Minions + "The Mask" (Cuban Pete) inspired Victory Celebration Stage:
+ * - Top illuminated stage platform: Commander Quack in the center flanked by the 3 aligned mini astronauts
+ * - Bottom conga pit: Continuous left-to-right Mambo conga parade of Carrapatos ETs shaking maracas ("Tcha-tcha!")
+ * - Music Play/Pause button + inviting shortcut to research that "Carrapatos ETs" is a nickname for real biofilms!
  */
-export const MamboPartyBanner: React.FC<{ avatarId: AvatarId; lang?: Language }> = ({
+export const MamboPartyBanner: React.FC<{
+  avatarId: AvatarId;
+  lang?: Language;
+  mamboPlaying?: boolean;
+  onToggleMambo?: () => void;
+  onResearchBiofilms?: () => void;
+}> = ({
   avatarId,
   lang = 'en',
+  mamboPlaying = true,
+  onToggleMambo,
+  onResearchBiofilms,
 }) => {
   const crewOrder: AvatarId[] = ['astra', 'orbita', 'cometa'];
   const orderedCrew = [
@@ -407,7 +600,75 @@ export const MamboPartyBanner: React.FC<{ avatarId: AvatarId; lang?: Language }>
     ...crewOrder.filter((id) => id !== avatarId),
   ];
 
-  const crowdDelays = ['0s', '0.14s', '0.28s', '0.08s', '0.22s', '0.35s', '0.12s'];
+  const isPt = lang === 'pt';
+  const lowSpec = useMemo(() => detectLowPerformanceDevice(), []);
+  const paradeTrackRef = useRef<HTMLDivElement | null>(null);
+
+  // 30fps requestAnimationFrame conga march on low-spec devices
+  useEffect(() => {
+    if (!lowSpec || prefersReducedMotion()) return;
+    let rafId = 0;
+    let startTime = 0;
+    let lastTick = 0;
+    const frameIntervalMs = 1000 / 30;
+
+    const tick = (now: number) => {
+      if (!startTime) startTime = now;
+      if (now - lastTick >= frameIntervalMs) {
+        lastTick = now;
+        const elapsed = (now - startTime) / 1000;
+        const progress = (elapsed % 12) / 12;
+        const pct = -50 + progress * 50;
+        if (paradeTrackRef.current) {
+          paradeTrackRef.current.style.transform = `translate3d(${pct.toFixed(2)}%, 0, 0)`;
+        }
+      }
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    rafId = window.requestAnimationFrame(tick);
+    return () => {
+      if (rafId) window.cancelAnimationFrame(rafId);
+    };
+  }, [lowSpec]);
+
+  const dancers = [
+    { delay: '0s', phrase: 'Tcha-tcha!', party: true },
+    { delay: '0.16s', phrase: '', party: false },
+    { delay: '0.32s', phrase: 'Mambo! 🎶', party: true },
+    { delay: '0.12s', phrase: '', party: false },
+    { delay: '0.28s', phrase: 'Tcha-tcha-tcha!', party: true },
+    { delay: '0.2s', phrase: '', party: false },
+  ];
+
+  const renderDancerGroup = (groupKey: string) => (
+    <div key={groupKey} className="flex shrink-0 items-end gap-4 sm:gap-7 pr-4 sm:pr-7">
+      {dancers.map((d, idx) => (
+        <div
+          key={`${groupKey}-${idx}`}
+          className="relative flex flex-col items-center"
+        >
+          {d.phrase && (
+            <span className="mb-1 rounded-lg border border-amber-400/60 bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-200 whitespace-nowrap">
+              {d.phrase}
+            </span>
+          )}
+          <div
+            className={lowSpec ? undefined : 'animate-mambo'}
+            style={{ animationDelay: d.delay, willChange: 'transform' }}
+          >
+            <MiniAlienTickSvg
+              size={idx % 3 === 0 ? 52 : 46}
+              party={d.party}
+              armsUp
+              maracas
+              disableCssAnimation={lowSpec}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-b from-[#172342] via-[#0F1830] to-[#090F1E] px-4 pt-6 pb-4">
@@ -421,33 +682,45 @@ export const MamboPartyBanner: React.FC<{ avatarId: AvatarId; lang?: Language }>
       <div className="relative z-10 flex flex-col items-center">
         <div className="flex flex-wrap items-end justify-center gap-3 sm:gap-6">
           {/* Left Crew Astronaut */}
-          <div className="animate-mambo flex flex-col items-center" style={{ animationDelay: '0.15s' }}>
+          <div
+            className={`${lowSpec ? '' : 'animate-mambo'} flex flex-col items-center`}
+            style={{ animationDelay: '0.15s', willChange: 'transform' }}
+          >
             <SpaceAvatarSvg id={orderedCrew[1]} size={54} />
             <span className="mt-1 text-[11px] font-semibold text-sky-300">
-              {lang === 'pt' ? 'Piloto' : 'Pilot'}
+              {isPt ? 'Piloto' : 'Pilot'}
             </span>
           </div>
 
           {/* Center Star: Commander Quack */}
-          <div className="animate-mambo flex flex-col items-center">
+          <div
+            className={`${lowSpec ? '' : 'animate-mambo'} flex flex-col items-center`}
+            style={{ willChange: 'transform' }}
+          >
             <QuackMascot expression="celebrate" size={124} />
             <span className="mt-0.5 text-xs font-extrabold text-amber-300">
-              {lang === 'pt' ? 'Comandante Quack' : 'Commander Quack'}
+              {isPt ? 'Comandante Quack' : 'Commander Quack'}
             </span>
           </div>
 
           {/* Right Crew Astronauts (2 & 3) */}
-          <div className="animate-mambo flex flex-col items-center" style={{ animationDelay: '0.25s' }}>
+          <div
+            className={`${lowSpec ? '' : 'animate-mambo'} flex flex-col items-center`}
+            style={{ animationDelay: '0.25s', willChange: 'transform' }}
+          >
             <SpaceAvatarSvg id={orderedCrew[0]} size={54} />
             <span className="mt-1 text-[11px] font-semibold text-emerald-300">
-              {lang === 'pt' ? 'Guardião(ã)' : 'Guardian'}
+              {isPt ? 'Guardião(ã)' : 'Guardian'}
             </span>
           </div>
 
-          <div className="hidden sm:flex animate-mambo flex-col items-center" style={{ animationDelay: '0.35s' }}>
+          <div
+            className={`hidden sm:flex ${lowSpec ? '' : 'animate-mambo'} flex-col items-center`}
+            style={{ animationDelay: '0.35s', willChange: 'transform' }}
+          >
             <SpaceAvatarSvg id={orderedCrew[2]} size={54} />
             <span className="mt-1 text-[11px] font-semibold text-amber-300">
-              {lang === 'pt' ? 'Engenharia' : 'Engineering'}
+              {isPt ? 'Engenharia' : 'Engineering'}
             </span>
           </div>
         </div>
@@ -456,27 +729,60 @@ export const MamboPartyBanner: React.FC<{ avatarId: AvatarId; lang?: Language }>
         <div className="mt-2 h-2.5 w-full max-w-xl rounded-full border border-orange-400/50 bg-gradient-to-r from-slate-800 via-orange-500/70 to-slate-800 shadow-[0_0_18px_rgba(249,115,22,0.4)]" />
       </div>
 
-      {/* BOTTOM CROWD PIT: Row of Cheering Alien Ticks */}
-      <div className="relative z-10 mt-3 flex flex-col items-center">
-        <div className="flex items-end justify-center gap-1.5 sm:gap-3 overflow-hidden pt-1">
-          {crowdDelays.map((delay, idx) => (
-            <div
-              key={idx}
-              className={`animate-minion-cheer ${idx >= 5 ? 'hidden sm:block' : ''}`}
-              style={{ animationDelay: delay }}
-            >
-              <MiniAlienTickSvg
-                size={idx === 3 ? 52 : 44}
-                party={idx % 2 === 0}
-                armsUp
-              />
-            </div>
-          ))}
+      {/* BOTTOM CONGA PIT: Left-to-Right "The Mask" Cuban Pete Mambo Parade */}
+      <div className="relative z-10 mt-3 flex flex-col items-center space-y-2.5">
+        <div className="w-full overflow-hidden pt-1">
+          <div
+            ref={paradeTrackRef}
+            className={`flex w-max items-end ${lowSpec ? '' : 'animate-mambo-parade'}`}
+            style={{ willChange: 'transform' }}
+          >
+            {renderDancerGroup('track-a')}
+            {renderDancerGroup('track-b')}
+          </div>
         </div>
-        <p className="mt-1 text-[11px] font-semibold text-emerald-300">
-          {lang === 'pt'
-            ? 'Platéia da Base Ares: os Carrapatos ETs vibrando com a tripulação!'
-            : 'Ares Base Crowd: the Alien Ticks cheering wildly with the crew!'}
+
+        <div className="flex flex-wrap items-center justify-center gap-2 text-center">
+          {onToggleMambo && (
+            <button
+              type="button"
+              onClick={onToggleMambo}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-amber-400/50 bg-amber-500/20 px-3 py-1.5 text-xs font-extrabold text-amber-200 hover:bg-amber-500/30 transition-colors"
+            >
+              {mamboPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+              <Music className="h-3.5 w-3.5 text-amber-300" />
+              <span>
+                {mamboPlaying
+                  ? isPt
+                    ? 'Pausar Música Mambo'
+                    : 'Pause Mambo Music'
+                  : isPt
+                    ? 'Tocar Música Mambo'
+                    : 'Play Mambo Music'}
+              </span>
+            </button>
+          )}
+
+          {onResearchBiofilms && (
+            <button
+              type="button"
+              onClick={onResearchBiofilms}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-400/45 bg-emerald-500/15 px-3 py-1.5 text-xs font-bold text-emerald-200 hover:bg-emerald-500/25 transition-colors"
+            >
+              <Microscope className="h-3.5 w-3.5 text-emerald-300" />
+              <span>
+                {isPt
+                  ? 'Pesquisar: “Carrapatos ETs” = Biofilmes NASA ➔'
+                  : 'Research: “Alien Ticks” = NASA Biofilms ➔'}
+              </span>
+            </button>
+          )}
+        </div>
+
+        <p className="text-[11px] font-medium text-emerald-200/90 text-center max-w-2xl leading-relaxed">
+          {isPt
+            ? 'Platéia da Base Ares: fila do Mambo (tcha-tcha!) dos Carrapatos ETs — apelido divertido da missão para os biofilmes estudados pela NASA em microgravidade!'
+            : 'Ares Base Crowd: the Alien Ticks Mambo conga line (cha-cha!) — our fun mission nickname for real biofilms studied by NASA in microgravity!'}
         </p>
       </div>
     </div>

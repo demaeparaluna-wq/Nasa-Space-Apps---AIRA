@@ -22,8 +22,32 @@ function getCtx(): AudioContext | null {
   return audioCtx;
 }
 
+let mamboIntervalId: number | null = null;
+let mamboMasterGain: GainNode | null = null;
+let mamboStep = 0;
+
+export function stopMamboLoop() {
+  if (typeof window !== 'undefined' && mamboIntervalId !== null) {
+    window.clearInterval(mamboIntervalId);
+    mamboIntervalId = null;
+  }
+  if (mamboMasterGain && audioCtx) {
+    try {
+      const now = audioCtx.currentTime;
+      mamboMasterGain.gain.cancelScheduledValues(now);
+      mamboMasterGain.gain.setTargetAtTime(0.0001, now, 0.03);
+    } catch {
+      // Ignore cleanup errors
+    }
+  }
+  mamboMasterGain = null;
+}
+
 export function setSoundMuted(muted: boolean) {
   isMuted = muted;
+  if (muted) {
+    stopMamboLoop();
+  }
 }
 
 export function getSoundMuted(): boolean {
@@ -35,7 +59,8 @@ function playTone(
   duration: number,
   type: OscillatorType = 'sine',
   volume = 0.06,
-  delay = 0
+  delay = 0,
+  dest?: AudioNode
 ) {
   const ctx = getCtx();
   if (!ctx) return;
@@ -49,17 +74,83 @@ function playTone(
     osc.frequency.setValueAtTime(freq, startTime);
 
     gain.gain.setValueAtTime(0.0001, startTime);
-    gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.015);
     gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(dest || ctx.destination);
 
     osc.start(startTime);
     osc.stop(startTime + duration + 0.02);
   } catch {
     // Ignore audio errors when autoplay policy blocks oscillator
   }
+}
+
+export function startMamboLoop(): boolean {
+  if (isMuted || typeof window === 'undefined') return false;
+  const ctx = getCtx();
+  if (!ctx) return false;
+
+  if (mamboIntervalId !== null) return true;
+
+  try {
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.85, ctx.currentTime);
+    master.connect(ctx.destination);
+    mamboMasterGain = master;
+  } catch {
+    return false;
+  }
+
+  mamboStep = 0;
+
+  // 16-step Cuban Mambo ("Tcha-tcha!") groove at ~200ms per eighth-note step
+  const bassNotes = [
+    130.81, 0, 196.0, 130.81, 164.81, 0, 196.0, 220.0,
+    174.61, 0, 196.0, 174.61, 146.83, 0, 196.0, 164.81,
+  ];
+  const brassHook = [
+    392.0, 440.0, 523.25, 0, 659.25, 587.33, 523.25, 0,
+    440.0, 523.25, 659.25, 0, 783.99, 659.25, 587.33, 523.25,
+  ];
+  // Syncopated maraca "ch-ch-CHA" pulse
+  const maracaSteps = [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1];
+
+  const triggerStep = () => {
+    if (isMuted || !mamboMasterGain) {
+      stopMamboLoop();
+      return;
+    }
+    const idx = mamboStep % 16;
+    const bass = bassNotes[idx];
+    const lead = brassHook[idx];
+
+    if (bass > 0) {
+      playTone(bass, 0.16, 'triangle', 0.055, 0, mamboMasterGain);
+    }
+    if (lead > 0) {
+      playTone(lead, 0.13, 'sawtooth', 0.022, 0, mamboMasterGain);
+      playTone(lead * 1.25, 0.11, 'triangle', 0.018, 0.01, mamboMasterGain);
+    }
+    if (maracaSteps[idx]) {
+      const accent = idx % 4 === 2 || idx === 15;
+      playTone(
+        accent ? 4800 : 3600,
+        accent ? 0.045 : 0.025,
+        'triangle',
+        accent ? 0.026 : 0.014,
+        0,
+        mamboMasterGain
+      );
+    }
+
+    mamboStep = (mamboStep + 1) % 16;
+  };
+
+  triggerStep();
+  mamboIntervalId = window.setInterval(triggerStep, 200);
+  return true;
 }
 
 export function playClickSound() {

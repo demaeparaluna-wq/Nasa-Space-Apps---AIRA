@@ -826,6 +826,11 @@ export function App() {
             onOpenInfoHub={(tab) => setInfoHubTab(tab)}
             onPlayAgain={handlePlayAgain}
             onBackToHangar={handleBackToHangar}
+            muted={muted}
+            onUnmuteSound={() => {
+              setMuted(false);
+              setSoundMuted(false);
+            }}
           />
         )}
       </main>

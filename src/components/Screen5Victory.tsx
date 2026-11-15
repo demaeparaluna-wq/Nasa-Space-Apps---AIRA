@@ -31,7 +31,12 @@ import {
   ResourceKey,
   Resources,
 } from '../types/game';
-import { playClickSound, playToolPickupSound } from '../utils/sound';
+import {
+  playClickSound,
+  playToolPickupSound,
+  startMamboLoop,
+  stopMamboLoop,
+} from '../utils/sound';
 import {
   MARTIAN_CONSTELLATIONS,
   MartianObservatoryCard,
@@ -61,6 +66,8 @@ interface Screen5VictoryProps {
   onOpenInfoHub: (tab: InfoHubTab) => void;
   onPlayAgain: () => void;
   onBackToHangar: () => void;
+  muted?: boolean;
+  onUnmuteSound?: () => void;
 }
 
 const LocalMartianSpaceFallbackSvg: React.FC<{ isPt: boolean }> = ({ isPt }) => (
@@ -126,11 +133,14 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
   onOpenInfoHub,
   onPlayAgain,
   onBackToHangar,
+  muted = false,
+  onUnmuteSound,
 }) => {
   const [copiedChallenge, setCopiedChallenge] = useState(false);
   const [drawingApod, setDrawingApod] = useState(false);
   const [lineageOpen, setLineageOpen] = useState(false);
   const [useLocalApodIllustration, setUseLocalApodIllustration] = useState(false);
+  const [mamboPlaying, setMamboPlaying] = useState(() => !muted);
 
   const failedUrlsRef = useRef<Set<string>>(new Set());
   const copyTimerRef = useRef<number | null>(null);
@@ -143,12 +153,44 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
   }, [nasaData.apod.url]);
 
   useEffect(() => {
+    if (muted) {
+      setMamboPlaying(false);
+      stopMamboLoop();
+      return;
+    }
+    if (mamboPlaying) {
+      const started = startMamboLoop();
+      if (!started) setMamboPlaying(false);
+    } else {
+      stopMamboLoop();
+    }
+  }, [muted, mamboPlaying]);
+
+  useEffect(() => {
     return () => {
+      stopMamboLoop();
       if (copyTimerRef.current !== null) {
         window.clearTimeout(copyTimerRef.current);
       }
     };
   }, []);
+
+  const handleToggleMambo = () => {
+    if (muted) {
+      onUnmuteSound?.();
+      setMamboPlaying(true);
+      return;
+    }
+    setMamboPlaying((prev) => {
+      const next = !prev;
+      if (next) {
+        startMamboLoop();
+      } else {
+        stopMamboLoop();
+      }
+      return next;
+    });
+  };
 
   const isPt = lang === 'pt';
   const {
@@ -294,7 +336,16 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
       <div className="relative z-10 mx-auto max-w-5xl space-y-6 pb-[110px] pointer-events-none">
         {/* Festive Mambo Celebration Stage */}
         <section className="pointer-events-auto space-y-4">
-          <MamboPartyBanner avatarId={avatarId} lang={lang} />
+          <MamboPartyBanner
+            avatarId={avatarId}
+            lang={lang}
+            mamboPlaying={!muted && mamboPlaying}
+            onToggleMambo={handleToggleMambo}
+            onResearchBiofilms={() => {
+              playClickSound();
+              onOpenInfoHub('explorer');
+            }}
+          />
 
           <div className="rounded-2xl border border-amber-400/50 bg-white dark:border-amber-500/35 dark:bg-[#10182E]/95 p-5 text-center space-y-2.5">
             <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/50 bg-emerald-500/15 px-3 py-1 text-xs font-extrabold text-emerald-700 dark:text-emerald-300">
