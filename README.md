@@ -175,7 +175,7 @@ git push origin v1.0.0
 | **Relevance** | Bridges the gap between NASA's public open-science archives and elementary/middle-school classrooms, operating reliably on low-spec hardware, blocked cookies/incognito browsers, and offline school intranets via a per-endpoint Circuit Breaker + `LocalFallback`. |
 | **Presentation** | Includes a live deployed web app, 2-minute judge walkthrough (`DEMO_SCRIPT.md`), unified Mermaid.js data lineage (`docs/ARCHITECTURE.md`), interactive **Real Science Lab** inspector inside the app, and printable educator guides (`docs/PEDAGOGICAL_GUIDE.md`). |
 
-### 2. Judge Quickstart & Verification URLs
+### 2. Verification URLs
 
 - **Standard Live Mode (DONKI + APOD + 24h Cache):**  
   `https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`
@@ -189,5 +189,26 @@ git push origin v1.0.0
 
 - **NASA Open Data Sources Used:** NASA CCMC DONKI (`/DONKI/WS/get/FLR`), NASA Astronomy Picture of the Day (`/planetary/apod`), NASA Open Science Data Repository (`OSD-120`), and NASA Mars 2020 Perseverance `MEDA` peer-reviewed telemetry baselines.
 - **Runtime AI Disclosure:** The deployed application executes **zero runtime LLM/generative-AI API calls** and requires **no user or server API keys** (`GEMINI_API_KEY` in `.env.example` is unused at runtime). Commander Quack's bilingual tutoring engine is 100% deterministic client-side TypeScript. Google AI Studio was used during development for software engineering, documentation, and static hosting.
+
+## 📡 NASA Open Data APIs & Instrument Documentation
+* **NASA CCMC DONKI (Space Weather Database Of Notifications, Knowledge, Information):** 
+  * Used to track real-time solar flare classifications (`/FLR`), determining radiation severity in Sol 2[cite: 1, 2].
+  * [Official DONKI API Documentation](https://kauai.ccmc.gsfc.nasa.gov/DONKI/)[cite: 1, 2]
+* **NASA OSDR (Open Science Data Repository):** 
+  * Referenced for spaceflight biological data on biofilm dynamics (*OSD-120*, *Zea et al.*) and 16h/day LED photoperiod requirements for the Veggie system (*Massa et al.*) in Sols 1 and 3[cite: 1, 2].
+  * [Official NASA OSDR Portal](https://osdr.nasa.gov/)[cite: 1, 2]
+* **Mars 2020 Perseverance MEDA (Mars Environmental Dynamics Analyzer):** 
+  * Utilized for real telemetry metrics of extreme temperatures at Jezero Crater (-85°C) and Earth-Mars communication latency parameters (*Rodriguez-Manfredi et al.*)[cite: 1, 2].
+  * [NASA Mars 2020 Science / MEDA Overview](https://mars.nasa.gov/mars2020/spacecraft/instruments/meda/)[cite: 1, 2]
+* **NASA APOD (Astronomy Picture of the Day):** 
+  * Integrated on Screen 5 for the post-rescue scientific keepsake gallery[cite: 1, 2].
+  * [NASA APOD API Docs](https://github.com/nasa/apod-api)[cite: 1, 2]
+
+---
+
+## Academic & Scientific References
+* **Zea, L., et al.** — Research on microbial biofilm behavior in microgravity and spaceflight environments (basis for the Sol 1 biological crisis via OSDR)[cite: 1, 2].
+* **Massa, G. D., et al.** — Studies on LED lighting and controlled environment plant growth for life support (*Veggie project* / Sol 3)[cite: 1, 2].
+* **Rodriguez-Manfredi, J. A., et al.** — Technical papers and operational data from the MEDA weather station aboard the Perseverance Rover at Jezero Crater[cite: 1, 2].
 
 
