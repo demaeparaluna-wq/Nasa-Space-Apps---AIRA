@@ -1,95 +1,82 @@
-# Guia Pedagógico para Educadores e Famílias
+# Educator & Family Pedagogical Guide
 
-**Projeto:** Missão Sol-4: Guardiões da Base Ares (*Mission Sol-4: Guardians of Ares Base*)  
-**Público-alvo:** Crianças de 7 a 12 anos (Ensino Fundamental I e II — 2º ao 7º ano)  
-**Duração sugerida:** 20 a 35 minutos (aplicação individual, em duplas ou equipes de até 4 estudantes)  
-**Requisitos:** Qualquer navegador moderno (computador, tablet ou celular) — funciona mesmo em redes escolares básicas ou offline.
-
----
-
-## 1. Como Configurar a Turma ou Família (3 Passos Rápidos)
-
-1. **Escolha o Idioma (`EN-US` / `PT-BR`) e o Modo de Jogo no Prólogo:**
-   - **Solo:** ideal para leitura em família ou estações individuais.
-   - **Equipe (2–4 jogadores):** ativa **turnos rotativos** com papéis reais da NASA — *Líder de Missão* (Sol 1), *Ciência* (Sol 2), *Comunicações* (Sol 3) e *Sistemas* (Sol 4).
-2. **Selecione o Perfil de Leitura (Adapta todo o tom do jogo):**
-   - **Exploradores (7–9 anos):** tom lúdico, analogias visuais (*"Carrapatos ETs"*, *"cofrinho"*) e vocabulário acessível.
-   - **Estrategistas (10–12 anos):** linguagem tática com foco em dados reais (`-85°C`, `Classe X8.7`, `14 min`, `τ=0,85`) e gestão de risco.
-   - **Pais & Professores:** texto didático-científico com nomenclatura STEM precisa para mediação pedagógica em voz alta.
-3. **Objetivo Didático:** chegar ao fim dos **4 Sols** mantendo todas as 4 barras (**Energia, Suporte de Vida, Escudo e Comunicações**) em **35% ou mais** (Título Ouro) — aprendendo que **toda escolha de engenharia tem prós e contras (trade-offs)** e que **falhar faz parte do Método Científico**.
+**Mission Sol-4: Ares Base Guardians** · *Team Ares Base Guardians (Maryangela Costa de Souza Florentin & Luna Costa Antunes)*  
+**Target Learners:** Ages 7–12 (Elementary & Early Middle School) · **Session Time:** 20–35 Minutes  
+**Requirements:** Any modern web browser (desktop, Chromebook, tablet, or smartphone) — works smoothly on low-bandwidth school networks and offline.
 
 ---
 
-## 2. Mapeamento dos 4 Sols ao Método Científico e Dados NASA
+## 1. Classroom & Home Setup (3 Easy Steps)
 
-| Sol Marciano | Etapa do Método Científico | Narrativa & Fenômeno Real NASA | O que os Estudantes Aprendem |
+1. **Choose Language & Play Mode (Prologue Screen):**
+   - **Bilingual Toggle (`EN-US` / `PT-BR`):** Switch seamlessly at any time for bilingual classrooms or ESL/STEM integration.
+   - **Solo vs. Rotating Team Mode (2–4 Players):** Team Mode assigns one real space-operations role per Sol so every student leads a decision:
+     - *Sol 1 — Mission Leader:* Coordinates crew consensus.
+     - *Sol 2 — Science Officer:* Tracks Veggie Greenhouse, biofilms, and MEDA.
+     - *Sol 3 — Comms Officer:* Manages the 14-minute radio delay and orbital links.
+     - *Sol 4 — Systems Engineer:* Protects Energy, Shield, and closed-loop water.
+2. **Select the Age-Appropriate Reading Profile:**
+   - **Explorers (Ages 7–9)** vs. **Strategists (Ages 10–12)** vs. **Parents & Teachers** dynamically adapts the tone across every screen, modal, tooltip, and Commander Quack chat reply.
+3. **Define the Learning Goal:** Complete all 4 Sols with every gauge (**Energy, Life Support, Shield, Comms**) at **`35%` or higher** (*Gold Guardian* status), discovering how real NASA engineers balance physical trade-offs and learn from failure.
+
+---
+
+## 2. Age-Band Scaffolding (`7–9` vs. `10–12` vs. `Educators`)
+
+| Dimension | Explorers (Ages 7–9) | Strategists (Ages 10–12) | Parents & Teachers Mode |
 | :--- | :--- | :--- | :--- |
-| **Pré-missão: Hangar** | **Planejamento & Modelagem** | Orçamento de **$100M**, massa máxima (**1.200 kg** Leve / **2.200 kg** Pesado), Órbitas e Instrumentos (*Veggie OSD-120*, *MEDA*, *DONKI*). | Equação de foguetes (massa × empuxo), trava física e reserva financeira de emergência. |
-| **Sol 1** | **Observação** | **"Carrapatos ETs" nos dutos & Silêncio de 14 min** (*NASA OSDR Biofilmes* — Zea et al. + *Mars 2020 MEDA*). | Biofilmes microbianos em microgravidade; velocidade finita da luz (~28 min ida e volta) exige autonomia local. |
-| **Sol 2** | **Hipótese** | **Corte de orçamento & Tempestade Solar Classe X8.7** (*NASA CCMC DONKI*). | Ausência de magnetosfera em Marte, proteção por materiais ricos em hidrogênio (`H₂O`) e uso de reserva financeira. |
-| **Sol 3** | **Experimento** | **Oficina em Microgravidade + Estufa Veggie no Escuro** (*OSD-120*: 16h LED + poeira *MEDA τ=0,85*). | Coordenação motora/busca sob pressão, colaboração (pedir ajuda aos drones), fotoperíodo LED vs. atenuação solar por poeira. |
-| **Sol 4** | **Conclusão** | **Reencontro na Janela Orbital & Pouso Final** (ventos de poeira na Cratera Jezero). | Análise sistêmica, sensoriamento ativo por radar, reentrada térmica e consolidação do aprendizado no Passaporte. |
+| **Voice & Tone** | Playful, warm, story-driven analogies (*"piggy bank"*, *"space duster"*, *"Alien Ticks"*). | Tactical, mission-control briefing focused on quantitative risk & resource strategy. | Didactic STEM terminology (*ECLSS*, *payload mass*, *DSN latency*, *radiative shielding*). |
+| **Math & Physics Focus** | Addition/subtraction under `$100M` budget; simple cause-and-effect (*"heavier rocket needs more fuel"*). | Payload mass constraints (`1,200 kg` vs `2,200 kg`), percentage deltas, and Sol 2 reserve thresholds (`$15M+`). | Quantitative systems engineering, energy-vs-shield coupling, and Tsiolkovsky payload trade-offs. |
+| **NASA Data Framing** | Relatable comparisons (*"giant sneeze from the Sun"*, *"space garden with glowing LEDs"*). | Exact telemetry (`-85°C`, `Class X8.7`, `14 min` one-way, `τ = 0.85`, `16h/day` LEDs). | Citations to peer-reviewed literature (*Zea et al.*, *Massa et al.*, *Rodriguez-Manfredi et al.*). |
+| **Commander Quack Chat** | Playful duck physics puns (*"A duck jumping on Mars hops 3x higher!"*). | Tactical engineering hints referencing Δv, radiation attenuation, and lowest gauges. | Curriculum discussion anchors connecting mission telemetry to scientific principles. |
 
 ---
 
-## 3. Alinhamento com Competências STEM e Códigos da BNCC
+## 3. Mapping Each Sol to the Scientific Method & STEM Outcomes
 
-### Competências Gerais da BNCC Trabalhadas
-- **Competência 1 (Conhecimento):** utilização de dados reais da NASA para explicar fenômenos astronômicos, biológicos e tecnológicos.
-- **Competência 2 (Pensamento Científico, Crítico e Criativo):** formulação e teste de hipóteses ao comparar as Cartas A, B e C em cada Sol.
-- **Competência 4 & 5 (Comunicação e Cultura Digital):** leitura crítica de painéis de telemetria, glossário interativo e colaboração em turnos rotativos.
-- **Competência 10 (Responsabilidade e Cidadania):** tomada de decisão consciente sob escassez de recursos e valorização do pedido de ajuda no Sol 3.
-
-### Habilidades Específicas da BNCC (Ciências da Natureza & Matemática)
-| Faixa Etária | Códigos BNCC | Conexão Direta com o Jogo |
-| :--- | :--- | :--- |
-| **7–9 anos** *(2º ao 4º ano)* | **EF02CI04 · EF03CI08 · EF04CI01 · EF04CI02** | Cultivo de plantas e necessidade de luz/água (*Estufa Veggie*); observação do céu e estrelas (*Observatório de Marte*); propriedades e preservação da água e misturas (*Biofilmes nos dutos*). |
-| **10–12 anos** *(5º ao 7º ano)* | **EF05CI10 · EF05CI11 · EF06CI13 · EF07CI02 · EF07CI05** | Constelações e mapas celestes (*Deneb e Órion*); uso de instrumentos ópticos e sensores (*APOD, MEDA, DONKI*); temperatura e equilíbrio térmico (`-85°C`); geração/uso de energia elétrica e fontes renováveis (painéis solares sob poeira). |
-| **Matemática** *(Transversal)* | **EF04MA25 · EF05MA07 · EF06MA13** | Orçamento de `$100M`, soma de massa em kg (`350 + 450 + 500 = 1.300 kg`), leitura de porcentagens (`+15%`, `-20%`) e meta de equilíbrio (`≥ 35%`). |
+| Mission Stage | Scientific Method Step | NASA Phenomenon & Challenge | Core STEM Learning Outcomes |
+| :--- | :--- | :--- | :--- |
+| **Pre-Flight: Hangar** | **Engineering Design & Modeling** | Assemble Rocket (`$35M` Light / `$50M` Heavy), Orbit, and 2 Kits (`Veggie`, `MEDA`, `DONKI`) within `$100M` and payload mass limits. | Understand mass vs. thrust constraints, financial opportunity cost, and why real missions cannot "pack everything." |
+| **Sol 1** | **Observation** | Microbial **biofilms** (*"Alien Ticks"*, `NASA OSDR`) clog water pipes during `-85°C` nights and a `14-min` one-way (`28-min` RTT) radio lag. | Observe how finite light speed limits Earth teleoperation and why autonomous local action is vital in deep space. |
+| **Sol 2** | **Hypothesis** | Earth freezes spare-parts funding right as a **Class X8.7 solar flare** (`NASA DONKI`) strikes Mars, which lacks a global magnetic field. | Formulate and test protective hypotheses using hydrogen-rich water shielding (`H₂O`), electromagnetic defense, and Hangar cash reserves. |
+| **Sol 3** | **Experiment** | Zero-gravity turbulence knocks out the **Veggie Greenhouse** (`OSD-120`: `16h/day` LEDs) amid `τ = 0.85` Martian dust. Players locate 3 floating tools (**Torque Wrench, Multimeter, Kapton Tape**). | Practice spatial scanning under time pressure, socio-emotional teamwork (optional Drone UV assist for `-8% Life Support`), and energy vs. photosynthesis trade-offs. |
+| **Sol 4** | **Conclusion** | Dust storms complicate final orbital rendezvous and landing at Jezero Crater. | Synthesize multi-system trade-offs, evaluate failure diagnostics (if any bar hits `0%`), and verify evidence in the Victory Passport & Real Science Lab. |
 
 ---
 
-## 4. Roteiro Pronto para Impressão — Ficha de Missão da Turma
+## 4. Classroom Facilitation Tips & Discussion Prompts
 
-> **Dica para o Professor / Família:** imprima ou projete esta seção para que as equipes registrem suas hipóteses antes de clicar nas cartas.
+### Handling Failure Constructively (Screen 4)
+If any subsystem drops to `0%`, **celebrate the learning moment!** NASA treats anomaly diagnosis as core engineering practice. Read the failure-physics box aloud with learners, identify which trade-off drained the gauge, and let students choose **"Retry This Sol"** or **"Redesign Ship in Hangar"** to test a new hypothesis.
 
+### Post-Victory Discussion Prompts (Built into the App's Classroom Guide)
+1. **Communication Latency:** *Why does a 14-minute one-way radio delay change how engineers design Mars rovers and habitats?*  
+   *(Key concept: 28-minute round-trip latency at the speed of light makes real-time Earth joystick control impossible.)*
+2. **Engineering Constraints:** *In the Hangar, why couldn't we simply pick the Heavy Rocket plus every scientific instrument with unlimited budget?*  
+   *(Key concept: rocket mass-to-fuel penalties and real mission budget caps force engineering prioritization.)*
+3. **Multi-Purpose Regenerative Systems:** *How do clean water and Veggie lettuce solve two survival challenges at once?*  
+   *(Key concept: water provides hydration and hydrogen radiation shielding; Veggie produces fresh food and photosynthetic oxygen.)*
+
+### Quick Printable Mission Log for Students
 ```text
 ================================================================================
-         FICHA DE BORDO — MISSÃO SOL-4: GUARDIÕES DA BASE ARES (NASA)
+              MISSION LOG — MISSION SOL-4: ARES BASE GUARDIANS
 ================================================================================
-Equipe / Guardião(ã): _______________________________  Data: ____/____/2026
-Perfil usado: [ ] Exploradores (7-9)  [ ] Estrategistas (10-12)  [ ] Professores
+Crew / Student Name(s): _____________________________  Date: ____/____/2026
+Profile Selected: [ ] Explorers (7-9)  [ ] Strategists (10-12)  [ ] Educators
 
-1. PROJETO NO HANGAR (Orçamento máximo: $100M)
-   Foguete: [ ] Leve ($35M · máx 1.200 kg)   [ ] Pesado ($50M · máx 2.200 kg)
-   Órbita:  [ ] Alta de Relé (+15% Rádio)   [ ] Baixa (+15% Escudo)
-   2 Instrumentos: [ ] Veggie (450kg/$25M) [ ] MEDA (350kg/$15M) [ ] DONKI (500kg/$25M)
-   Massa Total: 350 kg (cápsula) + ______ kg = ______ kg   | Sobra: $______M
+1. HANGAR DESIGN ($100M Max Budget)
+   Rocket: [ ] Light ($35M · 1,200kg max)   [ ] Heavy ($50M · 2,200kg max)
+   Orbit:  [ ] High Relay (+15% Comms)      [ ] Low Orbit (+15% Shield)
+   2 Kits: [ ] Veggie (450kg/$25M)  [ ] MEDA (350kg/$15M)  [ ] DONKI (500kg/$25M)
+   Total Mass: 350kg (capsule) + _____kg = _____kg  | Budget Left: $_____M
 
-2. DIÁRIO DO MÉTODO CIENTÍFICO (4 SOLS)
-   • Sol 1 (Observação - Biofilmes & 14 min): Carta [ ] A  [ ] B  [ ] C
-     Por quê? _________________________________________________________________
-   • Sol 2 (Hipótese - Explosão Solar X8.7):  Carta [ ] A  [ ] B  [ ] C
-     Por quê? _________________________________________________________________
-   • Sol 3 (Experimento - Oficina + Veggie):  Carta [ ] A  [ ] B  [ ] C
-     Pediu ajuda dos drones (-8% Suporte)? [ ] Sim  [ ] Não  | Tempo: ______s
-   • Sol 4 (Conclusão - Pouso Final):         Carta [ ] A  [ ] B  [ ] C
-     Resultado: [ ] Guardião Ouro (>=35% em tudo)  [ ] Sobrevivente de Marte
-
-3. RODA DE CONVERSA FINAL (3 PERGUNTAS DISPARADORAS)
-   Q1. Por que o atraso de 14 minutos no sinal de rádio muda o projeto de bases
-       em Marte? (Dica: 28 min ida e volta à velocidade da luz -> autonomia local)
-   Q2. No Hangar, por que não podemos levar o foguete mais pesado + todos os
-       instrumentos sem limites? (Dica: relação massa x combustível x orçamento)
-   Q3. Como água e alfaces (Estufa Veggie) resolvem dois problemas ao mesmo tempo?
-       (Dica: água = hidratação + blindagem radiativa; Veggie = alimento + O2)
+2. SCIENTIFIC METHOD TRACKER (SOLS 1–4)
+   • Sol 1 (Observation — Biofilms & 14-min lag): Card [ ] A  [ ] B  [ ] C
+   • Sol 2 (Hypothesis — Class X8.7 Solar Flare): Card [ ] A  [ ] B  [ ] C
+   • Sol 3 (Experiment — Zero-G Workshop + Veggie): Card [ ] A  [ ] B  [ ] C
+     Used Drone UV Help (-8% Life Support)? [ ] Yes  [ ] No
+   • Sol 4 (Conclusion — Final Touchdown): Card [ ] A  [ ] B  [ ] C
+   • Outcome: [ ] Gold Guardian (all gauges >= 35%)  [ ] Mars Survivor
 ================================================================================
 ```
-
----
-
-## 5. Gabarito Rápido para Mediação
-
-- **Se a equipe tentar Veggie (450 kg) + DONKI (500 kg) no Foguete Leve (1.200 kg):** deixe a **Trava Física** explicar na tela (`350 + 450 + 500 = 1.300 kg > 1.200 kg`) — excelente momento prático para trabalhar soma, inequação e trade-off.
-- **Se uma barra chegar a 0%:** normalize o erro como parte da engenharia da NASA! Use a explicação física da Tela 4 para discutir o que causou a falha e clique em *"Tentar Este Sol Novamente"* ou *"Reprojetar Nave no Hangar"*.
-- **Na Tela Final (Vitória):** clique no botão **"Pesquisar: 'Carrapatos ETs' = Biofilmes NASA"** para mostrar aos alunos as referências científicas reais (*Zea et al.*, *Massa et al.*, *Rodriguez-Manfredi et al.*) e brinque de descobrir as constelações no céu estrelado de Marte (onde a estrela polar norte é **Deneb**!).
