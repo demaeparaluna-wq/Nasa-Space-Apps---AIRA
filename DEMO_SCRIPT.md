@@ -2,7 +2,8 @@
 
 **Submission Title:** Mission Sol-4: Guardians of Ares Base  
 **Team:** Ares Base Guardians (*Maryangela Costa de Souza Florentin & Luna Costa Antunes*)  
-**Live Demo:** https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app  
+**Live Demo:** https://ares-base-guardians.ai.studio/  
+**Recorded Video (YouTube):** https://youtu.be/Ou2d6JxJJrU  
 **Exact Duration:** **2:00 (120 seconds)** · **Target Pace:** ~135 WPM (clear, energetic voiceover)  
 **Language:** 100% Fluent English (`EN-US`)
 

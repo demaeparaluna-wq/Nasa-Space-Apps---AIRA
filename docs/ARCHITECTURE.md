@@ -2,7 +2,7 @@
 
 **Project:** Mission Sol-4: Guardians of Ares Base  
 **Team:** Ares Base Guardians (*Maryangela Costa de Souza Florentin & Luna Costa Antunes*)  
-**Live Demo:** https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app  
+**Live Demo:** https://ares-base-guardians.ai.studio/  
 **Submission Track:** NASA Space Apps Challenge  
 **Runtime Model:** 100% Front-End Single Page Application (React · TypeScript · Tailwind CSS · Vite)
 

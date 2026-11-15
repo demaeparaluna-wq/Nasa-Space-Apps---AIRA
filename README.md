@@ -1,7 +1,8 @@
 # Mission Sol-4: Guardians of Ares Base
 
 ![NASA Space Apps Challenge](https://img.shields.io/badge/NASA_Space_Apps-2026-0B3D91?style=for-the-badge&logo=nasa&logoColor=white)
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Google_AI_Studio-EA580C?style=for-the-badge)](https://ares-base-guardians.ai.studio/)
+[![Play Live](https://img.shields.io/badge/Play_Live-ares--base--guardians.ai.studio-EA580C?style=for-the-badge)](https://ares-base-guardians.ai.studio/)
+[![Watch Demo](https://img.shields.io/badge/Watch_Demo-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/Ou2d6JxJJrU)
 ![React 19](https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-0F172A?style=for-the-badge&logo=tailwind-css&logoColor=38BDF8)
@@ -11,8 +12,9 @@
 **Team Ares Base Guardians** · *Maryangela Costa de Souza Florentin & Luna Costa Antunes*  
 Official Submission — **NASA Space Apps Challenge (2026)**
 
-- **Live Demo (Google AI Studio):** [`https://ares-base-guardians.ai.studio`](https://ares-base-guardians.ai.studio/)
-- **Source Repository:** `https://github.com/demaeparaluna-wq/Nasa-Space-Apps---Ares-Base-Guardians`
+- **Play the Game (Google AI Studio):** [`https://ares-base-guardians.ai.studio/`](https://ares-base-guardians.ai.studio/)
+- **Watch Demo Video (YouTube):** [`https://youtu.be/Ou2d6JxJJrU`](https://youtu.be/Ou2d6JxJJrU)
+- **Source Repository (GitHub):** `https://github.com/[username]/[repo-name]`
 - **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite, Per-Endpoint Circuit Breaker + `LocalFallback`) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
 
 ---
@@ -103,13 +105,26 @@ Because **Mission Sol-4** runs as a lightweight static web app with zero per-stu
 
 ---
 
-## Product Roadmap
+## 🏆 NASA Space Apps Challenge: Evaluation Pillars Alignment
 
-| Phase | Milestone | Scope & Deliverables |
-| :--- | :--- | :--- |
-| **V1 (Delivered)** | **Mars MVP & Universal Design** | Complete 5-screen Jezero Crater simulation, `$100M` Physics Lock Hangar, 4 Scientific Method Sols + Zero-G Workshop, local anti-spoiler Quack Chat, live/cached NASA APIs (`APOD`, `DONKI`, `OSDR`, `MEDA`), and native `♿ Accessibility` suite (`Large Text`, `High Contrast & Colorblind`, `Audio Description`). |
-| **V2 (Next)** | **Artemis / Moon Expansion & Multi-Language** | New lunar South Pole survival module powered by Artemis telemetry, expanded `i18n` packs (Spanish & French alongside `EN-US` / `PT-BR`), and downloadable printable STEM classroom mission certificates. |
-| **V3 (Future)** | **Teacher Analytics & Sign Language** | Optional zero-PII local classroom session summary exporter for educators (group trade-off debrief charts) plus integrated **LIBRAS / ASL** sign-language video overlays on narration cues. |
+**Mission Sol-4: Guardians of Ares Base** was architected from day one to directly address the core NASA Space Apps evaluation criteria:
+
+1. **Impact & Relevance:** Solves a real educational and inclusion gap in STEM, bringing actual Martian telemetry (Perseverance MEDA, DONKI solar flares) directly to children and classrooms with zero friction (100% front-end, zero login).
+2. **Scientific Validity:** Employs rigorous planetary parameters (Jezero Crater `-85°C` extremes, `14-minute` communication latency, OSDR spaceflight biofilm dynamics) structured around the true Scientific Method.
+3. **Creativity & Innovation:** Combines theatrical storytelling ("Dancing Mambo" / Commander Quack), kawaii design, and real aerospace trade-offs (`$100M` budget vs. mass) in a gamified experience.
+4. **Universal Accessibility (Feasibility):** Features a native, zero-dependency accessibility framework (`♿` Large Text, High Contrast/Colorblind-Safe, and `window.speechSynthesis` audio description) ensuring blind, low-vision, and sighted students collaborate as equals.
+
+---
+
+## 🗺️ Product Roadmap (V1 to V3)
+
+* **Phase 1 (MVP — Current Release):** Core 4-Sol narrative gameplay, Hangar physics engine, live NASA open-data integration (`DONKI`, `OSDR`, `MEDA`, `APOD`) with 24h caching, Circuit Breaker resilience, and native accessibility menu.
+* **Phase 2 (Q1/Q2 2027 — Classroom Integration):**
+  * Expansion of the teacher/educator dashboard with curriculum alignment metrics (`BNCC` / NextGen Science Standards).
+  * Multi-language support expansion (Spanish and French).
+* **Phase 3 (Long-term Vision — B2G & B2B Partnerships):**
+  * Integration with planetary science museums and interactive kiosks for public science engagement.
+  * Extended reality (AR) telemetry companion mode for mobile devices.
 
 ---
 
@@ -133,9 +148,9 @@ npm run lint
 npm run build
 ```
 
-### Production Deployment (Google AI Studio)
+### Production Hosting (Google AI Studio)
 1. Run `npm run build` to generate the self-contained static `dist/` bundle.
-2. Hosted live on **Google AI Studio** at [`https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`](https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app) — zero server environment variables or backend secrets are required.
+2. Play and share the live app at [`https://ares-base-guardians.ai.studio/`](https://ares-base-guardians.ai.studio/) — zero server environment variables or backend secrets are required.
 
 ---
 
@@ -146,7 +161,7 @@ Use these recommended fields in your GitHub repository sidebar (**About ⚙**) a
 - **Description:**
   `Interactive bilingual (EN-US/PT-BR) STEM Mars rescue game powered by real NASA data (DONKI, OSDR, MEDA, APOD) with circuit-breaker offline resilience and WCAG 2.1 accessibility.`
 - **Website:**
-  `https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`
+  `https://ares-base-guardians.ai.studio/`
 - **Topics (Tags):**
   `nasa`, `nasa-space-apps-challenge`, `mars`, `stem-education`, `educational-game`, `accessibility`, `wcag`, `bilingual`, `react`, `typescript`, `tailwindcss`, `vite`
 - **Documentation Artifacts Included:**
@@ -163,52 +178,55 @@ git push origin v1.0.0
 
 ---
 
-## NASA Space Apps Challenge — Judging Criteria & Verification
+## Judge Quickstart & Transparency Disclosure
 
-### 1. Alignment with the 5 Official Judging Pillars
-
-| Judging Criterion | How *Mission Sol-4: Guardians of Ares Base* Delivers |
-| :--- | :--- |
-| **Impact** | Teaches systems engineering, the Scientific Method, and STEM literacy to **ages 7–12** with zero prior space knowledge, built-in WCAG 2.1 AA accessibility (`Large Text`, `High Contrast & Colorblind Patterns`, `EN-US/PT-BR` audio description), and zero PII collection (`COPPA` / `LGPD Kids` safe). |
-| **Creativity** | Turns dry telemetry into an emotional Mars rescue story led by **Commander Quack** (4 dynamic SVG expressions), a `$100M` mass-constrained Hangar, a Zero-G tool-scavenging workshop minigame, anti-spoiler mentoring, and a celebratory Martian Mambo & Constellation Observatory. |
-| **Validity** | Grounded 100% in real NASA data and peer-reviewed spaceflight literature: **DONKI** Class `X8.7` (`AR3664`), **OSDR `OSD-120`** (*Massa et al.*, 2017; *Zea et al.*, 2018/2020), **Mars 2020 `MEDA`** (*Rodriguez-Manfredi et al.*, 2021 — `-85°C`, `τ = 0.85`, `14-min` delay), and **NASA APOD** + Mars `25.19°` tilt (**Deneb**). |
-| **Relevance** | Bridges the gap between NASA's public open-science archives and elementary/middle-school classrooms, operating reliably on low-spec hardware, blocked cookies/incognito browsers, and offline school intranets via a per-endpoint Circuit Breaker + `LocalFallback`. |
-| **Presentation** | Includes a live deployed web app, 2-minute judge walkthrough (`DEMO_SCRIPT.md`), unified Mermaid.js data lineage (`docs/ARCHITECTURE.md`), interactive **Real Science Lab** inspector inside the app, and printable educator guides (`docs/PEDAGOGICAL_GUIDE.md`). |
-
-### 2. Verification URLs
-
-- **Standard Live Mode (DONKI + APOD + 24h Cache):**  
-  `https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app`
-- **Test Circuit Breaker & Immediate `LocalFallback` (Zero Network Requests):**  
-  `https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app/?offline=1`
-- **Test Storage-Disabled / No-Persistent-Cache Mode (RAM-Only Session Cache):**  
-  `https://ais-pre-vhpaje572ys47vhgeaald5-760915443235.us-west2.run.app/?nocache=1`
+### 1. 1-Click Judge Verification Links
+- **Play Live Mission (DONKI + APOD + 24h Cache):**
+  [`https://ares-base-guardians.ai.studio/`](https://ares-base-guardians.ai.studio/)
+- **Watch Official 2-Minute Demo Video (YouTube):**
+  [`https://youtu.be/Ou2d6JxJJrU`](https://youtu.be/Ou2d6JxJJrU)
+- **Test Circuit Breaker & Immediate `LocalFallback` (Zero Network Requests):**
+  [`https://ares-base-guardians.ai.studio/?offline=1`](https://ares-base-guardians.ai.studio/?offline=1)
+- **Test Storage-Disabled / No-Persistent-Cache Mode (RAM-Only Session Cache):**
+  [`https://ares-base-guardians.ai.studio/?nocache=1`](https://ares-base-guardians.ai.studio/?nocache=1)
 - **Anti-Spoiler Pedagogical Check:** Open **Commander Quack Chat** in Sol 1–4 and ask *"Which card should I pick?"* — the agent refuses spoilers and guides trade-off reasoning using live gauges.
 
-### 3. Open Data Attribution & AI Transparency Disclosure
-
-- **NASA Open Data Sources Used:** NASA CCMC DONKI (`/DONKI/WS/get/FLR`), NASA Astronomy Picture of the Day (`/planetary/apod`), NASA Open Science Data Repository (`OSD-120`), and NASA Mars 2020 Perseverance `MEDA` peer-reviewed telemetry baselines.
-- **Runtime AI Disclosure:** The deployed application executes **zero runtime LLM/generative-AI API calls** and requires **no user or server API keys** (`GEMINI_API_KEY` in `.env.example` is unused at runtime). Commander Quack's bilingual tutoring engine is 100% deterministic client-side TypeScript. Google AI Studio was used during development for software engineering, documentation, and static hosting.
-
-## 📡 NASA Open Data APIs & Instrument Documentation
-* **NASA CCMC DONKI (Space Weather Database Of Notifications, Knowledge, Information):** 
-  * Used to track real-time solar flare classifications (`/FLR`), determining radiation severity in Sol 2[cite: 1, 2].
-  * [Official DONKI API Documentation](https://kauai.ccmc.gsfc.nasa.gov/DONKI/)[cite: 1, 2]
-* **NASA OSDR (Open Science Data Repository):** 
-  * Referenced for spaceflight biological data on biofilm dynamics (*OSD-120*, *Zea et al.*) and 16h/day LED photoperiod requirements for the Veggie system (*Massa et al.*) in Sols 1 and 3[cite: 1, 2].
-  * [Official NASA OSDR Portal](https://osdr.nasa.gov/)[cite: 1, 2]
-* **Mars 2020 Perseverance MEDA (Mars Environmental Dynamics Analyzer):** 
-  * Utilized for real telemetry metrics of extreme temperatures at Jezero Crater (-85°C) and Earth-Mars communication latency parameters (*Rodriguez-Manfredi et al.*)[cite: 1, 2].
-  * [NASA Mars 2020 Science / MEDA Overview](https://mars.nasa.gov/mars2020/spacecraft/instruments/meda/)[cite: 1, 2]
-* **NASA APOD (Astronomy Picture of the Day):** 
-  * Integrated on Screen 5 for the post-rescue scientific keepsake gallery[cite: 1, 2].
-  * [NASA APOD API Docs](https://github.com/nasa/apod-api)[cite: 1, 2]
+### 2. Runtime AI & Open-Data Transparency Disclosure
+- **Runtime AI Disclosure:** The deployed application executes **zero runtime LLM/generative-AI API calls** and requires **no user or server API keys** (`GEMINI_API_KEY` in `.env.example` is unused at runtime). Commander Quack's bilingual tutoring engine is 100% deterministic client-side TypeScript. Google AI Studio was used during development for software engineering, documentation, and live hosting.
 
 ---
 
-## Academic & Scientific References
-* **Zea, L., et al.** — Research on microbial biofilm behavior in microgravity and spaceflight environments (basis for the Sol 1 biological crisis via OSDR)[cite: 1, 2].
-* **Massa, G. D., et al.** — Studies on LED lighting and controlled environment plant growth for life support (*Veggie project* / Sol 3)[cite: 1, 2].
-* **Rodriguez-Manfredi, J. A., et al.** — Technical papers and operational data from the MEDA weather station aboard the Perseverance Rover at Jezero Crater[cite: 1, 2].
+## 🔗 All Project Links & References
+
+### Live Game, Demo Video & Repository
+- **Play Live Game (Google AI Studio):** https://ares-base-guardians.ai.studio/
+- **Official Demo Video (YouTube):** https://youtu.be/Ou2d6JxJJrU
+- **Offline Circuit Breaker Verification Mode:** https://ares-base-guardians.ai.studio/?offline=1
+- **No-Persistent-Cache Verification Mode:** https://ares-base-guardians.ai.studio/?nocache=1
+- **GitHub Repository:** `https://github.com/[username]/[repo-name]`
+
+### NASA Open Data APIs & Official Portals
+- **NASA CCMC DONKI Portal:** https://ccmc.gsfc.nasa.gov/tools/DONKI/
+- **NASA CCMC DONKI Solar Flare API (`/FLR`):** https://kauai.ccmc.gsfc.nasa.gov/DONKI/WS/get/FLR?startDate=2024-05-10&endDate=2024-05-20
+- **NASA Astronomy Picture of the Day (APOD) Archive:** https://apod.nasa.gov/apod/
+- **NASA APOD API Endpoint:** https://api.nasa.gov/planetary/apod
+- **NASA Open Science Data Repository (OSDR Study `OSD-120`):** https://osdr.nasa.gov/bio/repo/data/studies/OSD-120
+- **NASA Mars 2020 Perseverance Mission (`MEDA`):** https://science.nasa.gov/mission/mars-2020-perseverance/
+
+### Verified NASA/JPL Curated Space Imagery (`LocalFallback`)
+- **Jezero Crater Delta (`PIA24428` — Perseverance):** https://images-assets.nasa.gov/image/PIA24428/PIA24428~medium.jpg
+- **Blue Sunset on Mars (`PIA19400` — Curiosity):** https://images-assets.nasa.gov/image/PIA19400/PIA19400~medium.jpg
+- **Mount Sharp in Gale Crater (`PIA19808` — Curiosity):** https://images-assets.nasa.gov/image/PIA19808/PIA19808~medium.jpg
+- **Valles Marineris Mosaic (`PIA00422` — Viking):** https://images-assets.nasa.gov/image/PIA00422/PIA00422~medium.jpg
+- **Orion Nebula (`PIA08653` — Hubble):** https://images-assets.nasa.gov/image/PIA08653/PIA08653~medium.jpg
+
+### Project Documentation & Typography
+- **System Architecture & Unified Mermaid Lineage:** [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
+- **Circuit Breaker & `LocalFallback` Design Spec:** [`docs/IMPLEMENTATION_PLAN.md`](./docs/IMPLEMENTATION_PLAN.md)
+- **Educator & Family Pedagogical Guide:** [`docs/PEDAGOGICAL_GUIDE.md`](./docs/PEDAGOGICAL_GUIDE.md)
+- **2-Minute Judge Demo Script:** [`DEMO_SCRIPT.md`](./DEMO_SCRIPT.md)
+- **MIT Open-Source License:** [`LICENSE`](./LICENSE)
+- **Web Typography (`Outfit`, `Plus Jakarta Sans`, `JetBrains Mono`):** https://fonts.googleapis.com/
+
 
 
