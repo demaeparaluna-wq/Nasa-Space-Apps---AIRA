@@ -1,6 +1,6 @@
 {
-  "name": "Missão Sol-4: Guardiões da Base Ares",
-  "description": "Jogo educativo espacial 100% front-end em português com o mascote Comandante Quack e dados reais da NASA (DONKI, OSDR, MEDA e APOD), criado por Maryangela Costa de Souza Florentin & Luna Costa Antunes para o NASA Space Apps Challenge.",
+  "name": "Mission Sol-4: Guardians of Ares Base",
+  "description": "100% front-end bilingual educational Mars mission game (EN-US / PT-BR) featuring Commander Quack, native accessibility tools, and real NASA data (DONKI, OSDR, MEDA, and APOD), created by Maryangela Costa de Souza Florentin & Luna Costa Antunes for the NASA Space Apps Challenge.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }
