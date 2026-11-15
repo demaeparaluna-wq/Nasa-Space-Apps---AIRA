@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertTriangle, ArrowRight, Award, RotateCcw, Wrench } from 'lucide-react';
 import { getLocalizedMissionData } from '../data/missionDataEn';
+import { getProfileToneCopy } from '../data/toneCopy';
 import { AgeProfile, Language, ModalFeedbackState, ResourceKey, Resources } from '../types/game';
 import { playClickSound } from '../utils/sound';
 import { QuackMascot } from './QuackMascot';
@@ -25,6 +26,7 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
   onBackToHangar,
 }) => {
   const isPt = lang === 'pt';
+  const tone = getProfileToneCopy(lang, ageProfile);
   const { RESOURCE_META } = getLocalizedMissionData(lang);
 
   if (modal.type === 'failure') {
@@ -42,9 +44,7 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
             <QuackMascot expression="terror" size={112} />
             <div className="text-center sm:text-left">
               <p className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-                {isPt
-                  ? `Falha Crítica · Você Perdeu o Sol ${modal.sol}`
-                  : `Critical Failure · Sol ${modal.sol} Lost`}
+                {tone.modal.failureTag(modal.sol)}
               </p>
               <h2 className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">
                 {failedMeta
@@ -56,9 +56,7 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
                     : 'Critical system failure!'}
               </h2>
               <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-                {isPt
-                  ? 'Por que falhou? Sua escolha esgotou um sistema vital. Na engenharia da NASA, analisamos a física da falha para tentar novamente!'
-                  : 'Why did it fail? Your choice drained a vital system to zero. In NASA engineering, we diagnose the physics behind the failure and try again!'}
+                {tone.modal.failureIntro}
               </p>
             </div>
           </div>
@@ -136,9 +134,9 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
           <div className="flex items-start gap-2 rounded-xl border border-amber-400 bg-amber-50 px-3.5 py-2.5 text-xs font-semibold text-amber-900 dark:border-amber-500/50 dark:bg-amber-950/50 dark:text-amber-200">
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
             <span>
-              {isPt
-                ? `Por um triz! ${dangerKeys.map((k) => `${RESOURCE_META[k].label} (${resources[k]}%)`).join(', ')} caiu abaixo de 35% por causa do custo de trade-off desta carta. Recupere os recursos no próximo Sol!`
-                : `Close call! ${dangerKeys.map((k) => `${RESOURCE_META[k].label} (${resources[k]}%)`).join(', ')} fell below 35% due to this card's trade-off cost. Recover those systems in the next Sol!`}
+              {tone.modal.closeCallPrefix}{' '}
+              {dangerKeys.map((k) => `${RESOURCE_META[k].label} (${resources[k]}%)`).join(', ')}{' '}
+              {tone.modal.closeCallSuffix}
             </span>
           </div>
         )}
@@ -162,9 +160,7 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
 
         <div className="rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-[#0B1224] p-4 space-y-2">
           <p className="text-xs font-bold text-sky-700 dark:text-sky-300">
-            {isPt
-              ? 'Por que isso aconteceu na ciência real da NASA?'
-              : 'Why did this happen in real NASA science?'}
+            {tone.modal.scienceHeading}
           </p>
           <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
             {modal.chosenCard?.scienceExplanationByProfile[ageProfile]}

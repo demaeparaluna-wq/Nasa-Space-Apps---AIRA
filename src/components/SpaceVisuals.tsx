@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Microscope, Music, Pause, Play } from 'lucide-react';
 import { AvatarId, GameScreen, Language } from '../types/game';
 import { QuackMascot } from './QuackMascot';
@@ -10,10 +10,68 @@ function detectLowPerformanceDevice(): boolean {
     const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
     if (typeof cores === 'number' && cores > 0 && cores <= 4) return true;
     if (typeof memory === 'number' && memory > 0 && memory <= 4) return true;
+
+    const perfMemory = (
+      performance as Performance & {
+        memory?: { jsHeapSizeLimit?: number; usedJSHeapSize?: number };
+      }
+    )?.memory;
+    if (perfMemory && typeof perfMemory.jsHeapSizeLimit === 'number' && perfMemory.jsHeapSizeLimit > 0) {
+      if (perfMemory.jsHeapSizeLimit <= 1_100_000_000) return true;
+      if (
+        typeof perfMemory.usedJSHeapSize === 'number' &&
+        perfMemory.usedJSHeapSize / perfMemory.jsHeapSizeLimit > 0.72
+      ) {
+        return true;
+      }
+    }
   } catch {
     return false;
   }
   return false;
+}
+
+function useAdaptiveLowPerfMode(): boolean {
+  const [lowPerf, setLowPerf] = useState<boolean>(() => detectLowPerformanceDevice());
+
+  useEffect(() => {
+    if (lowPerf || typeof window === 'undefined' || prefersReducedMotion()) return;
+
+    let rafId = 0;
+    let lastTime = 0;
+    let samples = 0;
+    let slowFrames = 0;
+    let totalDelta = 0;
+
+    const probeFrame = (now: number) => {
+      if (lastTime > 0) {
+        const delta = now - lastTime;
+        // Ignore background-tab resume spikes (>250ms)
+        if (delta < 250) {
+          samples += 1;
+          totalDelta += delta;
+          if (delta > 34) slowFrames += 1;
+        }
+      }
+      lastTime = now;
+
+      if (samples >= 14) {
+        const avgDelta = totalDelta / samples;
+        if (avgDelta > 28 || slowFrames >= 4) {
+          setLowPerf(true);
+        }
+        return;
+      }
+      rafId = window.requestAnimationFrame(probeFrame);
+    };
+
+    rafId = window.requestAnimationFrame(probeFrame);
+    return () => {
+      if (rafId) window.cancelAnimationFrame(rafId);
+    };
+  }, [lowPerf]);
+
+  return lowPerf;
 }
 
 function prefersReducedMotion(): boolean {
@@ -41,7 +99,7 @@ export const UfoSplashVisual: React.FC = () => {
   }, []);
 
   return (
-    <div className="animate-float-zero-g inline-flex flex-col items-center">
+    <div className="animate-float-zero-g inline-flex flex-col items-center" style={{ willChange: 'transform' }}>
       <svg viewBox="0 0 160 120" className="w-36 h-28 overflow-visible" role="img" aria-label="Disco voador com ET piscando">
         <polygon points="62,84 98,84 114,118 46,118" fill="#38BDF8" fillOpacity="0.16" />
         <path
@@ -209,7 +267,10 @@ export const MiniAlienTickSvg: React.FC<{
     )}
 
     {scratchHead && (
-      <g className={disableCssAnimation ? undefined : 'animate-et-head-scratch'}>
+      <g
+        className={disableCssAnimation ? undefined : 'animate-et-head-scratch'}
+        style={{ willChange: 'transform' }}
+      >
         <path
           d="M59 45 Q69 34 55 24"
           fill="none"
@@ -300,12 +361,13 @@ export const BackgroundEasterEggLayer: React.FC<{
 }> = ({ screen, currentSol }) => {
   const [visible, setVisible] = useState(false);
   const [blink, setBlink] = useState(false);
-  const lowSpec = useMemo(() => detectLowPerformanceDevice(), []);
+  const lowSpec = useAdaptiveLowPerfMode();
 
   const saucerRef = useRef<HTMLDivElement | null>(null);
   const cowRef = useRef<SVGGElement | null>(null);
   const scoutUfoRef = useRef<HTMLDivElement | null>(null);
   const etPeekRef = useRef<HTMLDivElement | null>(null);
+  const etSecondaryRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setVisible(false);
@@ -397,6 +459,13 @@ export const BackgroundEasterEggLayer: React.FC<{
           const bob = Math.sin(elapsed * 2.2) * 3;
           const yPx = (1 - enter) * 16 + bob;
           etPeekRef.current.style.transform = `translate3d(0, ${yPx.toFixed(1)}px, 0)`;
+        }
+
+        if (etSecondaryRef.current) {
+          const enter = Math.min(1, elapsed / 0.8);
+          const bob = Math.cos(elapsed * 2.1) * 3;
+          const yPx = (1 - enter) * 16 + bob;
+          etSecondaryRef.current.style.transform = `translate3d(0, ${yPx.toFixed(1)}px, 0)`;
         }
       }
 
@@ -545,6 +614,7 @@ export const BackgroundEasterEggLayer: React.FC<{
                 </svg>
               </div>
               <div
+                ref={etSecondaryRef}
                 style={{ willChange: 'transform, opacity' }}
                 className={`${useRaf ? '' : 'animate-bg-et-peek'} fixed right-3 top-24 sm:right-8 sm:top-28 opacity-40 dark:opacity-50`}
               >
@@ -601,7 +671,7 @@ export const MamboPartyBanner: React.FC<{
   ];
 
   const isPt = lang === 'pt';
-  const lowSpec = useMemo(() => detectLowPerformanceDevice(), []);
+  const lowSpec = useAdaptiveLowPerfMode();
   const paradeTrackRef = useRef<HTMLDivElement | null>(null);
 
   // 30fps requestAnimationFrame conga march on low-spec devices
@@ -633,20 +703,27 @@ export const MamboPartyBanner: React.FC<{
   }, [lowSpec]);
 
   const dancers = [
-    { delay: '0s', phrase: 'Tcha-tcha!', party: true },
+    { delay: '0s', phrase: isPt ? 'Tcha-tcha-boom!' : 'Chik-chiky-boom!', party: true },
     { delay: '0.16s', phrase: '', party: false },
-    { delay: '0.32s', phrase: 'Mambo! 🎶', party: true },
+    { delay: '0.32s', phrase: isPt ? 'Mambo em Marte! 🎶' : 'Mars Mambo! 🎶', party: true },
     { delay: '0.12s', phrase: '', party: false },
-    { delay: '0.28s', phrase: 'Tcha-tcha-tcha!', party: true },
+    { delay: '0.28s', phrase: isPt ? 'Tcha-tcha-tcha!' : 'Cha-cha-cha!', party: true },
+    { delay: '0.2s', phrase: '', party: false },
+    { delay: '0.1s', phrase: isPt ? 'Base Ares! 🚀' : 'Ares Base! 🚀', party: true },
+    { delay: '0.24s', phrase: '', party: false },
+    { delay: '0.08s', phrase: isPt ? 'Cuban Marte! 🥁' : 'Cuban Mars! 🥁', party: true },
     { delay: '0.2s', phrase: '', party: false },
   ];
 
   const renderDancerGroup = (groupKey: string) => (
-    <div key={groupKey} className="flex shrink-0 items-end gap-4 sm:gap-7 pr-4 sm:pr-7">
+    <div
+      key={groupKey}
+      className="flex shrink-0 items-end gap-5 sm:gap-6 pr-5 sm:pr-6"
+    >
       {dancers.map((d, idx) => (
         <div
           key={`${groupKey}-${idx}`}
-          className="relative flex flex-col items-center"
+          className="relative flex min-w-[84px] sm:min-w-[96px] flex-col items-center shrink-0"
         >
           {d.phrase && (
             <span className="mb-1 rounded-lg border border-amber-400/60 bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-200 whitespace-nowrap">
@@ -731,7 +808,15 @@ export const MamboPartyBanner: React.FC<{
 
       {/* BOTTOM CONGA PIT: Left-to-Right "The Mask" Cuban Pete Mambo Parade */}
       <div className="relative z-10 mt-3 flex flex-col items-center space-y-2.5">
-        <div className="w-full overflow-hidden pt-1">
+        <div className="relative w-full overflow-hidden pt-1">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-[#0C1428] to-transparent"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-[#0C1428] to-transparent"
+          />
           <div
             ref={paradeTrackRef}
             className={`flex w-max items-end ${lowSpec ? '' : 'animate-mambo-parade'}`}

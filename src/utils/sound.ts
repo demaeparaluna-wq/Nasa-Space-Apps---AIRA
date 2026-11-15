@@ -96,7 +96,7 @@ export function startMamboLoop(): boolean {
 
   try {
     const master = ctx.createGain();
-    master.gain.setValueAtTime(0.85, ctx.currentTime);
+    master.gain.setValueAtTime(0.88, ctx.currentTime);
     master.connect(ctx.destination);
     mamboMasterGain = master;
   } catch {
@@ -105,51 +105,78 @@ export function startMamboLoop(): boolean {
 
   mamboStep = 0;
 
-  // 16-step Cuban Mambo ("Tcha-tcha!") groove at ~200ms per eighth-note step
+  // 32-step "Cuban Pete" (The Mask) inspired Mars Mambo arrangement (~165ms per eighth-note step)
+  // Phrase 1 & 2: Iconic playful rumba-mambo horn hook + "Chik-chiky-boom!" turnaround
   const bassNotes = [
-    130.81, 0, 196.0, 130.81, 164.81, 0, 196.0, 220.0,
-    174.61, 0, 196.0, 174.61, 146.83, 0, 196.0, 164.81,
+    130.81, 0, 196.0, 130.81, 164.81, 196.0, 220.0, 196.0,
+    174.61, 0, 196.0, 146.83, 196.0, 0, 130.81, 0,
+    130.81, 0, 196.0, 130.81, 164.81, 196.0, 220.0, 196.0,
+    174.61, 196.0, 146.83, 196.0, 130.81, 0, 98.0, 130.81,
   ];
-  const brassHook = [
-    392.0, 440.0, 523.25, 0, 659.25, 587.33, 523.25, 0,
-    440.0, 523.25, 659.25, 0, 783.99, 659.25, 587.33, 523.25,
+
+  // Syncopated Cuban Pete brass & marimba melody
+  const melodyNotes = [
+    392.0, 392.0, 440.0, 392.0, 329.63, 261.63, 0, 329.63,
+    440.0, 440.0, 493.88, 440.0, 392.0, 329.63, 0, 0,
+    392.0, 440.0, 523.25, 587.33, 659.25, 587.33, 523.25, 0,
+    523.25, 392.0, 329.63, 0, 523.25, 392.0, 261.63, 0,
   ];
-  // Syncopated maraca "ch-ch-CHA" pulse
-  const maracaSteps = [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1];
+
+  // Classic 3-2 Cuban Son Clave pattern (2 bars of 16 eighth-notes)
+  const claveSteps = new Set([0, 3, 6, 10, 12, 16, 19, 22, 26, 28]);
+
+  // "Chik-chiky-boom!" maraca + low conga punch on turnarounds
+  const maracaSteps = [
+    1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1,
+    1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1,
+  ];
+  const boomSteps = new Set([6, 14, 22, 27, 30]);
 
   const triggerStep = () => {
     if (isMuted || !mamboMasterGain) {
       stopMamboLoop();
       return;
     }
-    const idx = mamboStep % 16;
+    const idx = mamboStep % 32;
     const bass = bassNotes[idx];
-    const lead = brassHook[idx];
+    const lead = melodyNotes[idx];
 
     if (bass > 0) {
-      playTone(bass, 0.16, 'triangle', 0.055, 0, mamboMasterGain);
+      playTone(bass, 0.14, 'triangle', 0.06, 0, mamboMasterGain);
     }
+
     if (lead > 0) {
+      // Warm brassy horn + harmonic overtone
       playTone(lead, 0.13, 'sawtooth', 0.022, 0, mamboMasterGain);
-      playTone(lead * 1.25, 0.11, 'triangle', 0.018, 0.01, mamboMasterGain);
+      playTone(lead * 1.25, 0.11, 'triangle', 0.017, 0.01, mamboMasterGain);
     }
+
+    if (claveSteps.has(idx)) {
+      playTone(1180, 0.035, 'sine', 0.032, 0, mamboMasterGain);
+    }
+
     if (maracaSteps[idx]) {
-      const accent = idx % 4 === 2 || idx === 15;
+      const isChikAccent = idx % 4 === 2 || idx % 16 >= 12;
       playTone(
-        accent ? 4800 : 3600,
-        accent ? 0.045 : 0.025,
+        isChikAccent ? 5200 : 3900,
+        isChikAccent ? 0.04 : 0.022,
         'triangle',
-        accent ? 0.026 : 0.014,
+        isChikAccent ? 0.024 : 0.013,
         0,
         mamboMasterGain
       );
     }
 
-    mamboStep = (mamboStep + 1) % 16;
+    if (boomSteps.has(idx)) {
+      // Low conga "boom!" thump
+      playTone(110, 0.12, 'sine', 0.075, 0, mamboMasterGain);
+    }
+
+    mamboStep = (mamboStep + 1) % 32;
   };
 
   triggerStep();
-  mamboIntervalId = window.setInterval(triggerStep, 200);
+  mamboIntervalId = window.setInterval(triggerStep, 165);
   return true;
 }
 

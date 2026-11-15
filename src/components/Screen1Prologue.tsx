@@ -9,6 +9,7 @@ import {
   X,
 } from 'lucide-react';
 import { getLocalizedMissionData } from '../data/missionDataEn';
+import { getProfileToneCopy } from '../data/toneCopy';
 import { AgeProfile, AvatarId, Language, PlayMode } from '../types/game';
 import { playClickSound } from '../utils/sound';
 import { GlossaryInline } from './GlossaryButton';
@@ -54,6 +55,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
 
   const { AGE_PROFILES, SPACE_AVATARS, TEAM_ROLES } = getLocalizedMissionData(lang);
   const isPt = lang === 'pt';
+  const tone = getProfileToneCopy(lang, ageProfile);
 
   const handleTeamNameChange = (idx: number, val: string) => {
     setValidationError(null);
@@ -97,7 +99,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
         <MissionPatchLogo size={116} lang={lang} />
 
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-sky-600 dark:text-sky-400">
-          {isPt ? 'O Chamado da Base Ares' : 'The Call from Ares Base'}
+          {tone.prologue.eyebrow}
         </p>
 
         <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white text-balance leading-tight">
@@ -143,23 +145,13 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
               {isPt ? 'Comandante Quack · Sol 1' : 'Commander Quack · Sol 1'}
             </span>
 
-            {isPt ? (
-              <p className="text-sm sm:text-base leading-relaxed text-slate-800 dark:text-slate-100">
-                “Quack! Alô, Terra?! Aqui é o Comandante Quack na{' '}
-                <GlossaryInline termKey="jezero" ageProfile={ageProfile} lang={lang}>
-                  Cratera Jezero
-                </GlossaryInline>{' '}
-                — onde pousou o robô Perseverance! Os sensores estão falhando, o frio vai despencar para -85°C e algo estranho está entupindo nossos dutos de água! Vocês aí no Centro de Controle da Terra precisam preparar e lançar uma nave de apoio urgente antes que a Base Ares fique sem energia!”
-              </p>
-            ) : (
-              <p className="text-sm sm:text-base leading-relaxed text-slate-800 dark:text-slate-100">
-                “Quack! Hello, Earth?! This is Commander Quack at{' '}
-                <GlossaryInline termKey="jezero" ageProfile={ageProfile} lang={lang}>
-                  Jezero Crater
-                </GlossaryInline>{' '}
-                — where the Perseverance rover landed! Sensors are glitching, temperatures are plunging to -85°C, and something strange is clogging our water pipes! You at Earth Mission Control must build and launch an urgent rescue ship before Ares Base loses all power!”
-              </p>
-            )}
+            <p className="text-sm sm:text-base leading-relaxed text-slate-800 dark:text-slate-100">
+              {tone.prologue.quackCallBeforeJezero}{' '}
+              <GlossaryInline termKey="jezero" ageProfile={ageProfile} lang={lang}>
+                {isPt ? 'Cratera Jezero' : 'Jezero Crater'}
+              </GlossaryInline>{' '}
+              {tone.prologue.quackCallAfterJezero}
+            </p>
           </div>
         </div>
       </section>
@@ -171,9 +163,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
             {isPt ? 'Identidade da Tripulação' : 'Crew Identity'}
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            {isPt
-              ? 'Preencha os dados obrigatórios abaixo para liberar o Hangar de Engenharia.'
-              : 'Fill in the required fields below to unlock the Engineering Hangar.'}
+            {tone.prologue.crewSubtitle}
           </p>
         </div>
 
@@ -420,9 +410,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
                     <strong className="text-slate-900 dark:text-white">
                       {isPt ? 'Hangar ($100M):' : 'Hangar ($100M):'}
                     </strong>{' '}
-                    {isPt
-                      ? 'Escolha Foguete, Órbita e 2 Instrumentos sem estourar o peso ou o orçamento.'
-                      : 'Pick a Rocket, an Orbit, and 2 Instruments without exceeding mass or budget limits.'}
+                    {tone.prologue.howToStep1}
                   </span>
                 </li>
                 <li className="flex gap-2.5">
@@ -431,9 +419,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
                     <strong className="text-slate-900 dark:text-white">
                       {isPt ? '4 Sols Marcianos:' : '4 Martian Sols:'}
                     </strong>{' '}
-                    {isPt
-                      ? 'Cada decisão tem prós e contras reais. Escolhas descuidadas zeram seus medidores e fazem você perder!'
-                      : 'Every choice carries real trade-offs. Reckless choices drain systems to 0% and fail the mission!'}
+                    {tone.prologue.howToStep2}
                   </span>
                 </li>
                 <li className="flex gap-2.5">
@@ -442,9 +428,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
                     <strong className="text-slate-900 dark:text-white">
                       {isPt ? 'Título Ouro:' : 'Gold Guardian:'}
                     </strong>{' '}
-                    {isPt
-                      ? 'Termine os 4 Sols com todas as 4 barras em 35% ou mais e celebre na Festa Mambo!'
-                      : 'Finish all 4 Sols with every system at 35% or higher and celebrate at the Mambo Party!'}
+                    {tone.prologue.howToStep3}
                   </span>
                 </li>
               </ol>

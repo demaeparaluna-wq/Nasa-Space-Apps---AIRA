@@ -17,6 +17,7 @@ import {
 import workshopImg from '../assets/images/mars_space_workshop_1794706252297.jpg';
 import { HANGAR_BUDGET_M, INSTRUMENTS, ROCKETS } from '../data/missionData';
 import { getLocalizedMissionData } from '../data/missionDataEn';
+import { getProfileToneCopy } from '../data/toneCopy';
 import {
   AgeProfile,
   HangarConfig,
@@ -173,6 +174,7 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
   onChooseCard,
 }) => {
   const isPt = lang === 'pt';
+  const tone = getProfileToneCopy(lang, ageProfile);
   const rocketCost =
     ROCKETS.find((r) => r.id === hangarConfig.rocket)?.costM || 35;
   const instCost = INSTRUMENTS.filter((i) =>
@@ -439,16 +441,14 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
           >
             <AlertTriangle className="h-4 w-4 shrink-0" />
             <span>
-              {isPt
-                ? 'Comandante Quack está preocupado! Um sistema caiu abaixo de 35% — se chegar a 0%, você perde a missão!'
-                : 'Commander Quack is worried! A system dropped below 35% — if any gauge hits 0%, the mission fails!'}
+              {tone.command.dangerAlert}
             </span>
           </div>
         )}
 
-        {scenario.earthTransmission && (
+        {(tone.command.earthTransmissionBySol[currentSol] || scenario.earthTransmission) && (
           <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs sm:text-sm font-medium text-amber-950 dark:border-amber-500/35 dark:bg-amber-950/35 dark:text-amber-100">
-            {scenario.earthTransmission}
+            {tone.command.earthTransmissionBySol[currentSol] || scenario.earthTransmission}
           </div>
         )}
 
@@ -464,16 +464,10 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
           >
             <span>
               {savedBudget >= 15
-                ? isPt
-                  ? `💰 Reserva do Hangar: $${savedBudget}M poupados — Carta B ganha +10% de Energia extra!`
-                  : `💰 Hangar Reserve: $${savedBudget}M saved — Card B earns +10% extra Energy!`
+                ? tone.command.reserveBonus(savedBudget)
                 : savedBudget === 0
-                  ? isPt
-                    ? '⚠️ Reserva de Emergência Zerada ($0M livres de $100M) — Carta B sem bônus extra.'
-                    : '⚠️ Emergency Reserve Empty ($0M left of $100M) — Card B gets no extra bonus.'
-                  : isPt
-                    ? `💡 Reserva do Hangar: $${savedBudget}M poupados (precisava de $15M+ para o bônus extra da Carta B).`
-                    : `💡 Hangar Reserve: $${savedBudget}M saved ($15M+ needed for Card B's extra bonus).`}
+                  ? tone.command.reserveEmpty
+                  : tone.command.reservePartial(savedBudget)}
             </span>
             <span className="font-mono-tabular rounded-md bg-white/80 dark:bg-slate-900/70 px-2 py-0.5 text-[11px]">
               ${savedBudget}M / ${HANGAR_BUDGET_M}M
@@ -533,14 +527,10 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
               <Wrench className="h-5 w-5 text-amber-500 dark:text-amber-400" />
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                  {isPt
-                    ? 'Oficina em Microgravidade: Encontre as 3 Ferramentas Perdidas!'
-                    : 'Zero-G Workshop: Find the 3 Hidden Tools!'}
+                  {tone.command.workshopTitle}
                 </h2>
                 <p className="text-xs text-slate-600 dark:text-slate-300">
-                  {isPt
-                    ? `Vasculhe a oficina da Base Ares abaixo e clique nas 3 ferramentas escondidas (${collectedTools.length}/3).`
-                    : `Search the Ares Base workshop below and click all 3 camouflaged tools (${collectedTools.length}/3).`}
+                  {tone.command.workshopSubtitle(collectedTools.length)}
                 </p>
               </div>
             </div>
@@ -672,14 +662,10 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
         <section className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              {isPt
-                ? 'Escolha Sua Ação de Engenharia (Obrigatório Escolher 1 Carta)'
-                : 'Choose Your Engineering Action (Required: Pick 1 Card)'}
+              {tone.command.chooseActionTitle}
             </h2>
             <span className="text-xs text-slate-500 dark:text-slate-400">
-              {isPt
-                ? 'Cuidado: escolhas erradas podem zerar seus sistemas!'
-                : 'Careful: reckless choices can drain your systems to 0%!'}
+              {tone.command.chooseActionWarning}
             </span>
           </div>
 
@@ -745,9 +731,7 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
                     {isPt ? 'Trade-off de Assistência · Sol 3' : 'Assistance Trade-Off · Sol 3'}
                   </p>
                   <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                    {isPt
-                      ? 'Ativar Scanner de Ajuda (-8% Suporte de Vida)?'
-                      : 'Activate Help Scanner (-8% Life Support)?'}
+                    {tone.command.helpPromptTitle}
                   </h3>
                 </div>
               </div>
@@ -762,16 +746,11 @@ export const Screen3Command: React.FC<Screen3CommandProps> = ({
             </div>
 
             <div className="rounded-xl border border-emerald-300/60 bg-emerald-50/70 dark:border-emerald-500/35 dark:bg-emerald-950/30 p-3.5 text-xs leading-relaxed text-emerald-950 dark:text-emerald-100">
-              💛{' '}
-              {isPt
-                ? 'Lembre-se: na engenharia espacial e na vida, saber a hora de pedir ajuda é muito importante! Nenhuma missão da NASA funciona sozinha.'
-                : 'Remember: in space engineering and in life, knowing when to ask for help is very important! No NASA mission succeeds alone.'}
+              💛 {tone.command.helpEncouragement}
             </div>
 
             <p className="text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-slate-200">
-              {isPt
-                ? 'Se você seguir com o pedido de ajuda, as 3 ferramentas escondidas ficarão em destaque brilhante com dicas, ao custo de -8% de Suporte de Vida (energia e oxigênio dos drones de busca). Quer receber ajuda agora ou tentar procurar mais um pouco por conta própria?'
-                : 'If you confirm help, all 3 hidden tools will light up brightly with location hints at a cost of -8% Life Support (powering the base search drones). Would you like to accept help now or try searching a little longer on your own?'}
+              {tone.command.helpBody}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-2.5">

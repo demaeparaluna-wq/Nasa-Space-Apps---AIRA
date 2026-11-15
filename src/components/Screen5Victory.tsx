@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { getLocalizedMissionData } from '../data/missionDataEn';
+import { getProfileToneCopy } from '../data/toneCopy';
 import {
   fetchRandomNasaApod,
   pickRandomVerifiedMemory,
@@ -193,6 +194,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
   };
 
   const isPt = lang === 'pt';
+  const tone = getProfileToneCopy(lang, ageProfile);
   const {
     INSTRUMENTS,
     ORBITS,
@@ -289,8 +291,8 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
         : 'Mars Survivor';
 
     const text = isPt
-      ? `🚀 Completei a Missão Sol-4: Guardiões da Base Ares!\n🏅 Título: ${title}\n👨‍🚀 Tripulação: ${crewDisplay}\n🛰️ Nave: ${rocket.name} + ${orbit.name} (${missionCode})\n🔬 Pontuação Científica: ${totalScore} pts\n📊 Energia ${resources.energy}% | Suporte ${resources.lifeSupport}% | Escudo ${resources.shield}% | Rádio ${resources.comms}%\n\n“Quando o espaço apertar, continue a nadar! Quack!” — Você consegue bater meu placar usando dados reais da NASA?`
-      : `🚀 I completed Mission Sol-4: Guardians of Ares Base!\n🏅 Title: ${title}\n👨‍🚀 Crew: ${crewDisplay}\n🛰️ Ship: ${rocket.name} + ${orbit.name} (${missionCode})\n🔬 Science Score: ${totalScore} pts\n📊 Energy ${resources.energy}% | Life Support ${resources.lifeSupport}% | Shield ${resources.shield}% | Comms ${resources.comms}%\n\n“When space gets tough, just keep swimming! Quack!” — Can you beat my score using real NASA data?`;
+      ? `🚀 Completei a Missão Sol-4: Guardiões da Base Ares!\n🏅 Título: ${title}\n👨‍🚀 Tripulação: ${crewDisplay}\n🛰️ Nave: ${rocket.name} + ${orbit.name} (${missionCode})\n🔬 Pontuação Científica: ${totalScore} pts\n📊 Energia ${resources.energy}% | Suporte ${resources.lifeSupport}% | Escudo ${resources.shield}% | Rádio ${resources.comms}%\n\n${tone.victory.shareClosing}`
+      : `🚀 I completed Mission Sol-4: Guardians of Ares Base!\n🏅 Title: ${title}\n👨‍🚀 Crew: ${crewDisplay}\n🛰️ Ship: ${rocket.name} + ${orbit.name} (${missionCode})\n🔬 Science Score: ${totalScore} pts\n📊 Energy ${resources.energy}% | Life Support ${resources.lifeSupport}% | Shield ${resources.shield}% | Comms ${resources.comms}%\n\n${tone.victory.shareClosing}`;
 
     try {
       if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
@@ -351,25 +353,17 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
             <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/50 bg-emerald-500/15 px-3 py-1 text-xs font-extrabold text-emerald-700 dark:text-emerald-300">
               <Sparkles className="h-3.5 w-3.5" />
               <span>
-                {isPt
-                  ? 'MISSÃO COMPLETA: RESGATAMOS O COMANDANTE QUACK! 🚀🦆'
-                  : 'MISSION COMPLETE: WE RESCUED COMMANDER QUACK! 🚀🦆'}
+                {tone.victory.missionCompleteTag}
               </span>
             </div>
             <h1 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white text-balance">
-              {isPt
-                ? '🎉 Resgate Concluído & Grande Festa Dançando Mambo em Marte! 🎶'
-                : '🎉 Rescue Complete & Grand Mambo Celebration on Mars! 🎶'}
+              {tone.victory.headline}
             </h1>
             <p className="text-sm sm:text-base font-medium leading-relaxed text-slate-700 dark:text-slate-200 max-w-3xl mx-auto">
-              {isPt
-                ? '“Missão completa — vocês vieram da Terra e me resgataram! Sorria e acene, e lembre-se: quando o espaço apertar, continue a nadar! Quack! Agora vamos comemorar antes de voltar para casa!”'
-                : '“Mission complete — you flew from Earth and rescued me! Smile and wave, and remember: when space gets tough, just keep swimming! Quack! Now let’s celebrate before heading home!”'}
+              {tone.victory.quackSpeech}
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {isPt
-                ? 'Comandante Quack, os Guardiões no palco e toda a platéia de Carrapatos ETs estão comemorando juntos!'
-                : 'Commander Quack, the Guardians on stage, and the whole crowd of Alien Ticks are celebrating together!'}
+              {tone.victory.crowdNote}
             </p>
           </div>
         </section>
@@ -412,16 +406,10 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
                   </h2>
                   <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
                     {isGoldVictory
-                      ? isPt
-                        ? 'Maestria em Engenharia Sistêmica: todos os 4 sistemas terminaram acima de 35%!'
-                        : 'Systems Engineering Mastery: every gauge finished at 35% or above!'
+                      ? tone.victory.goldSummary
                       : isHeroicSurvival
-                        ? isPt
-                          ? 'Sobrevivência Heroica! Veja abaixo por que algumas barras ficaram baixas e tente o Título Ouro (>35% em tudo).'
-                          : 'Heroic Survival! Check the diagnosis below to see why systems dipped and aim for Gold (>35% everywhere).'
-                        : isPt
-                          ? 'Você completou os 4 Sols! Veja abaixo o diagnóstico do que reduziu seus pontos para buscar o Título Ouro.'
-                          : 'You survived all 4 Sols! See the breakdown below on why a gauge ended under 35% so you can chase Gold.'}
+                        ? tone.victory.heroicSummary
+                        : tone.victory.survivorSummary}
                   </p>
                 </div>
               </div>
@@ -446,9 +434,7 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
                 <p className="flex items-center gap-1.5 font-extrabold text-amber-900 dark:text-amber-200">
                   <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
                   <span>
-                    {isPt
-                      ? 'Por que a missão não atingiu o Título Ouro?'
-                      : 'Why didn’t the ship earn Gold Status?'}
+                    {tone.victory.notGoldHeading}
                   </span>
                 </p>
                 <p className="leading-relaxed text-amber-950 dark:text-amber-100">
@@ -461,12 +447,8 @@ export const Screen5Victory: React.FC<Screen5VictoryProps> = ({
                       : `Your choices in ${riskyChoices.map((c) => `Sol ${c.sol} (“${c.cardTitle}”)`).join(', ')} carried steep trade-offs that drained reserves. `
                     : ''}
                   {hangarConfig.rocket === 'heavy'
-                    ? isPt
-                      ? 'Além disso, o Foguete Pesado consumiu -8% de Energia logo no lançamento e reduziu sua folga de orçamento.'
-                      : 'Also, the Heavy Rocket burned -8% Energy at liftoff and reduced spare cash for Sol 2.'
-                    : isPt
-                      ? 'Dica: tente equilibrar cartas híbridas (Carta C) e usar os bônus de Órbita/Orçamento no Hangar!'
-                      : 'Tip: balance hybrid options (Card C) and combine Hangar Orbit/Budget bonuses!'}
+                    ? tone.victory.notGoldHeavyTip
+                    : tone.victory.notGoldGeneralTip}
                 </p>
               </div>
             )}

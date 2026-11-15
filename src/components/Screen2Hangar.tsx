@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { BASE_CAPSULE_MASS_KG, HANGAR_BUDGET_M } from '../data/missionData';
 import { getLocalizedMissionData } from '../data/missionDataEn';
+import { getProfileToneCopy } from '../data/toneCopy';
 import { AgeProfile, HangarConfig, InstrumentId, Language } from '../types/game';
 import { playClickSound, playLaunchSound } from '../utils/sound';
 import { GlossaryInline } from './GlossaryButton';
@@ -59,6 +60,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
   }, []);
 
   const isPt = lang === 'pt';
+  const tone = getProfileToneCopy(lang, ageProfile);
   const { ROCKETS, ORBITS, INSTRUMENTS } = getLocalizedMissionData(lang);
 
   const selectedRocket = ROCKETS.find((r) => r.id === config.rocket) || null;
@@ -89,36 +91,36 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
       category: isPt ? 'Órbita' : 'Orbit',
       title: ORBITS[0].name,
       specs: ORBITS[0].bonusLabel,
-      summary: ORBITS[0].summary,
-      whatIsIt: ORBITS[0].whatIsIt,
+      summary: tone.hangar.orbits.high.summary,
+      whatIsIt: tone.hangar.orbits.high.whatIsIt,
     },
     'orbit:low': {
       category: isPt ? 'Órbita' : 'Orbit',
       title: ORBITS[1].name,
       specs: ORBITS[1].bonusLabel,
-      summary: ORBITS[1].summary,
-      whatIsIt: ORBITS[1].whatIsIt,
+      summary: tone.hangar.orbits.low.summary,
+      whatIsIt: tone.hangar.orbits.low.whatIsIt,
     },
     'inst:veggie': {
       category: isPt ? 'Instrumento' : 'Instrument',
       title: INSTRUMENTS[0].name,
       specs: `${INSTRUMENTS[0].massKg} kg · $${INSTRUMENTS[0].costM}M · +${INSTRUMENTS[0].scienceBonus} ${isPt ? 'Ciência' : 'Science'} · +15% ${isPt ? 'Suporte' : 'Life Sup.'}`,
       summary: INSTRUMENTS[0].nasaRef,
-      whatIsIt: INSTRUMENTS[0].whatIsIt,
+      whatIsIt: tone.hangar.instruments.veggie.whatIsIt,
     },
     'inst:meda': {
       category: isPt ? 'Instrumento' : 'Instrument',
       title: INSTRUMENTS[1].name,
       specs: `${INSTRUMENTS[1].massKg} kg · $${INSTRUMENTS[1].costM}M · +${INSTRUMENTS[1].scienceBonus} ${isPt ? 'Ciência' : 'Science'} · +10% ${isPt ? 'Energia' : 'Energy'}, +5% ${isPt ? 'Rádio' : 'Comms'}`,
       summary: INSTRUMENTS[1].nasaRef,
-      whatIsIt: INSTRUMENTS[1].whatIsIt,
+      whatIsIt: tone.hangar.instruments.meda.whatIsIt,
     },
     'inst:donki': {
       category: isPt ? 'Instrumento' : 'Instrument',
       title: INSTRUMENTS[2].name,
       specs: `${INSTRUMENTS[2].massKg} kg · $${INSTRUMENTS[2].costM}M · +${INSTRUMENTS[2].scienceBonus} ${isPt ? 'Ciência' : 'Science'} · +15% ${isPt ? 'Escudo' : 'Shield'}`,
       summary: INSTRUMENTS[2].nasaRef,
-      whatIsIt: INSTRUMENTS[2].whatIsIt,
+      whatIsIt: tone.hangar.instruments.donki.whatIsIt,
     },
   };
 
@@ -186,9 +188,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
             {isPt ? 'Hangar de Engenharia · Resgate Base Ares' : 'Engineering Hangar · Ares Base Rescue'}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            {isPt
-              ? 'Monte o foguete de suprimentos e resgate que decolará da Terra rumo à Cratera Jezero!'
-              : 'Assemble the supply & rescue rocket launching from Earth to Jezero Crater!'}
+            {tone.hangar.subtitle}
           </p>
         </div>
       </div>
@@ -198,11 +198,9 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
         <Rocket className="h-4 w-4 shrink-0 text-orange-600 dark:text-orange-400 mt-0.5" />
         <p>
           <strong className="font-extrabold">
-            {isPt ? 'Kits Avançados de Reforço:' : 'Advanced Booster Kits:'}
+            {tone.hangar.boosterTitle}
           </strong>{' '}
-          {isPt
-            ? 'Os 2 instrumentos escolhidos (entre Estufa Veggie OSDR OSD-120, Estação MEDA Perseverance e Escudo/Antena DONKI) embarcam neste foguete para turbinar os módulos já instalados na Base Ares, dando bônus reais nas barras!'
-            : 'Your 2 chosen instruments (Veggie OSDR OSD-120, MEDA Perseverance, or DONKI Shield/Antenna) ride aboard this rocket as upgrade kits to supercharge existing Ares Base modules with real starting resource bonuses!'}
+          {tone.hangar.boosterBody}
         </p>
       </div>
 
@@ -376,7 +374,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
                   </div>
 
                   <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-200">
-                    {rocket.summary}
+                    {tone.hangar.rockets[rocket.id].summary}
                   </p>
 
                   <div className="flex flex-wrap items-center gap-2 text-[11px]">
@@ -390,7 +388,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
                           : '+5% Shield · -8% Energy'}
                     </span>
                     <span className="text-orange-700 dark:text-orange-300 font-semibold">
-                      ⚖️ {rocket.tradeoffNote}
+                      ⚖️ {tone.hangar.rockets[rocket.id].tradeoffNote}
                     </span>
                   </div>
                 </button>
@@ -419,7 +417,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
 
                 {infoOpen && (
                   <p className="mt-2 rounded-xl border border-sky-200 bg-sky-50/80 px-3 py-2 text-xs leading-relaxed text-slate-700 dark:border-sky-500/30 dark:bg-sky-950/30 dark:text-slate-200">
-                    {rocket.whatIsIt}
+                    {tone.hangar.rockets[rocket.id].whatIsIt}
                   </p>
                 )}
               </div>
@@ -631,9 +629,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
               <span className="flex items-center gap-1.5">
                 <Info className="h-3.5 w-3.5 text-sky-500 shrink-0" />
                 <span>
-                  {isPt
-                    ? 'Passe o mouse ou clique em qualquer ícone acima para expandir a explicação técnica e o trade-off.'
-                    : 'Hover or tap any icon above to expand its technical explanation and engineering trade-off.'}
+                  {tone.hangar.inspectPlaceholder}
                 </span>
               </span>
               <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
@@ -653,12 +649,8 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
             <div className="space-y-1">
               <p className="font-bold text-rose-700 dark:text-rose-300">
                 {isMissingSelection
-                  ? isPt
-                    ? 'Complete Todas as Escolhas Obrigatórias!'
-                    : 'Complete All Required Selections!'
-                  : isPt
-                    ? 'Trava Física de Engenharia Ativada — Por que não decola?'
-                    : 'Engineering Physics Lock — Why Can’t We Launch?'}
+                  ? tone.hangar.missingTitle
+                  : tone.hangar.physicsLockTitle}
               </p>
               {isMissingSelection && (
                 <p>
@@ -680,9 +672,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
                       ? `Excesso de Massa (${totalMassKg} kg > ${selectedRocket.maxMassKg} kg):`
                       : `Mass Overload (${totalMassKg} kg > ${selectedRocket.maxMassKg} kg):`}
                   </strong>{' '}
-                  {isPt
-                    ? `O ${selectedRocket.name} não tem empuxo para erguer Veggie (450 kg) + DONKI (500 kg) + cápsula (350 kg = 1.300 kg). Troque um instrumento pelo MEDA (350 kg) ou mude para o Foguete Pesado ($50M, aceita até 2.200 kg com -8% Energia)!`
-                    : `The ${selectedRocket.name} cannot lift Veggie (450 kg) + DONKI (500 kg) + capsule (350 kg = 1,300 kg). Swap one instrument for MEDA (350 kg) or upgrade to the Heavy Rocket ($50M, lifts 2,200 kg at -8% Energy)!`}
+                  {tone.hangar.overMassDetail(selectedRocket.name)}
                 </p>
               )}
               {isOverBudget && (
@@ -692,9 +682,7 @@ export const Screen2Hangar: React.FC<Screen2HangarProps> = ({
                       ? `Orçamento Excedido ($${totalCostM}M > $${HANGAR_BUDGET_M}M):`
                       : `Budget Exceeded ($${totalCostM}M > $${HANGAR_BUDGET_M}M):`}
                   </strong>{' '}
-                  {isPt
-                    ? 'O custo somado ultrapassou o teto de $100M. Troque para o Foguete Leve ($35M) ou inclua a Estação MEDA ($15M)!'
-                    : 'Combined cost passed the $100M limit. Switch to the Light Rocket ($35M) or pick the MEDA Station ($15M)!'}
+                  {tone.hangar.overBudgetDetail}
                 </p>
               )}
             </div>
