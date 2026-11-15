@@ -4,14 +4,12 @@ import {
   ArrowRight,
   Award,
   BookOpen,
-  Database,
-  Target,
   User,
   Users,
   X,
 } from 'lucide-react';
-import { AGE_PROFILES, SPACE_AVATARS, TEAM_ROLES } from '../data/missionData';
-import { AgeProfile, AvatarId, NasaDataBundle, PlayMode } from '../types/game';
+import { getLocalizedMissionData } from '../data/missionDataEn';
+import { AgeProfile, AvatarId, Language, PlayMode } from '../types/game';
 import { playClickSound } from '../utils/sound';
 import { GlossaryInline } from './GlossaryButton';
 import { MissionPatchLogo } from './MissionPatchLogo';
@@ -19,6 +17,7 @@ import { QuackMascot } from './QuackMascot';
 import { SpaceAvatarSvg } from './SpaceVisuals';
 
 interface Screen1PrologueProps {
+  lang?: Language;
   playerName: string;
   setPlayerName: (name: string) => void;
   avatarId: AvatarId;
@@ -31,12 +30,11 @@ interface Screen1PrologueProps {
   setTeamNames: (names: string[]) => void;
   teamCount: number;
   setTeamCount: (count: number) => void;
-  nasaData: NasaDataBundle;
-  onOpenLineage: () => void;
   onStartHangar: () => void;
 }
 
 export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
+  lang = 'en',
   playerName,
   setPlayerName,
   avatarId,
@@ -49,12 +47,13 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
   setTeamNames,
   teamCount,
   setTeamCount,
-  nasaData,
-  onOpenLineage,
   onStartHangar,
 }) => {
   const [activeInfoModal, setActiveInfoModal] = useState<'howto' | 'badges' | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  const { AGE_PROFILES, SPACE_AVATARS, TEAM_ROLES } = getLocalizedMissionData(lang);
+  const isPt = lang === 'pt';
 
   const handleTeamNameChange = (idx: number, val: string) => {
     setValidationError(null);
@@ -67,7 +66,11 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
     playClickSound();
     if (playMode === 'solo') {
       if (!playerName.trim()) {
-        setValidationError('Por favor, digite seu nome de Guardião(ã) antes de entrar no Hangar.');
+        setValidationError(
+          isPt
+            ? 'Por favor, digite seu nome de Guardião(ã) antes de entrar no Hangar.'
+            : 'Please enter your Guardian name before entering the Engineering Hangar.'
+        );
         return;
       }
     } else {
@@ -76,7 +79,9 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
       );
       if (missingIdx !== -1) {
         setValidationError(
-          `Preencha o nome de todos os ${teamCount} integrantes da equipe antes de avançar.`
+          isPt
+            ? `Preencha o nome de todos os ${teamCount} integrantes da equipe antes de avançar.`
+            : `Please fill in all ${teamCount} crew member names before continuing.`
         );
         return;
       }
@@ -87,18 +92,18 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 pb-20">
-      {/* Hero Patch + Title Lockup matching Screenshot Aesthetic */}
+      {/* Hero Patch + Title Lockup */}
       <section className="flex flex-col items-center text-center pt-1 space-y-3">
-        <MissionPatchLogo size={116} />
+        <MissionPatchLogo size={116} lang={lang} />
 
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-sky-600 dark:text-sky-400">
-          O Chamado da Base Ares
+          {isPt ? 'O Chamado da Base Ares' : 'The Call from Ares Base'}
         </p>
 
         <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white text-balance leading-tight">
-          Missão Sol-4:{' '}
+          {isPt ? 'Missão Sol-4:' : 'Mission Sol-4:'}{' '}
           <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
-            Guardiões da Base Ares
+            {isPt ? 'Guardiões da Base Ares' : 'Guardians of Ares Base'}
           </span>
         </h1>
 
@@ -112,7 +117,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700/90 dark:bg-[#131C33] dark:text-sky-200 dark:hover:bg-[#1A2540]"
           >
             <BookOpen className="h-3.5 w-3.5 text-sky-500" />
-            <span>Como Jogar em 3 Passos</span>
+            <span>{isPt ? 'Como Jogar em 3 Passos' : 'How to Play in 3 Steps'}</span>
           </button>
           <button
             type="button"
@@ -123,77 +128,52 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700/90 dark:bg-[#131C33] dark:text-amber-300 dark:hover:bg-[#1A2540]"
           >
             <Award className="h-3.5 w-3.5 text-amber-500" />
-            <span>Vitrine de Selos</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              playClickSound();
-              onOpenLineage();
-            }}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800 hover:bg-sky-100 dark:border-sky-500/40 dark:bg-sky-950/40 dark:text-sky-200 dark:hover:bg-sky-900/50"
-          >
-            <Database className="h-3.5 w-3.5 text-sky-500" />
-            <span>Linhagem NASA &amp; Mecânicas</span>
+            <span>{isPt ? 'Vitrine de Selos' : 'Mission Badges'}</span>
           </button>
         </div>
       </section>
 
-      {/* Clear Problem Statement & Real NASA Value */}
-      <section className="rounded-2xl border border-orange-200/80 bg-white/90 dark:border-orange-500/25 dark:bg-[#131C33]/90 p-4 sm:p-5 backdrop-blur-md">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="space-y-1">
-            <p className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-orange-600 dark:text-orange-400">
-              <Target className="h-3.5 w-3.5" />
-              <span>Qual problema resolvemos?</span>
-            </p>
-            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
-              Dados espaciais da NASA costumam ser complexos e desconectados da sala de aula. Aqui você toma decisões reais de <strong>engenharia sistêmica</strong> (com{' '}
-              <strong>zero conhecimento prévio</strong>) ligando tempestades solares (<strong>{nasaData.donkiFlare.classType}</strong>), clima de Marte (<strong>{nasaData.meda.nightTempC}°C</strong>) e biofilmes (<strong>{nasaData.osdr.studyId}</strong>) à sobrevivência da base.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              playClickSound();
-              onOpenLineage();
-            }}
-            className="shrink-0 self-start sm:self-center rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-[#192440] dark:text-sky-300 dark:hover:bg-slate-800 whitespace-nowrap"
-          >
-            Ver Mapa Técnico ➔
-          </button>
-        </div>
-      </section>
-
-      {/* Emergency Transmission Card with Centered Comandante Quack matching Screenshot */}
+      {/* Emergency Transmission Card with Centered Commander Quack */}
       <section className="rounded-3xl border border-slate-200 bg-white/95 dark:border-slate-800/80 dark:bg-[#131C33]/95 p-5 sm:p-7 shadow-2xl backdrop-blur-md">
         <div className="flex flex-col items-center space-y-4">
           <QuackMascot expression="terror" size={144} />
 
           <div className="w-full rounded-2xl border border-slate-200 bg-slate-50 dark:border-slate-700/60 dark:bg-[#192440] p-4 sm:p-5 space-y-3 text-left">
             <span className="inline-block rounded-lg bg-orange-500 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white">
-              Comandante Quack · Sol 1
+              {isPt ? 'Comandante Quack · Sol 1' : 'Commander Quack · Sol 1'}
             </span>
 
-            <p className="text-sm sm:text-base leading-relaxed text-slate-800 dark:text-slate-100">
-              “Quack! Alô, Terra?! Aqui é o Comandante Quack na{' '}
-              <GlossaryInline termKey="jezero" ageProfile={ageProfile}>
-                Cratera Jezero
-              </GlossaryInline>{' '}
-              — um enorme buraco em Marte onde pousou o robô Perseverance! O sinal está falhando e... o que é aquilo se mexendo nos dutos de água?!”
-            </p>
+            {isPt ? (
+              <p className="text-sm sm:text-base leading-relaxed text-slate-800 dark:text-slate-100">
+                “Quack! Alô, Terra?! Aqui é o Comandante Quack na{' '}
+                <GlossaryInline termKey="jezero" ageProfile={ageProfile} lang={lang}>
+                  Cratera Jezero
+                </GlossaryInline>{' '}
+                — um enorme buraco em Marte onde pousou o robô Perseverance! O sinal está falhando e... o que é aquilo se mexendo nos dutos de água?!”
+              </p>
+            ) : (
+              <p className="text-sm sm:text-base leading-relaxed text-slate-800 dark:text-slate-100">
+                “Quack! Hello, Earth?! This is Commander Quack at{' '}
+                <GlossaryInline termKey="jezero" ageProfile={ageProfile} lang={lang}>
+                  Jezero Crater
+                </GlossaryInline>{' '}
+                — a giant crater on Mars where the Perseverance rover landed! Our signal is glitching and... what is that wriggling inside our water pipes?!”
+              </p>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Focused Crew Configuration Card */}
+      {/* Crew Configuration Card */}
       <section className="rounded-3xl border border-slate-200 bg-white/95 dark:border-slate-800/80 dark:bg-[#131C33]/95 p-5 sm:p-6 shadow-xl backdrop-blur-md space-y-5">
         <div>
           <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
-            Identidade da Tripulação
+            {isPt ? 'Identidade da Tripulação' : 'Crew Identity'}
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Preencha os dados obrigatórios abaixo para liberar o Hangar de Engenharia.
+            {isPt
+              ? 'Preencha os dados obrigatórios abaixo para liberar o Hangar de Engenharia.'
+              : 'Fill in the required fields below to unlock the Engineering Hangar.'}
           </p>
         </div>
 
@@ -213,7 +193,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
             }`}
           >
             <User className="h-4 w-4" />
-            <span>Solo</span>
+            <span>{isPt ? 'Solo' : 'Solo'}</span>
           </button>
           <button
             type="button"
@@ -229,7 +209,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
             }`}
           >
             <Users className="h-4 w-4" />
-            <span>Equipe (2–4 jogadores)</span>
+            <span>{isPt ? 'Equipe (2–4 jogadores)' : 'Team (2–4 players)'}</span>
           </button>
         </div>
 
@@ -239,7 +219,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
               htmlFor="player-name"
               className="block text-xs font-semibold text-slate-700 dark:text-slate-300"
             >
-              Seu Nome de Guardião(ã) *
+              {isPt ? 'Seu Nome de Guardião(ã) *' : 'Your Guardian Name *'}
             </label>
             <input
               id="player-name"
@@ -250,7 +230,11 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
                 setValidationError(null);
                 setPlayerName(e.target.value);
               }}
-              placeholder="Digite seu nome (Ex: Luna ou Capitão Leo)"
+              placeholder={
+                isPt
+                  ? 'Ex: Nome ou apelido'
+                  : 'e.g., Name or nickname'
+              }
               className="mt-1.5 w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-500 focus:outline-none dark:border-slate-700 dark:bg-[#0B1224] dark:text-white dark:placeholder:text-slate-500"
             />
           </div>
@@ -258,7 +242,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
           <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-3.5 dark:border-slate-800 dark:bg-[#0B1224]">
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-                Turnos Rotativos (1 papel por Sol)
+                {isPt ? 'Turnos Rotativos (1 papel por Sol)' : 'Rotating Turns (1 role per Sol)'}
               </span>
               <div className="flex items-center gap-1">
                 {[2, 3, 4].map((num) => (
@@ -292,7 +276,11 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
                     maxLength={20}
                     value={teamNames[idx] || ''}
                     onChange={(e) => handleTeamNameChange(idx, e.target.value)}
-                    placeholder={`Nome do Jogador ${idx + 1}`}
+                    placeholder={
+                      isPt
+                        ? `Jogador ${idx + 1} · Ex: Nome ou apelido`
+                        : `Player ${idx + 1} · Name or nickname`
+                    }
                     className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none dark:border-slate-700 dark:bg-[#131C33] dark:text-white dark:placeholder:text-slate-500"
                   />
                 </div>
@@ -304,7 +292,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
         {/* 3 Space Avatars */}
         <div className="space-y-2">
           <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-            Avatar Espacial
+            {isPt ? 'Avatar Espacial' : 'Space Avatar'}
           </span>
           <div className="grid grid-cols-3 gap-2.5">
             {SPACE_AVATARS.map((av) => {
@@ -339,7 +327,9 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
         {/* Age Profile Selector */}
         <div className="space-y-2">
           <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-            Perfil de Leitura (adapta textos e chat do Quack)
+            {isPt
+              ? 'Perfil de Leitura (adapta textos e chat do Quack)'
+              : 'Reading Profile (adapts mission texts & Quack chat)'}
           </span>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {AGE_PROFILES.map((prof) => {
@@ -385,7 +375,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
           onClick={handleProceed}
           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4 text-base font-extrabold text-slate-950 shadow-lg hover:brightness-105 transition-all focus-visible:outline-2 focus-visible:outline-orange-400"
         >
-          <span>Entrar no Hangar de Engenharia</span>
+          <span>{isPt ? 'Entrar no Hangar de Engenharia' : 'Enter Engineering Hangar'}</span>
           <ArrowRight className="h-5 w-5" />
         </button>
       </section>
@@ -405,14 +395,18 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">
                 {activeInfoModal === 'howto'
-                  ? 'Como Jogar em 3 Passos'
-                  : 'Vitrine de Selos da NASA'}
+                  ? isPt
+                    ? 'Como Jogar em 3 Passos'
+                    : 'How to Play in 3 Steps'
+                  : isPt
+                    ? 'Vitrine de Selos da NASA'
+                    : 'NASA Mission Badges'}
               </h2>
               <button
                 type="button"
                 onClick={() => setActiveInfoModal(null)}
                 className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
-                aria-label="Fechar janela"
+                aria-label={isPt ? 'Fechar janela' : 'Close dialog'}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -423,35 +417,50 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
                 <li className="flex gap-2.5">
                   <span className="font-mono-tabular font-bold text-orange-500">01.</span>
                   <span>
-                    <strong className="text-slate-900 dark:text-white">Hangar ($100M):</strong> Escolha Foguete, Órbita e 2 Instrumentos sem estourar o peso ou o orçamento.
+                    <strong className="text-slate-900 dark:text-white">
+                      {isPt ? 'Hangar ($100M):' : 'Hangar ($100M):'}
+                    </strong>{' '}
+                    {isPt
+                      ? 'Escolha Foguete, Órbita e 2 Instrumentos sem estourar o peso ou o orçamento.'
+                      : 'Pick a Rocket, an Orbit, and 2 Instruments without exceeding mass or budget limits.'}
                   </span>
                 </li>
                 <li className="flex gap-2.5">
                   <span className="font-mono-tabular font-bold text-orange-500">02.</span>
                   <span>
-                    <strong className="text-slate-900 dark:text-white">4 Sols Marcianos:</strong> Cada decisão tem prós e contras reais. Escolhas descuidadas zeram seus medidores e fazem você perder!
+                    <strong className="text-slate-900 dark:text-white">
+                      {isPt ? '4 Sols Marcianos:' : '4 Martian Sols:'}
+                    </strong>{' '}
+                    {isPt
+                      ? 'Cada decisão tem prós e contras reais. Escolhas descuidadas zeram seus medidores e fazem você perder!'
+                      : 'Every choice carries real trade-offs. Reckless choices drain systems to 0% and fail the mission!'}
                   </span>
                 </li>
                 <li className="flex gap-2.5">
                   <span className="font-mono-tabular font-bold text-orange-500">03.</span>
                   <span>
-                    <strong className="text-slate-900 dark:text-white">Título Ouro:</strong> Termine os 4 Sols com todas as 4 barras em 35% ou mais e celebre na Festa Mambo!
+                    <strong className="text-slate-900 dark:text-white">
+                      {isPt ? 'Título Ouro:' : 'Gold Guardian:'}
+                    </strong>{' '}
+                    {isPt
+                      ? 'Termine os 4 Sols com todas as 4 barras em 35% ou mais e celebre na Festa Mambo!'
+                      : 'Finish all 4 Sols with every system at 35% or higher and celebrate at the Mambo Party!'}
                   </span>
                 </li>
               </ol>
             ) : (
               <div className="grid grid-cols-1 gap-2 text-xs text-slate-700 dark:text-slate-200">
                 <div className="rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-[#0B1224] px-3 py-2.5">
-                  🏅 <strong>Caçador de Biofilmes</strong> — Sol 1 (OSDR + MEDA)
+                  🏅 <strong>{isPt ? 'Caçador de Biofilmes' : 'Biofilm Hunter'}</strong> — Sol 1 (OSDR + MEDA)
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-[#0B1224] px-3 py-2.5">
-                  🛡️ <strong>Guardião das Tempestades Solares</strong> — Sol 2 (DONKI X8.7)
+                  🛡️ <strong>{isPt ? 'Guardião das Tempestades Solares' : 'Solar Storm Guardian'}</strong> — Sol 2 (DONKI X8.7)
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-[#0B1224] px-3 py-2.5">
-                  🌱 <strong>Botânico Espacial</strong> — Sol 3 (Estufa Veggie 16h LED)
+                  🌱 <strong>{isPt ? 'Botânico Espacial' : 'Space Botanist'}</strong> — Sol 3 (Veggie 16h LED)
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-[#0B1224] px-3 py-2.5">
-                  🚀 <strong>Comandante de Marte</strong> — Sol 4 (Pouso Final)
+                  🚀 <strong>{isPt ? 'Comandante de Marte' : 'Commander of Mars'}</strong> — Sol 4 ({isPt ? 'Pouso Final' : 'Final Landing'})
                 </div>
               </div>
             )}
@@ -461,7 +470,7 @@ export const Screen1Prologue: React.FC<Screen1PrologueProps> = ({
               onClick={() => setActiveInfoModal(null)}
               className="w-full rounded-xl bg-orange-500 py-2.5 text-xs font-extrabold text-white hover:bg-orange-400"
             >
-              Entendi!
+              {isPt ? 'Entendi!' : 'Got it!'}
             </button>
           </div>
         </div>

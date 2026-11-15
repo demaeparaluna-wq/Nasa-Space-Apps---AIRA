@@ -1,7 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Database, Moon, Sun, Volume2, VolumeX, X } from 'lucide-react';
-import { NasaFooter } from './components/NasaFooter';
+import {
+  Cpu,
+  GraduationCap,
+  Languages,
+  Menu,
+  Microscope,
+  Moon,
+  Sun,
+  Target,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
+import { InfoHubTab, MissionInfoHubModal } from './components/MissionInfoHubModal';
 import { MissionPatchLogo } from './components/MissionPatchLogo';
+import { NasaFooter } from './components/NasaFooter';
 import { QuackChatWidget } from './components/QuackChatWidget';
 import { Screen1Prologue } from './components/Screen1Prologue';
 import { Screen2Hangar } from './components/Screen2Hangar';
@@ -10,8 +22,8 @@ import { Screen4Modal } from './components/Screen4Modal';
 import { Screen5Victory } from './components/Screen5Victory';
 import { BackgroundEasterEggLayer } from './components/SpaceVisuals';
 import { SplashScreen } from './components/SplashScreen';
-import { TechnicalLineagePanel } from './components/TechnicalLineagePanel';
-import { HANGAR_BUDGET_M, INSTRUMENTS, ORBITS, ROCKETS, SOL_SCENARIOS } from './data/missionData';
+import { HANGAR_BUDGET_M, INSTRUMENTS, ORBITS, ROCKETS } from './data/missionData';
+import { getLocalizedMissionData } from './data/missionDataEn';
 import { getArchivedFallbackBundle, loadResilientNasaData } from './services/nasaApi';
 import {
   AgeProfile,
@@ -20,6 +32,7 @@ import {
   ChoiceHistoryEntry,
   GameScreen,
   HangarConfig,
+  Language,
   ModalFeedbackState,
   NasaApodData,
   NasaDataBundle,
@@ -50,6 +63,12 @@ function clampResource(val: number): number {
 
 function computeInitialResources(config: HangarConfig): Resources {
   const next = { ...BASE_STARTING_RESOURCES };
+  const rocket = ROCKETS.find((r) => r.id === config.rocket);
+  if (rocket?.startingDelta) {
+    (Object.entries(rocket.startingDelta) as [ResourceKey, number][]).forEach(([k, v]) => {
+      next[k] = clampResource(next[k] + v);
+    });
+  }
   const orbit = ORBITS.find((o) => o.id === config.orbit);
   if (orbit?.delta) {
     (Object.entries(orbit.delta) as [ResourceKey, number][]).forEach(([k, v]) => {
@@ -65,9 +84,46 @@ function computeInitialResources(config: HangarConfig): Resources {
 }
 
 function buildFailurePhysics(
+  lang: Language,
   resource: ResourceKey,
   nasaData: NasaDataBundle
 ): Record<AgeProfile, string> {
+  if (lang === 'en') {
+    if (resource === 'energy') {
+      return {
+        explorers: `The batteries ran dry and the ${nasaData.meda.nightTempC}°C Martian freeze turned Ares Base’s pipes to ice! Without power, heaters and lights shut down.`,
+        strategists: `Energy hit 0%. At ${nasaData.meda.nightTempC}°C in Jezero Crater, losing electrical heating freezes water pipelines and shuts off core hardware.`,
+        educators: `Thermal failure from electrical deficit: without Watts for resistive heaters, nocturnal Jezero temperatures (${nasaData.meda.nightTempC}°C MEDA) freeze the fluid loop.`,
+      };
+    }
+    if (resource === 'lifeSupport') {
+      return {
+        explorers:
+          'Fresh air and clean water ran out! Astronauts and Commander Quack need oxygen from Veggie plants and clean water pipes.',
+        strategists:
+          'Life Support reached 0%. Without biofilm-free water filtering and Veggie O₂ generation (16h LED), the habitat becomes unbreathable.',
+        educators:
+          'ECLSS failure: breakdown of closed-loop water recovery and photosynthetic oxygen regeneration.',
+      };
+    }
+    if (resource === 'shield') {
+      return {
+        explorers:
+          'The protective shield got too weak and solar flare rays plus Martian dust slammed into the base!',
+        strategists: `Shield dropped to 0%. Without a planetary magnetosphere on Mars, Class ${nasaData.donkiFlare.classType} solar flare particles and dust storms damage the base.`,
+        educators: `Critical radiation exposure (DONKI Class ${nasaData.donkiFlare.classType} event) due to depleted active/passive habitat shielding.`,
+      };
+    }
+    return {
+      explorers:
+        'The radio went silent in space! Without the 14-minute signal back to Earth, we cannot guide our rescue ship.',
+      strategists:
+        'Comms fell to 0%. Across a 14-min one-way delay with an unaligned dish, telemetry with Earth mission control was lost.',
+      educators:
+        'Deep Space Network (DSN) link loss: without continuous telemetry across 28-min RTT latency, orbital maneuvers go blind.',
+    };
+  }
+
   if (resource === 'energy') {
     return {
       explorers: `As baterias acabaram e o frio de ${nasaData.meda.nightTempC}°C congelou os canos da Base Ares! Sem energia, os aquecedores e luzes não funcionam.`,
@@ -105,8 +161,11 @@ function buildFailurePhysics(
 
 export function App() {
   const [screen, setScreen] = useState<GameScreen>('splash');
+  const [lang, setLang] = useState<Language>('en');
   const [muted, setMuted] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  const isPt = lang === 'pt';
 
   // Sync Tailwind .dark class on documentElement
   useEffect(() => {
@@ -117,6 +176,19 @@ export function App() {
       root.classList.remove('dark');
     }
   }, [theme]);
+
+  // Sync <html lang> and <title> with active language
+  useEffect(() => {
+    document.documentElement.lang = isPt ? 'pt-BR' : 'en-US';
+    document.title = isPt
+      ? 'Missão Sol-4: Guardiões da Base Ares'
+      : 'Mission Sol-4: Guardians of Ares Base';
+  }, [isPt]);
+
+  // Auto-scroll to top / Commander Quack on every screen or Sol transition (great for mobile!)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [screen, /* also scroll when Sol advances */]);
 
   // Silent NASA fetch during splash
   const [nasaData, setNasaData] = useState<NasaDataBundle>(() =>
@@ -139,7 +211,10 @@ export function App() {
   const [ageProfile, setAgeProfile] = useState<AgeProfile>('explorers');
   const [playMode, setPlayMode] = useState<PlayMode>('solo');
   const [teamCount, setTeamCount] = useState(2);
-  const [teamNames, setTeamNames] = useState<string[]>(['Luna', 'Mary', '', '']);
+  const [teamNames, setTeamNames] = useState<string[]>(['', '', '', '']);
+  const [hasVisitedHangar, setHasVisitedHangar] = useState(false);
+  const [hasLaunched, setHasLaunched] = useState(false);
+  const [hasCompletedMission, setHasCompletedMission] = useState(false);
 
   // Hangar State starts unselected so players deliberately pick every option
   const [hangarConfig, setHangarConfig] = useState<HangarConfig>({
@@ -159,7 +234,13 @@ export function App() {
   const [penaltyPoints, setPenaltyPoints] = useState(0);
   const [choiceHistory, setChoiceHistory] = useState<ChoiceHistoryEntry[]>([]);
   const [modalFeedback, setModalFeedback] = useState<ModalFeedbackState | null>(null);
-  const [showLineageModal, setShowLineageModal] = useState(false);
+  const [infoHubTab, setInfoHubTab] = useState<InfoHubTab | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Scroll to top cleanly whenever currentSol changes as well
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentSol]);
 
   const toggleMute = () => {
     const next = !muted;
@@ -169,6 +250,10 @@ export function App() {
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const toggleLang = () => {
+    setLang((prev) => (prev === 'en' ? 'pt' : 'en'));
   };
 
   const handleSplashDone = useCallback(() => {
@@ -185,7 +270,16 @@ export function App() {
     setPenaltyPoints(0);
     setChoiceHistory([]);
     setModalFeedback(null);
+    setHasLaunched(true);
     setScreen('command');
+  };
+
+  const handleRequestToolHelpCost = () => {
+    setResources((prev) => {
+      const nextLS = Math.max(1, prev.lifeSupport - 8);
+      setLastDelta({ lifeSupport: nextLS - prev.lifeSupport });
+      return { ...prev, lifeSupport: nextLS };
+    });
   };
 
   const handleChooseCard = (card: SolCard) => {
@@ -197,7 +291,7 @@ export function App() {
     }
     if (currentSol === 2 && card.id === 'B') {
       const rocketCost =
-        ROCKETS.find((r) => r.id === hangarConfig.rocket)?.costM || 40;
+        ROCKETS.find((r) => r.id === hangarConfig.rocket)?.costM || 35;
       const instCost = INSTRUMENTS.filter((i) =>
         hangarConfig.instruments.includes(i.id)
       ).reduce((s, i) => s + i.costM, 0);
@@ -219,7 +313,6 @@ export function App() {
     setLastDelta(appliedDelta);
     setResources(updated);
 
-    // Check if any meter hit 0% -> Loss / Critical Failure!
     const failedKey = (Object.keys(updated) as ResourceKey[]).find(
       (k) => updated[k] <= 0
     );
@@ -232,12 +325,11 @@ export function App() {
         sol: currentSol,
         appliedDelta,
         failedResource: failedKey,
-        failurePhysicsByProfile: buildFailurePhysics(failedKey, nasaData),
+        failurePhysicsByProfile: buildFailurePhysics(lang, failedKey, nasaData),
       });
       return;
     }
 
-    // Check if any meter entered danger (<35%) -> Risk penalty + worried Quack!
     const enteredDanger = (Object.keys(updated) as ResourceKey[]).some(
       (k) => updated[k] < 35
     );
@@ -248,6 +340,7 @@ export function App() {
       playBadgeUnlockSound();
     }
 
+    const { SOL_SCENARIOS } = getLocalizedMissionData(lang);
     const scenario = SOL_SCENARIOS.find((s) => s.sol === currentSol)!;
     const historyEntry: ChoiceHistoryEntry = {
       sol: currentSol,
@@ -286,6 +379,7 @@ export function App() {
       setLastDelta(null);
     } else {
       playVictoryMamboSound();
+      setHasCompletedMission(true);
       setScreen('victory');
     }
   };
@@ -298,6 +392,7 @@ export function App() {
 
   const handleBackToHangar = () => {
     setModalFeedback(null);
+    setHasVisitedHangar(true);
     setScreen('hangar');
   };
 
@@ -309,6 +404,9 @@ export function App() {
     setLastDelta(null);
     setModalFeedback(null);
     setHangarConfig({ rocket: null, orbit: null, instruments: [] });
+    setHasVisitedHangar(false);
+    setHasLaunched(false);
+    setHasCompletedMission(false);
     setScreen('prologue');
   };
 
@@ -319,7 +417,9 @@ export function App() {
     }));
   };
 
-  // Current automatic Quack expression: worried/terror if any bar < 35% in Command!
+  const { SOL_SCENARIOS } = getLocalizedMissionData(lang);
+
+  // Automatic Quack expression: worried/terror if any bar < 35% in Command!
   const widgetExpression: QuackExpression = (() => {
     if (screen === 'prologue') return 'terror';
     if (screen === 'victory') return 'celebrate';
@@ -342,56 +442,118 @@ export function App() {
   if (screen === 'splash') {
     return (
       <>
-        <SplashScreen onComplete={handleSplashDone} />
-        <NasaFooter nasaData={nasaData} lightSurface />
+        <SplashScreen lang={lang} onComplete={handleSplashDone} />
+        <NasaFooter lang={lang} nasaData={nasaData} lightSurface />
       </>
     );
   }
 
   return (
     <div className="relative min-h-screen bg-slate-50 text-slate-900 dark:bg-[#0B1221] dark:text-slate-100 transition-colors">
-      {/* Subtle Martian top-right radial glow matching mission aesthetic */}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-0 dark:bg-[radial-gradient(ellipse_at_top_right,_rgba(234,88,12,0.16),_transparent_55%)]"
       />
       <BackgroundEasterEggLayer screen={screen} currentSol={currentSol} />
 
-      {/* Clean Top Bar with Orange Mission Patch + Theme Switch + Audio Toggle */}
-      <header className="relative z-10 border-b border-slate-200 bg-white/95 dark:border-slate-800/80 dark:bg-[#0B1221]/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2.5">
-          <div className="flex items-center gap-2.5 whitespace-nowrap shrink-0">
-            <MissionPatchLogo size={36} />
-            <span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
-              Missão Sol-4 · Base Ares
+      {/* Top Bar: Orange Mission Patch + Clickable Stage Nav + Language Switcher right next to Dark Mode + Audio + Menu */}
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 dark:border-slate-800/80 dark:bg-[#0B1221]/92 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4 py-2.5">
+          <button
+            type="button"
+            onClick={() => setScreen('prologue')}
+            className="flex items-center gap-2 whitespace-nowrap shrink-0 text-left hover:opacity-90 transition-opacity"
+          >
+            <MissionPatchLogo size={36} lang={lang} />
+            <span className="font-display text-sm sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
+              {isPt ? 'Missão Sol-4 · Base Ares' : 'Mission Sol-4 · Ares Base'}
             </span>
-          </div>
+          </button>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-500 dark:text-slate-400">
-            <span className={screen === 'prologue' ? 'text-orange-600 dark:text-orange-400' : ''}>
-              1. Prólogo
-            </span>
-            <span className={screen === 'hangar' ? 'text-orange-600 dark:text-orange-400' : ''}>
-              2. Hangar
-            </span>
-            <span className={screen === 'command' ? 'text-orange-600 dark:text-orange-400' : ''}>
-              3. Central (4 Sols)
-            </span>
-            <span className={screen === 'victory' ? 'text-orange-600 dark:text-orange-400' : ''}>
-              4. Passaporte NASA
-            </span>
-          </nav>
+          {(() => {
+            const crewReady =
+              playMode === 'solo'
+                ? playerName.trim().length > 0
+                : Array.from({ length: teamCount }).every(
+                    (_, i) => Boolean(teamNames[i] && teamNames[i].trim())
+                  );
+            const stageItems: {
+              id: Exclude<GameScreen, 'splash'>;
+              label: string;
+              shortLabel: string;
+              enabled: boolean;
+            }[] = [
+              {
+                id: 'prologue',
+                label: isPt ? '1. Prólogo' : '1. Prologue',
+                shortLabel: isPt ? '1. Prólogo' : '1. Prologue',
+                enabled: true,
+              },
+              {
+                id: 'hangar',
+                label: isPt ? '2. Hangar' : '2. Hangar',
+                shortLabel: '2. Hangar',
+                enabled: hasVisitedHangar || hasLaunched || hasCompletedMission || crewReady,
+              },
+              {
+                id: 'command',
+                label: isPt ? '3. Central (4 Sols)' : '3. Command (4 Sols)',
+                shortLabel: isPt ? '3. Central' : '3. Command',
+                enabled: hasLaunched || hasCompletedMission,
+              },
+              {
+                id: 'victory',
+                label: isPt ? '4. Passaporte NASA' : '4. NASA Passport',
+                shortLabel: isPt ? '4. Passaporte' : '4. Passport',
+                enabled: hasCompletedMission,
+              },
+            ];
 
-          <div className="flex items-center gap-2 shrink-0">
+            return (
+              <nav
+                aria-label={isPt ? 'Etapas da missão' : 'Mission stages'}
+                className="hidden lg:flex items-center gap-2 text-xs font-semibold"
+              >
+                {stageItems.map((item) => {
+                  const active = screen === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      disabled={!item.enabled}
+                      onClick={() => {
+                        if (!item.enabled) return;
+                        if (item.id === 'hangar') setHasVisitedHangar(true);
+                        setModalFeedback(null);
+                        setScreen(item.id);
+                      }}
+                      className={`rounded-lg px-2.5 py-1 transition-colors ${
+                        active
+                          ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 font-bold'
+                          : item.enabled
+                            ? 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white cursor-pointer'
+                            : 'text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-60'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </nav>
+            );
+          })()}
+
+          <div className="relative flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Language Toggle right next to Dark Mode */}
             <button
               type="button"
-              onClick={() => setShowLineageModal(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-xs font-semibold text-sky-800 hover:bg-sky-100 dark:border-sky-500/40 dark:bg-sky-950/50 dark:text-sky-200 dark:hover:bg-sky-900/60 whitespace-nowrap"
-              aria-label="Ver Linhagem Técnica NASA e Relação com Mecânicas"
+              onClick={toggleLang}
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-slate-100 px-2 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 whitespace-nowrap"
+              aria-label={isPt ? 'Switch to US English' : 'Mudar para Português (Brasil)'}
+              title={isPt ? 'Switch to English (US)' : 'Mudar para Português (BR)'}
             >
-              <Database className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" />
-              <span className="hidden sm:inline">Dados &amp; Mecânicas</span>
-              <span className="sm:hidden">Dados</span>
+              <Languages className="h-3.5 w-3.5 text-orange-500" />
+              <span>{isPt ? 'PT-BR' : 'EN-US'}</span>
             </button>
 
             <button
@@ -399,18 +561,24 @@ export function App() {
               onClick={toggleTheme}
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 whitespace-nowrap"
               aria-label={
-                theme === 'dark' ? 'Mudar para visão clean clara' : 'Mudar para modo escuro espacial'
+                theme === 'dark'
+                  ? isPt
+                    ? 'Mudar para visão clean clara'
+                    : 'Switch to clean light mode'
+                  : isPt
+                    ? 'Mudar para modo escuro espacial'
+                    : 'Switch to space dark mode'
               }
             >
               {theme === 'dark' ? (
                 <>
                   <Sun className="h-3.5 w-3.5 text-amber-400" />
-                  <span>Visão Clean</span>
+                  <span className="hidden sm:inline">{isPt ? 'Visão Clean' : 'Light Mode'}</span>
                 </>
               ) : (
                 <>
                   <Moon className="h-3.5 w-3.5 text-sky-600" />
-                  <span>Modo Escuro</span>
+                  <span className="hidden sm:inline">{isPt ? 'Modo Escuro' : 'Dark Mode'}</span>
                 </>
               )}
             </button>
@@ -419,13 +587,156 @@ export function App() {
               type="button"
               onClick={toggleMute}
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 whitespace-nowrap"
-              aria-label={muted ? 'Ativar sons' : 'Silenciar sons'}
+              aria-label={
+                muted ? (isPt ? 'Ativar sons' : 'Unmute sounds') : isPt ? 'Silenciar sons' : 'Mute sounds'
+              }
             >
               {muted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
-              <span className="hidden sm:inline">{muted ? 'Mudo' : 'Som'}</span>
+              <span className="hidden sm:inline">
+                {muted ? (isPt ? 'Mudo' : 'Muted') : isPt ? 'Som' : 'Sound'}
+              </span>
             </button>
+
+            {/* Discreet 3-bar hamburger menu */}
+            <button
+              type="button"
+              onClick={() => setMenuOpen((prev) => !prev)}
+              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-slate-100 p-1.5 text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+              aria-label={
+                isPt
+                  ? 'Abrir menu de informações, visão técnica e área dos pais'
+                  : 'Open info, technical lineage & parents menu'
+              }
+              aria-expanded={menuOpen}
+            >
+              <Menu className="h-4 w-4" />
+            </button>
+
+            {menuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => setMenuOpen(false)}
+                  aria-hidden="true"
+                />
+                <div className="absolute right-0 top-11 z-40 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl dark:border-slate-700 dark:bg-[#10182E]">
+                  <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {isPt ? 'Navegação & Ciência' : 'Navigation & Science'}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setInfoHubTab('about');
+                    }}
+                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <Target className="h-4 w-4 text-orange-500" />
+                    <span>{isPt ? 'Sobre o Jogo & Problema' : 'About & Problem Statement'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setInfoHubTab('explorer');
+                    }}
+                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <Microscope className="h-4 w-4 text-emerald-500" />
+                    <span>{isPt ? 'Laboratório NASA (Explorador)' : 'NASA Science Lab (Explorer)'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setInfoHubTab('technical');
+                    }}
+                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <Cpu className="h-4 w-4 text-sky-500" />
+                    <span>{isPt ? 'Visão Técnica & Linhagem' : 'Technical View & Lineage'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setInfoHubTab('parents');
+                    }}
+                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <GraduationCap className="h-4 w-4 text-violet-500" />
+                    <span>{isPt ? 'Área Pais & Professores' : 'Parents & Teachers Area'}</span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
+
+        {/* Compact Mobile / Tablet Stage Navigation Bar */}
+        {(() => {
+          const crewReady =
+            playMode === 'solo'
+              ? playerName.trim().length > 0
+              : Array.from({ length: teamCount }).every(
+                  (_, i) => Boolean(teamNames[i] && teamNames[i].trim())
+                );
+          const mobileStages: {
+            id: Exclude<GameScreen, 'splash'>;
+            label: string;
+            enabled: boolean;
+          }[] = [
+            { id: 'prologue', label: isPt ? '1. Prólogo' : '1. Prologue', enabled: true },
+            {
+              id: 'hangar',
+              label: '2. Hangar',
+              enabled: hasVisitedHangar || hasLaunched || hasCompletedMission || crewReady,
+            },
+            {
+              id: 'command',
+              label: isPt ? '3. Central' : '3. Command',
+              enabled: hasLaunched || hasCompletedMission,
+            },
+            {
+              id: 'victory',
+              label: isPt ? '4. Passaporte' : '4. Passport',
+              enabled: hasCompletedMission,
+            },
+          ];
+
+          return (
+            <nav
+              aria-label={isPt ? 'Etapas da missão (móvel)' : 'Mission stages (mobile)'}
+              className="lg:hidden flex items-center justify-between gap-1 overflow-x-auto border-t border-slate-200/80 dark:border-slate-800/80 px-3 py-1.5 text-[11px] font-semibold"
+            >
+              {mobileStages.map((item) => {
+                const active = screen === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    disabled={!item.enabled}
+                    onClick={() => {
+                      if (!item.enabled) return;
+                      if (item.id === 'hangar') setHasVisitedHangar(true);
+                      setModalFeedback(null);
+                      setScreen(item.id);
+                    }}
+                    className={`shrink-0 rounded-md px-2 py-0.5 transition-colors ${
+                      active
+                        ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 font-bold'
+                        : item.enabled
+                          ? 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                          : 'text-slate-400 dark:text-slate-600 opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
+          );
+        })()}
       </header>
 
       <main
@@ -435,6 +746,7 @@ export function App() {
       >
         {screen === 'prologue' && (
           <Screen1Prologue
+            lang={lang}
             playerName={playerName}
             setPlayerName={setPlayerName}
             avatarId={avatarId}
@@ -447,14 +759,16 @@ export function App() {
             setTeamNames={setTeamNames}
             teamCount={teamCount}
             setTeamCount={setTeamCount}
-            nasaData={nasaData}
-            onOpenLineage={() => setShowLineageModal(true)}
-            onStartHangar={() => setScreen('hangar')}
+            onStartHangar={() => {
+              setHasVisitedHangar(true);
+              setScreen('hangar');
+            }}
           />
         )}
 
         {screen === 'hangar' && (
           <Screen2Hangar
+            lang={lang}
             ageProfile={ageProfile}
             config={hangarConfig}
             setConfig={setHangarConfig}
@@ -465,6 +779,7 @@ export function App() {
 
         {screen === 'command' && (
           <Screen3Command
+            lang={lang}
             currentSol={currentSol}
             resources={resources}
             lastDelta={lastDelta}
@@ -474,12 +789,14 @@ export function App() {
             teamCount={teamCount}
             soloName={playerName}
             nasaData={nasaData}
+            onRequestToolHelpCost={handleRequestToolHelpCost}
             onChooseCard={handleChooseCard}
           />
         )}
 
         {screen === 'victory' && (
           <Screen5Victory
+            lang={lang}
             playerName={playerName}
             playMode={playMode}
             teamNames={teamNames}
@@ -493,6 +810,7 @@ export function App() {
             choiceHistory={choiceHistory}
             nasaData={nasaData}
             onUpdateApod={handleUpdateApod}
+            onOpenInfoHub={(tab) => setInfoHubTab(tab)}
             onPlayAgain={handlePlayAgain}
             onBackToHangar={handleBackToHangar}
           />
@@ -501,6 +819,7 @@ export function App() {
 
       {modalFeedback && (
         <Screen4Modal
+          lang={lang}
           modal={modalFeedback}
           resources={resources}
           ageProfile={ageProfile}
@@ -510,56 +829,22 @@ export function App() {
         />
       )}
 
-      {showLineageModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
-          onClick={() => setShowLineageModal(false)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div
-            className="max-h-[88vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-[#10182E] p-5 sm:p-6 shadow-2xl space-y-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
-                  Arquitetura Educacional &amp; Dados Reais
-                </p>
-                <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
-                  Linhagem Técnica NASA &amp; Relacionamento nas Mecânicas
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowLineageModal(false)}
-                className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
-                aria-label="Fechar janela técnica"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <TechnicalLineagePanel
-              nasaData={nasaData}
-              ageProfile={ageProfile}
-              hangarConfig={hangarConfig}
-              resources={resources}
-              choiceHistory={choiceHistory}
-            />
-
-            <button
-              type="button"
-              onClick={() => setShowLineageModal(false)}
-              className="w-full rounded-xl bg-sky-500 py-2.5 text-xs font-extrabold text-slate-950 hover:bg-sky-400"
-            >
-              Voltar à Missão
-            </button>
-          </div>
-        </div>
+      {infoHubTab && (
+        <MissionInfoHubModal
+          lang={lang}
+          activeTab={infoHubTab}
+          onChangeTab={setInfoHubTab}
+          onClose={() => setInfoHubTab(null)}
+          nasaData={nasaData}
+          ageProfile={ageProfile}
+          hangarConfig={hangarConfig}
+          resources={resources}
+          choiceHistory={choiceHistory}
+        />
       )}
 
       <QuackChatWidget
+        lang={lang}
         screen={screen}
         currentSol={currentSol}
         ageProfile={ageProfile}
@@ -570,7 +855,7 @@ export function App() {
         choiceHistory={choiceHistory}
       />
 
-      <NasaFooter nasaData={nasaData} />
+      <NasaFooter lang={lang} nasaData={nasaData} />
     </div>
   );
 }

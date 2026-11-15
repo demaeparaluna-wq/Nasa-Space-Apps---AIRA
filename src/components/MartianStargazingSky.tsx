@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
 import { Sparkles, Telescope } from 'lucide-react';
-import { AgeProfile } from '../types/game';
+import { AgeProfile, Language } from '../types/game';
 import { playToolPickupSound } from '../utils/sound';
 
 export interface MartianConstellation {
   id: string;
   name: string;
+  nameEn: string;
   hemisphere: string;
+  hemisphereEn: string;
   mainStar: string;
   points: { x: number; y: number; label?: string }[];
   lines: [number, number][];
   factByProfile: Record<AgeProfile, string>;
+  factByProfileEn: Record<AgeProfile, string>;
 }
 
 export const MARTIAN_CONSTELLATIONS: MartianConstellation[] = [
   {
     id: 'cygnus',
     name: 'Cisne (Cygnus)',
+    nameEn: 'Cygnus (The Swan)',
     hemisphere: 'Hemisfério Norte Marciano · Polo Norte Celeste',
+    hemisphereEn: 'Martian Northern Hemisphere · Celestial North Pole',
     mainStar: 'Deneb',
     points: [
       { x: 18, y: 18, label: 'Deneb' },
@@ -40,11 +45,21 @@ export const MARTIAN_CONSTELLATIONS: MartianConstellation[] = [
       educators:
         'Astronomia planetária real: diferentemente da Terra (Polaris), a orientação axial de Marte faz com que Deneb (α Cygni) atue próximo ao polo norte celeste.',
     },
+    factByProfileEn: {
+      explorers:
+        'On Mars, bright star Deneb in Cygnus acts almost like the “North Star” guiding astronauts at night!',
+      strategists:
+        'Because of Mars’s axial tilt (25.19°), Mars’s north celestial pole points very close to Deneb in the constellation Cygnus.',
+      educators:
+        'Real planetary astronomy: unlike Earth (Polaris), Mars’s spin axis orientation places Deneb (α Cygni) near the Martian north celestial pole.',
+    },
   },
   {
     id: 'orion',
     name: 'Órion (O Caçador)',
+    nameEn: 'Orion (The Hunter)',
     hemisphere: 'Equatorial · Visível de Jezero',
+    hemisphereEn: 'Equatorial · Visible from Jezero',
     mainStar: 'Betelgeuse & Rigel',
     points: [
       { x: 52, y: 18, label: 'Betelgeuse' },
@@ -72,19 +87,29 @@ export const MARTIAN_CONSTELLATIONS: MartianConstellation[] = [
       educators:
         'Constelação equatorial proeminente em Marte; o contraste espectral entre Betelgeuse (classe M) e Rigel (classe B) auxilia na calibração óptica de câmeras estelares.',
     },
+    factByProfileEn: {
+      explorers:
+        'Orion’s three belt stars shine in the Martian sky too — and Betelgeuse glows reddish just like Martian sand!',
+      strategists:
+        'Seen from Jezero Crater (18°N), Orion crosses the night sky with red supergiant Betelgeuse and blue-white Rigel.',
+      educators:
+        'Prominent equatorial constellation from Mars; spectral contrast between Betelgeuse (M-type) and Rigel (B-type) assists star-tracker optical calibration.',
+    },
   },
   {
     id: 'taurus',
     name: 'Touro & Plêiades',
+    nameEn: 'Taurus & Pleiades',
     hemisphere: 'Hemisfério Norte / Eclíptica Marciana',
-    mainStar: 'Aldebarã',
+    hemisphereEn: 'Northern Sky / Martian Ecliptic',
+    mainStar: 'Aldebaran',
     points: [
-      { x: 78, y: 24, label: 'Aldebarã' },
+      { x: 78, y: 24, label: 'Aldebaran' },
       { x: 83, y: 21 },
       { x: 84, y: 27 },
       { x: 89, y: 16 },
       { x: 91, y: 30 },
-      { x: 73, y: 14, label: 'Plêiades' },
+      { x: 73, y: 14, label: 'Pleiades' },
     ],
     lines: [
       [0, 1],
@@ -100,11 +125,21 @@ export const MARTIAN_CONSTELLATIONS: MartianConstellation[] = [
       educators:
         'O aglomerado das Plêiades e Aldebarã situam-se próximos ao plano da eclíptica, servindo de referência para rastreadores estelares interplanetários.',
     },
+    factByProfileEn: {
+      explorers:
+        'Near Taurus sparkles a cozy cluster of baby blue stars called the Pleiades — like fireflies in the Martian sky!',
+      strategists:
+        'Orange giant Aldebaran and the Pleiades open cluster (M45) appear clearly after Mars’s famous blue sunset.',
+      educators:
+        'The Pleiades cluster and Aldebaran lie near the ecliptic plane, serving as key waypoints for interplanetary star trackers.',
+    },
   },
   {
     id: 'ursa-major',
     name: 'Ursa Maior',
+    nameEn: 'Ursa Major (Big Dipper)',
     hemisphere: 'Hemisfério Norte Marciano',
+    hemisphereEn: 'Martian Northern Sky',
     mainStar: 'Alioth & Dubhe',
     points: [
       { x: 14, y: 58 },
@@ -132,12 +167,22 @@ export const MARTIAN_CONSTELLATIONS: MartianConstellation[] = [
       educators:
         'Devido às distâncias interestelares (~80 anos-luz), a paralaxe entre Terra e Marte (~1,5 UA) é imperceptível a olho nu, preservando o asterismo.',
     },
+    factByProfileEn: {
+      explorers:
+        'High in Mars’s northern sky you can connect 7 bright stars to trace the giant Big Dipper ladle!',
+      strategists:
+        'The Big Dipper’s seven stars keep the exact same shape from Mars because they sit dozens of light-years away.',
+      educators:
+        'Given interstellar distances (~80 light-years), parallax between Earth and Mars (~1.5 AU) is negligible, preserving the asterism.',
+    },
   },
   {
     id: 'crux',
     name: 'Cruzeiro do Sul (Crux)',
+    nameEn: 'Southern Cross (Crux)',
     hemisphere: 'Hemisfério Sul Marciano',
-    mainStar: 'Estrela de Magalhães (Acrux)',
+    hemisphereEn: 'Martian Southern Hemisphere',
+    mainStar: 'Acrux',
     points: [
       { x: 75, y: 56 },
       { x: 75, y: 78, label: 'Acrux' },
@@ -156,6 +201,14 @@ export const MARTIAN_CONSTELLATIONS: MartianConstellation[] = [
       educators:
         'Referência cultural e astronômica do hemisfério sul: observável a partir de latitudes austrais marcianas com a mesma geometria vista do Brasil.',
     },
+    factByProfileEn: {
+      explorers:
+        'Looking south from Mars, explorers recognize the bright Southern Cross right away — the same star cross seen from Brazil!',
+      strategists:
+        'Visible from Mars’s southern latitudes (like Hellas Basin), Crux helps locate the Martian south celestial pole near Kappa Velorum.',
+      educators:
+        'Iconic southern-sky navigation reference: observable across southern Martian latitudes with identical geometry to Earth’s southern hemisphere.',
+    },
   },
 ];
 
@@ -168,16 +221,14 @@ export interface SpawnedTwinkleStar {
 }
 
 interface MartianStargazingBackdropProps {
+  lang?: Language;
   stars: SpawnedTwinkleStar[];
   revealedIds: string[];
   onSkyClick: (xPct: number, yPct: number) => void;
 }
 
-/**
- * Full-screen deep Martian night sky behind Screen 5.
- * Clicking any open spot in the sky spawns twinkling CSS-animated stars and reveals constellations.
- */
 export const MartianStargazingBackdrop: React.FC<MartianStargazingBackdropProps> = ({
+  lang = 'en',
   stars,
   revealedIds,
   onSkyClick,
@@ -193,9 +244,12 @@ export const MartianStargazingBackdrop: React.FC<MartianStargazingBackdropProps>
     <div
       onClick={handleClick}
       className="fixed inset-0 z-0 cursor-crosshair overflow-hidden bg-[radial-gradient(ellipse_at_top,_#121E3D_0%,_#070B17_65%,_#050811_100%)]"
-      aria-label="Céu estrelado de Marte — clique para observar estrelas e constelações"
+      aria-label={
+        lang === 'pt'
+          ? 'Céu estrelado de Marte — clique para observar estrelas e constelações'
+          : 'Martian starry night sky — click to spawn twinkling stars and reveal constellations'
+      }
     >
-      {/* Subtle ambient distant starfield */}
       <div
         className="pointer-events-none absolute inset-0 opacity-45"
         style={{
@@ -204,7 +258,6 @@ export const MartianStargazingBackdrop: React.FC<MartianStargazingBackdropProps>
         }}
       />
 
-      {/* Revealed Real Martian Constellations drawn across the background sky */}
       <svg
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
@@ -242,7 +295,6 @@ export const MartianStargazingBackdrop: React.FC<MartianStargazingBackdropProps>
         ))}
       </svg>
 
-      {/* Clicked Twinkling Stars */}
       {stars.map((star) => (
         <div
           key={star.id}
@@ -270,23 +322,22 @@ export const MartianStargazingBackdrop: React.FC<MartianStargazingBackdropProps>
 };
 
 interface MartianObservatoryCardProps {
+  lang?: Language;
   ageProfile: AgeProfile;
   stars: SpawnedTwinkleStar[];
   revealedIds: string[];
   onSkyClick: (xPct: number, yPct: number) => void;
 }
 
-/**
- * Interactive Night Sky Observatory panel on Screen 5 so players on mobile or desktop
- * also have an unobstructed, dedicated starry Martian sky viewport to click and explore constellations.
- */
 export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
+  lang = 'en',
   ageProfile,
   stars,
   revealedIds,
   onSkyClick,
 }) => {
   const [selectedConstellationId, setSelectedConstellationId] = useState<string | null>(null);
+  const isPt = lang === 'pt';
 
   const activeConstellation =
     MARTIAN_CONSTELLATIONS.find((c) => c.id === selectedConstellationId) ||
@@ -308,19 +359,22 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
           <Telescope className="h-5 w-5 text-sky-400" />
           <div>
             <h2 className="text-lg font-extrabold text-white">
-              Observação de Estrelas · Céu Noturno de Marte
+              {isPt
+                ? 'Observação de Estrelas · Céu Noturno de Marte'
+                : 'Stargazing · Martian Night Sky'}
             </h2>
             <p className="text-xs text-slate-300">
-              Clique em pontos aleatórios no céu abaixo (ou no fundo da tela!) para fazer estrelas piscarem e revelar constelações reais vistas de Marte.
+              {isPt
+                ? 'Clique em pontos aleatórios no céu abaixo (ou no fundo da tela!) para fazer estrelas piscarem e revelar constelações reais vistas de Marte.'
+                : 'Click random spots in the sky below (or the night background!) to spawn twinkling stars and reveal real constellations seen from Mars.'}
             </p>
           </div>
         </div>
         <span className="font-mono-tabular text-xs font-bold text-amber-300">
-          Constelações: {revealedIds.length} / {MARTIAN_CONSTELLATIONS.length}
+          {isPt ? 'Constelações' : 'Constellations'}: {revealedIds.length} / {MARTIAN_CONSTELLATIONS.length}
         </span>
       </div>
 
-      {/* Dedicated Clickable Martian Sky Dome */}
       <div
         onClick={handlePanelSkyClick}
         role="button"
@@ -332,9 +386,12 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
           }
         }}
         className="relative h-64 sm:h-72 w-full cursor-crosshair overflow-hidden rounded-2xl border border-slate-700 bg-[radial-gradient(ellipse_at_bottom,_#2B141A_0%,_#0B142B_55%,_#050812_100%)] select-none"
-        aria-label="Clique no céu marciano para acender estrelas e descobrir constelações"
+        aria-label={
+          isPt
+            ? 'Clique no céu marciano para acender estrelas e descobrir constelações'
+            : 'Click the Martian sky to light stars and reveal constellations'
+        }
       >
-        {/* Martian red horizon silhouette */}
         <svg
           viewBox="0 0 800 90"
           preserveAspectRatio="none"
@@ -347,7 +404,6 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
           />
         </svg>
 
-        {/* Constellation SVG overlay */}
         <svg
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
@@ -380,7 +436,6 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
           ))}
         </svg>
 
-        {/* Constellation Name Labels */}
         {MARTIAN_CONSTELLATIONS.filter((c) => revealedIds.includes(c.id)).map((c) => {
           const anchor = c.points[0];
           return (
@@ -394,12 +449,11 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
               style={{ left: `${anchor.x}%`, top: `${Math.max(8, anchor.y - 6)}%` }}
               className="absolute -translate-x-1/2 rounded-md border border-sky-400/50 bg-[#0A1328]/85 px-2 py-0.5 text-[10px] font-bold text-sky-200 hover:border-amber-300 hover:text-amber-200"
             >
-              {c.name}
+              {isPt ? c.name : c.nameEn}
             </button>
           );
         })}
 
-        {/* Twinkling CSS-animated clicked stars */}
         {stars.map((star) => (
           <div
             key={star.id}
@@ -427,23 +481,29 @@ export const MartianObservatoryCard: React.FC<MartianObservatoryCardProps> = ({
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="rounded-xl border border-sky-400/30 bg-[#0A1328]/80 px-4 py-2 text-xs font-semibold text-sky-200">
               <Sparkles className="mr-1.5 inline h-4 w-4 text-amber-300" />
-              Toque em qualquer ponto escuro do céu para observar estrelas!
+              {isPt
+                ? 'Toque em qualquer ponto escuro do céu para observar estrelas!'
+                : 'Tap anywhere in the dark Martian sky to observe stars!'}
             </div>
           </div>
         )}
       </div>
 
-      {/* Revealed Constellation Scientific Detail */}
       {activeConstellation && (
         <div className="rounded-xl border border-slate-800 bg-[#080F20] p-4 text-xs space-y-1.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-sm font-extrabold text-amber-300">
-              ✨ {activeConstellation.name} · Estrela principal: {activeConstellation.mainStar}
+              ✨ {isPt ? activeConstellation.name : activeConstellation.nameEn} ·{' '}
+              {isPt ? 'Estrela principal' : 'Lead star'}: {activeConstellation.mainStar}
             </span>
-            <span className="text-[11px] text-sky-300">{activeConstellation.hemisphere}</span>
+            <span className="text-[11px] text-sky-300">
+              {isPt ? activeConstellation.hemisphere : activeConstellation.hemisphereEn}
+            </span>
           </div>
           <p className="leading-relaxed text-slate-200">
-            {activeConstellation.factByProfile[ageProfile]}
+            {isPt
+              ? activeConstellation.factByProfile[ageProfile]
+              : activeConstellation.factByProfileEn[ageProfile]}
           </p>
         </div>
       )}

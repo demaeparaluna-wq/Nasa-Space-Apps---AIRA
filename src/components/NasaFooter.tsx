@@ -1,18 +1,29 @@
 import React from 'react';
-import { NasaDataBundle } from '../types/game';
+import { Language, NasaDataBundle } from '../types/game';
 
 interface NasaFooterProps {
   nasaData: NasaDataBundle;
+  lang?: Language;
   lightSurface?: boolean;
 }
 
-export const NasaFooter: React.FC<NasaFooterProps> = ({ nasaData, lightSurface = false }) => {
+export const NasaFooter: React.FC<NasaFooterProps> = ({
+  nasaData,
+  lang = 'en',
+  lightSurface = false,
+}) => {
   const statusLabel =
-    nasaData.status === 'live'
-      ? '🟢 DADOS AO VIVO NASA'
-      : nasaData.status === 'cache'
-        ? '🔵 CACHE LOCAL (24H)'
-        : '🟡 DADOS REAIS ARQUIVADOS';
+    lang === 'pt'
+      ? nasaData.status === 'live'
+        ? '🟢 DADOS AO VIVO NASA'
+        : nasaData.status === 'cache'
+          ? '🔵 CACHE LOCAL (24H)'
+          : '🟡 DADOS REAIS ARQUIVADOS'
+      : nasaData.status === 'live'
+        ? '🟢 LIVE NASA DATA'
+        : nasaData.status === 'cache'
+          ? '🔵 LOCAL CACHE (24H)'
+          : '🟡 ARCHIVED REAL NASA DATA';
 
   return (
     <footer
@@ -33,7 +44,9 @@ export const NasaFooter: React.FC<NasaFooterProps> = ({ nasaData, lightSurface =
           </span>
         </div>
         <p className="text-[11px] leading-tight opacity-85">
-          Desenvolvido por Maryangela Costa de Souza Florentin &amp; Luna Costa Antunes • NASA Space Apps Challenge
+          {lang === 'pt'
+            ? 'Desenvolvido por Maryangela Costa de Souza Florentin & Luna Costa Antunes • NASA Space Apps Challenge'
+            : 'Developed by Maryangela Costa de Souza Florentin & Luna Costa Antunes • NASA Space Apps Challenge'}
         </p>
       </div>
     </footer>

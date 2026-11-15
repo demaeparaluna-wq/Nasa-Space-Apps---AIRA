@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AvatarId, GameScreen } from '../types/game';
+import { AvatarId, GameScreen, Language } from '../types/game';
 import { QuackMascot } from './QuackMascot';
 
 export const UfoSplashVisual: React.FC = () => {
@@ -136,7 +136,7 @@ export const BackgroundEasterEggLayer: React.FC<{
     setVisible(false);
     const timer = window.setTimeout(() => {
       setVisible(true);
-    }, 4000);
+    }, 1000);
     return () => window.clearTimeout(timer);
   }, [screen, currentSol]);
 
@@ -144,7 +144,7 @@ export const BackgroundEasterEggLayer: React.FC<{
     const id = window.setInterval(() => {
       setBlink(true);
       window.setTimeout(() => setBlink(false), 180);
-    }, 2400);
+    }, 2200);
     return () => window.clearInterval(id);
   }, []);
 
@@ -152,7 +152,7 @@ export const BackgroundEasterEggLayer: React.FC<{
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none"
+      className="pointer-events-none fixed inset-0 z-[1] overflow-hidden select-none"
       aria-hidden="true"
     >
       {/* Distant Martian Crater Ridge Silhouette along bottom background */}
@@ -180,32 +180,58 @@ export const BackgroundEasterEggLayer: React.FC<{
 
       {visible && (
         <>
-          {/* Screen 1 Prologue OR Sol 1: ET peeking gently from the distant ridge/corner */}
-          {(screen === 'prologue' || (screen === 'command' && currentSol === 1)) && (
-            <div className="animate-bg-et-peek fixed right-3 bottom-14 sm:right-8 sm:bottom-16 opacity-45">
-              <MiniAlienTickSvg size={64} blink={blink} />
-            </div>
-          )}
-
-          {/* Screen 2 Hangar: Subtle hovering UFO high in the distant sky */}
-          {screen === 'hangar' && (
-            <div className="animate-float-zero-g fixed left-4 top-20 sm:left-10 sm:top-24 opacity-40">
-              <svg viewBox="0 0 80 48" className="w-20 h-12">
-                <polygon points="28,32 52,32 62,48 18,48" fill="#38BDF8" fillOpacity="0.16" />
-                <path d="M24 22 C24 8, 56 8, 56 22 Z" fill="#BAE6FD" fillOpacity="0.7" />
-                <ellipse cx="40" cy="24" rx="28" ry="8" fill="#475569" />
-                <circle cx="24" cy="25" r="2.2" fill="#FACC15" />
-                <circle cx="40" cy="27" r="2.2" fill="#F97316" />
-                <circle cx="56" cy="25" r="2.2" fill="#4ADE80" />
+          {/* Corner 1 (Bottom-Right): Blinking Alien Tick peeking gently across every screen (with Base Ares flag on Sol 4) */}
+          <div className="animate-bg-et-peek fixed right-2.5 bottom-14 sm:right-6 sm:bottom-16 opacity-55 dark:opacity-65 flex items-end gap-1">
+            <MiniAlienTickSvg
+              size={58}
+              blink={blink}
+              armsUp={screen === 'command' && currentSol === 4}
+            />
+            {screen === 'command' && currentSol === 4 && (
+              <svg viewBox="0 0 32 48" className="w-6 h-10 -ml-2">
+                <line x1="6" y1="6" x2="6" y2="44" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+                <path d="M7 8 L29 13 L7 21 Z" fill="#F97316" />
               </svg>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Sol 2: Flying saucer cruising softly across the background sky */}
-          {screen === 'command' && currentSol === 2 && (
-            <div className="fixed inset-x-0 top-16 opacity-50">
+          {/* Corner 2 (Bottom-Left): Cute Spotted Cow being abducted into UFO tractor beam across screens */}
+          <div className="fixed left-2 bottom-14 sm:left-6 sm:bottom-16 opacity-60 dark:opacity-75">
+            <svg viewBox="0 0 110 120" className="w-24 h-26 sm:w-28 sm:h-30 overflow-visible">
+              <defs>
+                <linearGradient id="tractor-beam-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.6" />
+                  <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.08" />
+                </linearGradient>
+              </defs>
+              <polygon points="34,34 76,34 98,112 12,112" fill="url(#tractor-beam-grad)" />
+              <g className="animate-cow-abduction" style={{ transformOrigin: '55px 78px' }}>
+                <line x1="44" y1="86" x2="43" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="49" y1="86" x2="49" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="60" y1="86" x2="60" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="65" y1="86" x2="66" y2="94" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+                <ellipse cx="55" cy="79" rx="14" ry="9" fill="#FFFFFF" stroke="#94A3B8" strokeWidth="1.2" />
+                <circle cx="50" cy="77" r="3" fill="#0F172A" />
+                <circle cx="59" cy="81" r="2.3" fill="#0F172A" />
+                <circle cx="68" cy="74" r="6" fill="#FFFFFF" stroke="#94A3B8" strokeWidth="1.2" />
+                <path d="M64 68 L62 64 M71 68 L73 64" stroke="#FDE047" strokeWidth="1.8" strokeLinecap="round" />
+                <ellipse cx="70" cy="76.5" rx="4" ry="2.6" fill="#FDA4AF" />
+                <circle cx="66.5" cy="72.5" r="1.3" fill="#0F172A" />
+                <circle cx="70.5" cy="72.5" r="1.3" fill="#0F172A" />
+              </g>
+              <path d="M36 26 C36 10, 74 10, 74 26 Z" fill="#BAE6FD" fillOpacity="0.88" stroke="#38BDF8" strokeWidth="1.5" />
+              <ellipse cx="55" cy="30" rx="34" ry="9" fill="#475569" stroke="#1E293B" strokeWidth="1.8" />
+              <circle cx="34" cy="31" r="2.5" fill="#FACC15" />
+              <circle cx="55" cy="33" r="2.5" fill="#F97316" />
+              <circle cx="76" cy="31" r="2.5" fill="#4ADE80" />
+            </svg>
+          </div>
+
+          {/* Upper-Sky Passby: Flying saucer gliding across the sky on Sol 2 & Victory */}
+          {((screen === 'command' && currentSol === 2) || screen === 'victory') && (
+            <div className="fixed inset-x-0 top-16 opacity-45">
               <div className="animate-ufo-flyby inline-block">
-                <svg viewBox="0 0 96 48" className="w-24 h-12">
+                <svg viewBox="0 0 96 48" className="w-20 h-10 sm:w-24 sm:h-12">
                   <path d="M30 22 C30 8, 66 8, 66 22 Z" fill="#BAE6FD" fillOpacity="0.75" />
                   <ellipse cx="48" cy="25" rx="34" ry="9" fill="#64748B" />
                   <circle cx="28" cy="26" r="2.8" fill="#FACC15" />
@@ -216,37 +242,12 @@ export const BackgroundEasterEggLayer: React.FC<{
             </div>
           )}
 
-          {/* Sol 3: Tiny UFO beaming up a smiling space cow in the background corner */}
-          {screen === 'command' && currentSol === 3 && (
-            <div className="animate-float-zero-g fixed left-3 bottom-14 sm:left-8 sm:bottom-16 opacity-45">
-              <svg viewBox="0 0 72 80" className="w-20 h-22">
-                <polygon points="22,26 50,26 62,74 10,74" fill="#38BDF8" fillOpacity="0.2" />
-                <path d="M24 20 C24 10, 48 10, 48 20 Z" fill="#BAE6FD" />
-                <ellipse cx="36" cy="22" rx="26" ry="7" fill="#64748B" />
-                <ellipse cx="36" cy="54" rx="10" ry="7" fill="#FFFFFF" />
-                <circle cx="32" cy="53" r="2" fill="#0F172A" />
-                <circle cx="43" cy="50" r="4.5" fill="#FFFFFF" />
-                <circle cx="44" cy="49" r="1.2" fill="#0F172A" />
-              </svg>
-            </div>
-          )}
-
-          {/* Sol 4: Friendly ET waving a Base Ares flag on the distant Martian ridge */}
-          {screen === 'command' && currentSol === 4 && (
-            <div className="animate-bg-et-peek fixed left-4 bottom-14 sm:left-8 sm:bottom-16 opacity-50 flex items-end gap-1">
-              <MiniAlienTickSvg size={54} party armsUp />
-              <svg viewBox="0 0 32 48" className="w-7 h-11 -ml-2">
-                <line x1="6" y1="6" x2="6" y2="44" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
-                <path d="M7 8 L29 13 L7 21 Z" fill="#F97316" />
-              </svg>
-            </div>
-          )}
-
-          {/* Victory: Subtle celebrating UFO silhouette in upper horizon */}
-          {screen === 'victory' && (
-            <div className="animate-float-zero-g fixed right-5 top-20 opacity-35">
-              <svg viewBox="0 0 80 48" className="w-16 h-10">
-                <path d="M24 22 C24 8, 56 8, 56 22 Z" fill="#BAE6FD" fillOpacity="0.65" />
+          {/* Upper-Left Hovering Saucer on Hangar */}
+          {screen === 'hangar' && (
+            <div className="animate-float-zero-g fixed right-4 top-20 sm:right-10 sm:top-24 opacity-45">
+              <svg viewBox="0 0 80 48" className="w-16 h-10 sm:w-20 sm:h-12">
+                <polygon points="28,32 52,32 62,48 18,48" fill="#38BDF8" fillOpacity="0.16" />
+                <path d="M24 22 C24 8, 56 8, 56 22 Z" fill="#BAE6FD" fillOpacity="0.7" />
                 <ellipse cx="40" cy="24" rx="28" ry="8" fill="#475569" />
                 <circle cx="24" cy="25" r="2.2" fill="#FACC15" />
                 <circle cx="40" cy="27" r="2.2" fill="#F97316" />
@@ -265,7 +266,10 @@ export const BackgroundEasterEggLayer: React.FC<{
  * - Top illuminated stage platform ("Gru"): Comandante Quack in the center flanked by the 3 aligned mini astronauts
  * - Bottom cheering crowd pit: a synchronized row of cute Carrapatos ETs jumping and raising their arms!
  */
-export const MamboPartyBanner: React.FC<{ avatarId: AvatarId }> = ({ avatarId }) => {
+export const MamboPartyBanner: React.FC<{ avatarId: AvatarId; lang?: Language }> = ({
+  avatarId,
+  lang = 'en',
+}) => {
   const crewOrder: AvatarId[] = ['astra', 'orbita', 'cometa'];
   const orderedCrew = [
     avatarId,
@@ -276,38 +280,44 @@ export const MamboPartyBanner: React.FC<{ avatarId: AvatarId }> = ({ avatarId })
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-b from-[#172342]/95 via-[#0F1830]/95 to-[#090F1E]/95 px-4 pt-6 pb-4 backdrop-blur-md">
-      {/* Subtle spotlight beam behind Comandante Quack */}
+      {/* Subtle spotlight beam behind Commander Quack */}
       <div
         className="pointer-events-none absolute left-1/2 top-0 h-48 w-64 -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,_rgba(251,191,36,0.22),_transparent_70%)]"
         aria-hidden="true"
       />
 
-      {/* TOP STAGE PLATFORM: Comandante Quack ("Gru") + 3 Aligned Crew Astronauts */}
+      {/* TOP STAGE PLATFORM: Commander Quack + 3 Aligned Crew Astronauts */}
       <div className="relative z-10 flex flex-col items-center">
         <div className="flex flex-wrap items-end justify-center gap-3 sm:gap-6">
           {/* Left Crew Astronaut */}
           <div className="animate-mambo flex flex-col items-center" style={{ animationDelay: '0.15s' }}>
             <SpaceAvatarSvg id={orderedCrew[1]} size={54} />
-            <span className="mt-1 text-[11px] font-semibold text-sky-300">Piloto</span>
+            <span className="mt-1 text-[11px] font-semibold text-sky-300">
+              {lang === 'pt' ? 'Piloto' : 'Pilot'}
+            </span>
           </div>
 
-          {/* Center Star: Comandante Quack */}
+          {/* Center Star: Commander Quack */}
           <div className="animate-mambo flex flex-col items-center">
             <QuackMascot expression="celebrate" size={124} />
             <span className="mt-0.5 text-xs font-extrabold text-amber-300">
-              Comandante Quack
+              {lang === 'pt' ? 'Comandante Quack' : 'Commander Quack'}
             </span>
           </div>
 
           {/* Right Crew Astronauts (2 & 3) */}
           <div className="animate-mambo flex flex-col items-center" style={{ animationDelay: '0.25s' }}>
             <SpaceAvatarSvg id={orderedCrew[0]} size={54} />
-            <span className="mt-1 text-[11px] font-semibold text-emerald-300">Guardião(ã)</span>
+            <span className="mt-1 text-[11px] font-semibold text-emerald-300">
+              {lang === 'pt' ? 'Guardião(ã)' : 'Guardian'}
+            </span>
           </div>
 
           <div className="hidden sm:flex animate-mambo flex-col items-center" style={{ animationDelay: '0.35s' }}>
             <SpaceAvatarSvg id={orderedCrew[2]} size={54} />
-            <span className="mt-1 text-[11px] font-semibold text-amber-300">Engenharia</span>
+            <span className="mt-1 text-[11px] font-semibold text-amber-300">
+              {lang === 'pt' ? 'Engenharia' : 'Engineering'}
+            </span>
           </div>
         </div>
 
@@ -315,7 +325,7 @@ export const MamboPartyBanner: React.FC<{ avatarId: AvatarId }> = ({ avatarId })
         <div className="mt-2 h-2.5 w-full max-w-xl rounded-full border border-orange-400/50 bg-gradient-to-r from-slate-800 via-orange-500/70 to-slate-800 shadow-[0_0_18px_rgba(249,115,22,0.4)]" />
       </div>
 
-      {/* BOTTOM CROWD PIT: Row of Cheering Carrapatos ETs ("Minions Crowd") */}
+      {/* BOTTOM CROWD PIT: Row of Cheering Alien Ticks */}
       <div className="relative z-10 mt-3 flex flex-col items-center">
         <div className="flex items-end justify-center gap-1.5 sm:gap-3 overflow-hidden pt-1">
           {crowdDelays.map((delay, idx) => (
@@ -333,17 +343,20 @@ export const MamboPartyBanner: React.FC<{ avatarId: AvatarId }> = ({ avatarId })
           ))}
         </div>
         <p className="mt-1 text-[11px] font-semibold text-emerald-300">
-          Platéia da Base Ares: os Carrapatos ETs vibrando com a tripulação!
+          {lang === 'pt'
+            ? 'Platéia da Base Ares: os Carrapatos ETs vibrando com a tripulação!'
+            : 'Ares Base Crowd: the Alien Ticks cheering wildly with the crew!'}
         </p>
       </div>
     </div>
   );
 };
 
-export const RocketLaunchOverlay: React.FC<{ rocketName: string; orbitName: string }> = ({
-  rocketName,
-  orbitName,
-}) => (
+export const RocketLaunchOverlay: React.FC<{
+  rocketName: string;
+  orbitName: string;
+  lang?: Language;
+}> = ({ rocketName, orbitName, lang = 'en' }) => (
   <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#060B16]/95 px-6 text-center">
     <div className="relative h-56 w-40 flex items-end justify-center overflow-hidden">
       <div className="animate-rocket-launch flex flex-col items-center">
@@ -357,12 +370,16 @@ export const RocketLaunchOverlay: React.FC<{ rocketName: string; orbitName: stri
         </svg>
       </div>
     </div>
-    <h2 className="mt-4 text-2xl font-bold text-white">Decolagem rumo à Cratera Jezero!</h2>
+    <h2 className="mt-4 text-2xl font-bold text-white">
+      {lang === 'pt' ? 'Decolagem rumo à Cratera Jezero!' : 'Liftoff to Jezero Crater!'}
+    </h2>
     <p className="mt-2 text-sm text-slate-300">
       {rocketName} · {orbitName}
     </p>
     <p className="mt-1 font-mono-tabular text-xs text-orange-400">
-      Trajetória confirmada para a Base Ares em Marte...
+      {lang === 'pt'
+        ? 'Trajetória confirmada para a Base Ares em Marte...'
+        : 'Trajectory locked for Ares Base on Mars...'}
     </p>
   </div>
 );

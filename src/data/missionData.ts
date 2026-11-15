@@ -75,22 +75,24 @@ export const ROCKETS: RocketOption[] = [
   {
     id: 'light',
     name: 'Foguete Leve',
-    costM: 40,
+    costM: 35,
     maxMassKg: 1200,
     whatIsIt:
-      'Veículo ágil que custa menos e deixa dinheiro extra guardado para emergências na missão, mas carrega até 1.200 kg no total.',
-    summary: 'Economiza verba para emergências em Marte.',
-    tradeoffNote: 'Sobra orçamento ($60M livres), mas o limite de peso é justo.',
+      'Veículo ágil que custa menos ($35M) e deixa dinheiro extra guardado para emergências na missão, mas carrega até 1.200 kg no total e tem fuselagem mais leve.',
+    summary: 'Economiza verba ($25M+) e inicia com +5% Energia, mas limita carga pesada (-5% Escudo).',
+    tradeoffNote: 'Não suporta Veggie + DONKI juntos (1.300 kg > 1.200 kg), mas garante reserva para o Sol 2.',
+    startingDelta: { energy: 5, shield: -5 },
   },
   {
     id: 'heavy',
     name: 'Foguete Pesado',
-    costM: 75,
+    costM: 50,
     maxMassKg: 2200,
     whatIsIt:
-      'Foguete gigante com tanques reforçados que suporta até 2.200 kg de carga, mas consome quase todo o orçamento de $100M.',
-    summary: 'Alta capacidade de carga, porém custo elevado.',
-    tradeoffNote: 'Atenção: com 2 instrumentos, o custo total ultrapassa $100M!',
+      'Foguete reforçado que suporta até 2.200 kg (permite qualquer dupla de instrumentos), mas queima mais combustível no lançamento (-8% Energia) e reduz a verba livre.',
+    summary: 'Leva qualquer dupla de instrumentos (+5% Escudo), mas consome mais combustível (-8% Energia).',
+    tradeoffNote: 'Com Veggie + DONKI usa todos os $100M ($0M livre — sem bônus extra no Sol 2).',
+    startingDelta: { shield: 5, energy: -8 },
   },
 ];
 
@@ -133,7 +135,7 @@ export const INSTRUMENTS: InstrumentOption[] = [
     name: 'Estação MEDA Perseverance',
     shortName: 'Estação MEDA',
     massKg: 350,
-    costM: 20,
+    costM: 15,
     scienceBonus: 35,
     whatIsIt:
       'Estação meteorológica do rover Perseverance que mede o frio noturno de -85°C, tempestades de poeira (τ=0,85) e atrasos de rádio de 14 min.',
@@ -145,7 +147,7 @@ export const INSTRUMENTS: InstrumentOption[] = [
     name: 'Escudo & Antena DONKI',
     shortName: 'Escudo DONKI',
     massKg: 500,
-    costM: 30,
+    costM: 25,
     scienceBonus: 25,
     whatIsIt:
       'Sensor espacial conectado ao sistema DONKI da NASA que detecta explosões solares (como a Classe X8.7) antes que atinjam a Base Ares.',

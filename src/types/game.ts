@@ -1,3 +1,5 @@
+export type Language = 'en' | 'pt';
+
 export type AgeProfile = 'explorers' | 'strategists' | 'educators';
 
 export type PlayMode = 'solo' | 'team';
@@ -42,6 +44,7 @@ export interface RocketOption {
   whatIsIt: string;
   summary: string;
   tradeoffNote: string;
+  startingDelta: ResourceDelta;
 }
 
 export interface OrbitOption {

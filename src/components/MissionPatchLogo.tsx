@@ -1,17 +1,19 @@
 import React from 'react';
+import { Language } from '../types/game';
 
 interface MissionPatchLogoProps {
   size?: number;
   className?: string;
+  lang?: Language;
 }
 
 /**
- * Emblema Oficial Laranja da Missão Sol-4: Guardiões da Base Ares
- * Inspirado nos patches espaciais da NASA com o Comandante Quack no centro e Marte ao fundo.
+ * Official Orange Mission Patch for Mission Sol-4: Guardians of Ares Base
  */
 export const MissionPatchLogo: React.FC<MissionPatchLogoProps> = ({
   size = 112,
   className = '',
+  lang = 'en',
 }) => {
   const uid = React.useId().replace(/:/g, '');
   const topArcId = `patch-top-${uid}`;
@@ -26,7 +28,11 @@ export const MissionPatchLogo: React.FC<MissionPatchLogoProps> = ({
       viewBox="0 0 220 220"
       className={`select-none shrink-0 drop-shadow-[0_6px_22px_rgba(249,115,22,0.35)] ${className}`}
       role="img"
-      aria-label="Logo Oficial Missão Sol-4: Guardiões da Base Ares"
+      aria-label={
+        lang === 'pt'
+          ? 'Logo Oficial Missão Sol-4: Guardiões da Base Ares'
+          : 'Official Patch Mission Sol-4: Guardians of Ares Base'
+      }
     >
       <defs>
         <path id={topArcId} d="M 38,110 A 72,72 0 1,1 182,110" />
@@ -111,19 +117,19 @@ export const MissionPatchLogo: React.FC<MissionPatchLogoProps> = ({
         fontFamily="Outfit, sans-serif"
       >
         <textPath href={`#${topArcId}`} startOffset="50%" textAnchor="middle">
-          MISSÃO SOL-4
+          {lang === 'pt' ? 'MISSÃO SOL-4' : 'MISSION SOL-4'}
         </textPath>
       </text>
 
       <text
         fill="#FFF7ED"
-        fontSize="10.2"
+        fontSize={lang === 'pt' ? '10.2' : '9.4'}
         fontWeight="700"
         letterSpacing="1.2"
         fontFamily="Outfit, sans-serif"
       >
         <textPath href={`#${bottomArcId}`} startOffset="50%" textAnchor="middle">
-          GUARDIÕES DA BASE ARES
+          {lang === 'pt' ? 'GUARDIÕES DA BASE ARES' : 'GUARDIANS OF ARES BASE'}
         </textPath>
       </text>
 

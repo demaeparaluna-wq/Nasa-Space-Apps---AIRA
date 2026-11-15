@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { Language } from '../types/game';
 import { UfoSplashVisual } from './SpaceVisuals';
 
 interface SplashScreenProps {
+  lang?: Language;
   onComplete: () => void;
 }
 
-export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
+export const SplashScreen: React.FC<SplashScreenProps> = ({ lang = 'en', onComplete }) => {
   const [progress, setProgress] = useState(12);
 
   useEffect(() => {
@@ -31,10 +33,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         <UfoSplashVisual />
 
         <h1 className="mt-5 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-          Missão Sol-4: Guardiões da Base Ares
+          {lang === 'pt'
+            ? 'Missão Sol-4: Guardiões da Base Ares'
+            : 'Mission Sol-4: Guardians of Ares Base'}
         </h1>
         <p className="mt-2 text-sm sm:text-base font-medium text-slate-600">
-          Bem-vindo à Base Ares — Sincronizando telemetria com o Comandante Quack...
+          {lang === 'pt'
+            ? 'Bem-vindo à Base Ares — Sincronizando telemetria com o Comandante Quack...'
+            : 'Welcome to Ares Base — Syncing NASA telemetry with Commander Quack...'}
         </p>
 
         {/* Loading bar */}
@@ -46,13 +52,15 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         </div>
 
         <div className="mt-4 flex w-full items-center justify-between text-xs text-slate-500">
-          <span className="font-mono-tabular">Telemetria NASA · {progress}%</span>
+          <span className="font-mono-tabular">
+            {lang === 'pt' ? `Telemetria NASA · ${progress}%` : `NASA Telemetry · ${progress}%`}
+          </span>
           <button
             type="button"
             onClick={onComplete}
             className="rounded-lg px-3 py-1.5 font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
           >
-            Pular abertura ➔
+            {lang === 'pt' ? 'Pular abertura ➔' : 'Skip intro ➔'}
           </button>
         </div>
       </div>

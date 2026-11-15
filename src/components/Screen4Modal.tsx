@@ -1,11 +1,12 @@
 import React from 'react';
 import { AlertTriangle, ArrowRight, Award, RotateCcw, Wrench } from 'lucide-react';
-import { RESOURCE_META } from '../data/missionData';
-import { AgeProfile, ModalFeedbackState, ResourceKey, Resources } from '../types/game';
+import { getLocalizedMissionData } from '../data/missionDataEn';
+import { AgeProfile, Language, ModalFeedbackState, ResourceKey, Resources } from '../types/game';
 import { playClickSound } from '../utils/sound';
 import { QuackMascot } from './QuackMascot';
 
 interface Screen4ModalProps {
+  lang?: Language;
   modal: ModalFeedbackState;
   resources: Resources;
   ageProfile: AgeProfile;
@@ -15,6 +16,7 @@ interface Screen4ModalProps {
 }
 
 export const Screen4Modal: React.FC<Screen4ModalProps> = ({
+  lang = 'en',
   modal,
   resources,
   ageProfile,
@@ -22,6 +24,9 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
   onRetrySol,
   onBackToHangar,
 }) => {
+  const isPt = lang === 'pt';
+  const { RESOURCE_META } = getLocalizedMissionData(lang);
+
   if (modal.type === 'failure') {
     const failedMeta = modal.failedResource ? RESOURCE_META[modal.failedResource] : null;
     const failureText = modal.failurePhysicsByProfile?.[ageProfile];
@@ -37,15 +42,23 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
             <QuackMascot expression="terror" size={112} />
             <div className="text-center sm:text-left">
               <p className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-                Falha Crítica · Você Perdeu o Sol {modal.sol}
+                {isPt
+                  ? `Falha Crítica · Você Perdeu o Sol ${modal.sol}`
+                  : `Critical Failure · Sol ${modal.sol} Lost`}
               </p>
               <h2 className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">
                 {failedMeta
-                  ? `${failedMeta.label} chegou a 0%!`
-                  : 'Sistema em estado crítico!'}
+                  ? isPt
+                    ? `${failedMeta.label} chegou a 0%!`
+                    : `${failedMeta.label} dropped to 0%!`
+                  : isPt
+                    ? 'Sistema em estado crítico!'
+                    : 'Critical system failure!'}
               </h2>
               <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-                Sua escolha esgotou um sistema vital. Na engenharia da NASA, aprendemos com a física da falha para tentar novamente!
+                {isPt
+                  ? 'Por que falhou? Sua escolha esgotou um sistema vital. Na engenharia da NASA, analisamos a física da falha para tentar novamente!'
+                  : 'Why did it fail? Your choice drained a vital system to zero. In NASA engineering, we diagnose the physics behind the failure and try again!'}
               </p>
             </div>
           </div>
@@ -64,7 +77,7 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
               className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-3 text-sm font-bold text-slate-950 hover:bg-orange-400"
             >
               <RotateCcw className="h-4 w-4" />
-              <span>Tentar Este Sol Novamente</span>
+              <span>{isPt ? 'Tentar Este Sol Novamente' : 'Retry This Sol'}</span>
             </button>
             <button
               type="button"
@@ -75,7 +88,7 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
               className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700 px-4 py-3 text-sm font-semibold"
             >
               <Wrench className="h-4 w-4" />
-              <span>Reprojetar Nave no Hangar</span>
+              <span>{isPt ? 'Reprojetar Nave no Hangar' : 'Redesign Ship in Hangar'}</span>
             </button>
           </div>
         </div>
@@ -83,11 +96,8 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
     );
   }
 
-  const inDangerNow =
-    resources.energy < 35 ||
-    resources.lifeSupport < 35 ||
-    resources.shield < 35 ||
-    resources.comms < 35;
+  const dangerKeys = (Object.keys(resources) as ResourceKey[]).filter((k) => resources[k] < 35);
+  const inDangerNow = dangerKeys.length > 0;
 
   const deltaEntries = (Object.entries(modal.appliedDelta) as [ResourceKey, number][]).filter(
     ([, val]) => val !== 0
@@ -109,7 +119,9 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
           <div className="text-center sm:text-left">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-300">
               <Award className="h-4 w-4" />
-              <span>SELO DESBLOQUEADO · SOL {modal.sol}</span>
+              <span>
+                {isPt ? `SELO DESBLOQUEADO · SOL ${modal.sol}` : `BADGE UNLOCKED · SOL ${modal.sol}`}
+              </span>
             </div>
             <h2 className="mt-1 text-2xl font-extrabold text-slate-900 dark:text-white">
               {modal.badge?.title}
@@ -124,7 +136,9 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
           <div className="flex items-start gap-2 rounded-xl border border-amber-400 bg-amber-50 px-3.5 py-2.5 text-xs font-semibold text-amber-900 dark:border-amber-500/50 dark:bg-amber-950/50 dark:text-amber-200">
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
             <span>
-              Por um triz! Um dos seus medidores caiu abaixo de 35% e o Comandante Quack ficou preocupado. Recupere os recursos no próximo Sol para não perder!
+              {isPt
+                ? `Por um triz! ${dangerKeys.map((k) => `${RESOURCE_META[k].label} (${resources[k]}%)`).join(', ')} caiu abaixo de 35% por causa do custo de trade-off desta carta. Recupere os recursos no próximo Sol!`
+                : `Close call! ${dangerKeys.map((k) => `${RESOURCE_META[k].label} (${resources[k]}%)`).join(', ')} fell below 35% due to this card's trade-off cost. Recover those systems in the next Sol!`}
             </span>
           </div>
         )}
@@ -148,7 +162,9 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
 
         <div className="rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-[#0B1224] p-4 space-y-2">
           <p className="text-xs font-bold text-sky-700 dark:text-sky-300">
-            Por que isso aconteceu na ciência real da NASA?
+            {isPt
+              ? 'Por que isso aconteceu na ciência real da NASA?'
+              : 'Why did this happen in real NASA science?'}
           </p>
           <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
             {modal.chosenCard?.scienceExplanationByProfile[ageProfile]}
@@ -168,8 +184,12 @@ export const Screen4Modal: React.FC<Screen4ModalProps> = ({
         >
           <span>
             {modal.sol < 4
-              ? `Avançar para o Sol ${modal.sol + 1}`
-              : 'Ir para o Passaporte & Festa Mambo!'}
+              ? isPt
+                ? `Avançar para o Sol ${modal.sol + 1}`
+                : `Advance to Sol ${modal.sol + 1}`
+              : isPt
+                ? 'Ir para o Passaporte & Festa Mambo!'
+                : 'Go to Passport & Mambo Party!'}
           </span>
           <ArrowRight className="h-5 w-5" />
         </button>
