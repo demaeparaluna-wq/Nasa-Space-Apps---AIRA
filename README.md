@@ -3,6 +3,7 @@
 ![NASA Space Apps Challenge](https://img.shields.io/badge/NASA_Space_Apps-2026-0B3D91?style=for-the-badge&logo=nasa&logoColor=white)
 [![Play Live](https://img.shields.io/badge/Play_Live-ares--base--guardians.ai.studio-EA580C?style=for-the-badge)](https://ares-base-guardians.ai.studio/)
 [![Watch Demo](https://img.shields.io/badge/Watch_Demo-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/Ou2d6JxJJrU)
+[![Data Lineage Architecture](https://img.shields.io/badge/Data_Lineage-Architecture_Diagram-7C3AED?style=for-the-badge&logo=figma&logoColor=white)](https://www.figma.com/make/SdqABKS0g4AW9Q5QbxcJX4/Arquitetura-de-Linhagem-NASA?fullscreen=1&t=VhUD8dblY7gtzIe5-1&code-node-id=0-6)
 ![React 19](https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-0F172A?style=for-the-badge&logo=tailwind-css&logoColor=38BDF8)
@@ -14,7 +15,8 @@ Official Submission — **NASA Space Apps Challenge (2026)**
 
 - **Play the Game (Google AI Studio):** [`https://ares-base-guardians.ai.studio/`](https://ares-base-guardians.ai.studio/)
 - **Watch Demo Video (YouTube):** [`https://youtu.be/Ou2d6JxJJrU`](https://youtu.be/Ou2d6JxJJrU)
-- **Source Repository (GitHub):** `https://github.com/demaeparaluna-wq/Nasa-Space-Apps---Ares-Base-Guardians`
+- **Data Lineage Architecture Diagram (Interactive):** [`View Fullscreen Diagram`](https://www.figma.com/make/SdqABKS0g4AW9Q5QbxcJX4/Arquitetura-de-Linhagem-NASA?fullscreen=1&t=VhUD8dblY7gtzIe5-1&code-node-id=0-6)
+- **Source Repository (GitHub):** `https://github.com/[username]/[repo-name]`
 - **Architecture:** 100% Front-End SPA (React + TypeScript + Tailwind CSS + Vite, Per-Endpoint Circuit Breaker + `LocalFallback`) · Zero Backend · Bilingual (`EN-US` / `PT-BR`)
 
 ---
@@ -74,6 +76,7 @@ Available discreetly in the top-right corner from the **Splash Screen** through 
 ## Architecture, Circuit Breaker & Offline Resilience
 
 - **100% Front-End Execution:** Built with React, TypeScript, Tailwind CSS, Vite, native Web Audio API, and native Web Speech API (`window.speechSynthesis`). Runs with zero backend servers, zero external databases, and zero user API keys.
+- **Interactive Data Lineage Architecture:** Explore the complete end-to-end NASA telemetry flow visually in the [Data Lineage Architecture Diagram](https://www.figma.com/make/SdqABKS0g4AW9Q5QbxcJX4/Arquitetura-de-Linhagem-NASA?fullscreen=1&t=VhUD8dblY7gtzIe5-1&code-node-id=0-6) (complementing the technical specification in [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)).
 - **Per-Endpoint Circuit Breaker (`CLOSED → OPEN → HALF_OPEN`):** Independent state machines guard **DONKI** and **APOD**. On the first timeout (`4,000 ms` `AbortController`), HTTP error, or non-photo payload, that endpoint trips to `OPEN` for a 5-minute cooldown and short-circuits directly to the immutable `LocalFallback` constant bundle (plus verified NASA/JPL photo cycling on Screen 5).
 - **Anti-Logo APOD Guard & 3-Tier No-Cache Resilience:** APOD fetches a 6-item batch (`count=6`) and filters out videos, SVG/GIF icons, and NASA agency logos/seals/patches. An in-memory session cache and in-flight request deduplicator run alongside guarded 24h `localStorage` (`quack_nasa_cache_v1`), ensuring zero errors when judges disable cookies/storage or pass `?nocache=1`.
 - **Immediate Offline Bypass (`?offline=1`):** When `navigator.onLine === false` or `?offline=1` is active, the client skips `fetch()` immediately and boots in `0 ms` from `LocalFallback` (`status = 'archived'`).
@@ -221,6 +224,7 @@ git push origin v1.0.0
 - **Orion Nebula (`PIA08653` — Hubble):** https://images-assets.nasa.gov/image/PIA08653/PIA08653~medium.jpg
 
 ### Project Documentation & Typography
+- **Data Lineage Architecture Diagram (Interactive Fullscreen):** https://www.figma.com/make/SdqABKS0g4AW9Q5QbxcJX4/Arquitetura-de-Linhagem-NASA?fullscreen=1&t=VhUD8dblY7gtzIe5-1&code-node-id=0-6
 - **System Architecture & Unified Mermaid Lineage:** [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
 - **Circuit Breaker & `LocalFallback` Design Spec:** [`docs/IMPLEMENTATION_PLAN.md`](./docs/IMPLEMENTATION_PLAN.md)
 - **Educator & Family Pedagogical Guide:** [`docs/PEDAGOGICAL_GUIDE.md`](./docs/PEDAGOGICAL_GUIDE.md)

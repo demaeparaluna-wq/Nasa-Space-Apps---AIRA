@@ -3,6 +3,7 @@
 **Project:** Mission Sol-4: Guardians of Ares Base  
 **Team:** Ares Base Guardians (*Maryangela Costa de Souza Florentin & Luna Costa Antunes*)  
 **Live Demo:** https://ares-base-guardians.ai.studio/  
+**Data Lineage Diagram (Interactive):** https://www.figma.com/make/SdqABKS0g4AW9Q5QbxcJX4/Arquitetura-de-Linhagem-NASA?fullscreen=1&t=VhUD8dblY7gtzIe5-1&code-node-id=0-6  
 **Submission Track:** NASA Space Apps Challenge  
 **Runtime Model:** 100% Front-End Single Page Application (React · TypeScript · Tailwind CSS · Vite)
 
@@ -56,6 +57,8 @@ src/
 ---
 
 ## 2. Unified NASA Data Lineage Flowchart & 24-Hour Cache Schema
+
+> **Interactive Visual Architecture:** Open the full-screen [**NASA Data Lineage Architecture Diagram**](https://www.figma.com/make/SdqABKS0g4AW9Q5QbxcJX4/Arquitetura-de-Linhagem-NASA?fullscreen=1&t=VhUD8dblY7gtzIe5-1&code-node-id=0-6) to inspect the visual system map alongside the Mermaid.js flow below.
 
 The diagram below traces the complete runtime pipeline from official NASA open-science sources through the 24-hour `localStorage` caching layer and the Accessibility Layer into every interactive screen and Commander Quack's local pedagogical engine.
 
